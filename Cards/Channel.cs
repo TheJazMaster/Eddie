@@ -13,15 +13,10 @@ namespace Eddie.Cards
 
         public override CardData GetData(State state)
         {
-            int discount = 0;
-            if (upgrade == Upgrade.A) {
-                discount = 1
-            }
-
             return new CardData()
             {
                 cost = 1,
-                discount = discount,
+                // discount = upgrade == Upgrade.A ? 1 : 0,
                 floppable = upgrade == Upgrade.B,
                 buoyant = upgrade == Upgrade.B,
                 retain = upgrade == Upgrade.B,

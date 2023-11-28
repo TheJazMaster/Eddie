@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Eddie.Cards
 {
     [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class EnemyShift : Card
+    public class Interference : Card
     {
         public override string Name() => "Interference";
 
@@ -15,7 +15,7 @@ namespace Eddie.Cards
         {
             return new CardData()
             {
-                cost = 1,
+                cost = upgrade == Upgrade.B ? 0 : 1,
                 infinite = upgrade != Upgrade.B,
                 recycle = upgrade == Upgrade.B
             };
@@ -31,7 +31,7 @@ namespace Eddie.Cards
                             dir = 1,
                             targetPlayer = false
                         }
-                    }
+                    };
                 case Upgrade.A:
                     return new List<CardAction> {
                         new AMove
@@ -39,7 +39,7 @@ namespace Eddie.Cards
                             dir = 2,
                             targetPlayer = false
                         }
-                    }
+                    };
                 case Upgrade.B:
                     return new List<CardAction> {
                         new AMove
@@ -53,7 +53,9 @@ namespace Eddie.Cards
                             statusAmount = 1,
                             targetPlayer = false
                         }
-                    }
+                    };
+                default:
+                    return new List<CardAction>();
             }
         }
     }

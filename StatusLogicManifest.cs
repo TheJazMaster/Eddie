@@ -1,82 +1,70 @@
-﻿// using CobaltCoreModding.Definitions.ExternalItems;
-// using CobaltCoreModding.Definitions.ModContactPoints;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModContactPoints;
+using CobaltCoreModding.Definitions.ModManifests;
 
-// using HarmonyLib;
+using HarmonyLib;
 
-// namespace Eddie
-// {
-//     public partial class Manifest
-//     {
+namespace Eddie
+{
+    public partial class Manifest : IStatusManifest
+    {
+        public static ExternalStatus? CircuitStatus { get; private set; }
+        public static ExternalStatus? ClosedCircuitStatus { get; private set; }
+        public static ExternalStatus? LoseEnergyEveryTurnStatus { get; private set; }
 
-//         public static ExternalStatus? SmartExplosiveStatus { get; private set; }
+        public void LoadManifest(IStatusRegistry statusRegistry)
+        {
+            //patch in logic for our statuses
+            var harmony = new Harmony("Eddie.Status");
+            // CircuitStatusLogic(harmony);
+            // ClosedCircuitStatusLogic(harmony);
+            LoseEnergyEveryTurnStatusLogic(harmony);
 
-//         public static ExternalStatus? RocketSiloStatus { get; private set; }
+            //create status objects
+            CircuitStatus = new ExternalStatus("Eddie.Status.Circuit", true, Eddie_PrimaryColor, null, CircuitIcon ?? throw MakeInformativeException(Logger, "Missing Circuit Icon for status"), true);
+            CircuitStatus.AddLocalisation("Circuit", "Gain {0} Closed Circuit at the start of your turn.");
+            statusRegistry.RegisterStatus(CircuitStatus);
 
-//         public static ExternalStatus? PopBubblesStatus { get; private set; }
+            ClosedCircuitStatus = new ExternalStatus("Eddie.Status.ClosedCircuit", true, Eddie_PrimaryColor, null, ClosedCircuitIcon ?? throw MakeInformativeException(Logger, "Missing Closed Circuit Icon for status"), true);
+            ClosedCircuitStatus.AddLocalisation("Closed Circuit", "When a card would be discarded, lose 1 Closed Circuit instead.");
+            statusRegistry.RegisterStatus(ClosedCircuitStatus);
 
-//         public static ExternalStatus? LoseDroneShiftStatus { get; private set; }
+            LoseEnergyEveryTurnStatus = new ExternalStatus("Eddie.Status.LoseEnergyEveryTurn", true, Eddie_PrimaryColor, null, LoseEnergyEveryTurnIcon ?? throw MakeInformativeException(Logger, "Missing Lose Energy Icon for status"), true);
+            LoseEnergyEveryTurnStatus.AddLocalisation("Lose Energy Every Turn", "Lose {0} energy at the start of every turn.");
+            statusRegistry.RegisterStatus(LoseEnergyEveryTurnStatus);
+        }
 
-//         public void LoadManifest(IStatusRegistry statusRegistry)
-//         {
+        private void LoseEnergyEveryTurnStatusLogic(Harmony harmony)
+        {
 
-//             //patch in logic for our statuses
-//             var harmony = new Harmony("Eddie.Status");
-//             SmartExplosiveLogic(harmony);
-//             RocketSiloStatusLogic(harmony);
-//             PopBubblesStatusLogic(harmony);
-//             LoseDroneShiftLogic(harmony);
+            var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw MakeInformativeException(Logger, "Couldn't find Ship.OnBeginTurn method");
+            var start_turn_post = typeof(Manifest).GetMethod("LoseEnergyEveryTurn", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Manifest.LoseEnergyEveryTurn method");
+            harmony.Patch(start_turn_method, postfix: new HarmonyMethod(start_turn_post));
+        }
 
-//             //create status objects
-//             SmartExplosiveStatus = new ExternalStatus("Eddie.Status.SmartExplosive", true, Johanna_Primary_Color, null, SmartExplosiveSprite ?? throw new Exception("MissingSprite"), true);
-//             SmartExplosiveStatus.AddLocalisation("Smart Explosives", "Your missiles and clusters won't fire if they would miss. Reduced by 1 at the start of your turn.");
-//             statusRegistry.RegisterStatus(SmartExplosiveStatus);
-
-//             RocketSiloStatus = new ExternalStatus("Eddie.Status.RocketSiloStatus", true, Johanna_Primary_Color, null, RocketSiloSprite ?? throw new Exception("MissingSprite"), true);
-//             RocketSiloStatus.AddLocalisation("Rocket Silo", "For each stack gain a Micro Missiles card at the start of your turn.");
-//             statusRegistry.RegisterStatus(RocketSiloStatus);
-
-//             PopBubblesStatus = new ExternalStatus("Eddie.Status.PopBubblesStatus", true, Johanna_Primary_Color, null, PopBubblesSprite ?? throw new Exception("MissingSprite"), true);
-//             PopBubblesStatus.AddLocalisation("Bubble Pop", "At the start of your next turn all midrow bubbles are popped.");
-//             statusRegistry.RegisterStatus(PopBubblesStatus);
-
-//             LoseDroneShiftStatus = new ExternalStatus("Eddie.Status.LoseDroneShiftStatus", true, Johanna_Primary_Color, null, LoseDroneShiftSprite ?? throw new Exception("MissingSprite"), true);
-//             LoseDroneShiftStatus.AddLocalisation("Lose Droneshift", "Lose all droneshift at the start of your next turn.");
-//             statusRegistry.RegisterStatus(LoseDroneShiftStatus);
-//         }
-
-//         private void LoseDroneShiftLogic(Harmony harmony)
-//         {
-
-//             var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw new Exception("Couldnt find Ship.OnBeginTurn method");
-//             var start_turn_post = typeof(Manifest).GetMethod("LoseDroneShiftTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.LoseDroneShiftTurnStart method");
-//             harmony.Patch(start_turn_method, postfix: new HarmonyMethod(start_turn_post));
-//         }
-
-//         private static void LoseDroneShiftTurnStart(Ship __instance)
-//         {
-//             if (LoseDroneShiftStatus?.Id == null)
-//                 return;
-//             var status = (Status)LoseDroneShiftStatus.Id;
-//             if (__instance.Get(status) <= 0)
-//                 return;
-//             __instance.Set(Status.droneShift, 0);
-//             __instance.Add(status, -1);
-//         }
+        private static void LoseEnergyEveryTurn(Ship __instance, State s, Combat c)
+        {
+            if (LoseEnergyEveryTurnStatus?.Id == null)
+                return;
+            var status = (Status)LoseEnergyEveryTurnStatus.Id;
+            
+            c.energy -= __instance.Get(status);
+        }
 
 
 //         private void SmartExplosiveLogic(Harmony harmony)
 //         {
 //             //patch start turn to decrease status by 1.
 
-//             var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw new Exception("Couldnt find Ship.OnBeginTurn method");
-//             var start_turn_post = typeof(Manifest).GetMethod("SmartExplosiveTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.SmartExplosiveTurnStart method");
+//             var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw MakeInformativeException(Logger, "Couldnt find Ship.OnBeginTurn method");
+//             var start_turn_post = typeof(Manifest).GetMethod("SmartExplosiveTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Manifest.SmartExplosiveTurnStart method");
 //             harmony.Patch(start_turn_method, postfix: new HarmonyMethod(start_turn_post));
 
 //             //patch regular missile.begin to not fire if the owner has smart explosive
 
-//             var a_missile_hit_update = typeof(AMissileHit).GetMethod("Update") ?? throw new Exception("Couldnt find AMissileHit.Update method");
+//             var a_missile_hit_update = typeof(AMissileHit).GetMethod("Update") ?? throw MakeInformativeException(Logger, "Couldnt find AMissileHit.Update method");
 
-//             var a_missile_hit_prefix = typeof(Manifest).GetMethod("SmartExplosiveMissileLock", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.SmartExplosiveMissileLock method");
+//             var a_missile_hit_prefix = typeof(Manifest).GetMethod("SmartExplosiveMissileLock", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Manifest.SmartExplosiveMissileLock method");
 //             harmony.Patch(a_missile_hit_update, prefix: new HarmonyMethod(a_missile_hit_prefix));
 //         }
 
@@ -112,8 +100,8 @@
 //         private void RocketSiloStatusLogic(Harmony harmony)
 //         {
 //             // patch turn start of player to generate card in hand.
-//             var a_start_player_turn_begin_method = typeof(AStartPlayerTurn).GetMethod("Begin") ?? throw new Exception("Couldnt find AStartPlayerTurn.Begin method");
-//             var a_start_player_turn_begin_postfix = typeof(Manifest).GetMethod("RocketSiloTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.RocketSiloTurnStart method");
+//             var a_start_player_turn_begin_method = typeof(AStartPlayerTurn).GetMethod("Begin") ?? throw MakeInformativeException(Logger, "Couldnt find AStartPlayerTurn.Begin method");
+//             var a_start_player_turn_begin_postfix = typeof(Manifest).GetMethod("RocketSiloTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Manifest.RocketSiloTurnStart method");
 //             harmony.Patch(a_start_player_turn_begin_method, postfix: new HarmonyMethod(a_start_player_turn_begin_postfix));
 //         }
 
@@ -138,8 +126,8 @@
 //         private void PopBubblesStatusLogic(Harmony harmony)
 //         {
 //             //patch turn start to decrease this value by 1 and destroy all midrow bubbles.
-//             var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw new Exception("Couldnt find Ship.OnBeginTurn method");
-//             var start_turn_post = typeof(Manifest).GetMethod("PopBubblesTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.PopBubblesTurnStart method");
+//             var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw MakeInformativeException(Logger, "Couldnt find Ship.OnBeginTurn method");
+//             var start_turn_post = typeof(Manifest).GetMethod("PopBubblesTurnStart", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Manifest.PopBubblesTurnStart method");
 //             harmony.Patch(start_turn_method, postfix: new HarmonyMethod(start_turn_post));
 //         }
 
@@ -159,5 +147,5 @@
 //             __instance.Set(status, 0);
 //         }
 
-//     }
-// }
+    }
+}

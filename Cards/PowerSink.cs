@@ -1,4 +1,4 @@
-﻿using Eddie.CardLogicManifest
+﻿using Eddie.Actions;
 using System;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
@@ -11,42 +11,43 @@ namespace Eddie.Cards
     [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
     public class PowerSink : Card
     {
+        // int cardsPlayedBefore = 0;
         public override string Name() => "Power Sink";
 
         public override CardData GetData(State state)
         {
             return new CardData()
             {
-                cost = upgrade == Upgrade.A ? 0 : 1,
+                cost = upgrade == Upgrade.B ? 2 : upgrade == Upgrade.A ? 0 : 1,
                 exhaust = upgrade == Upgrade.B
             };
         }
 
         public override List<CardAction> GetActions(State s, Combat c)
         {
-            ConditionalWeakTable isEnergy = CardLogicManifest.isEnergy;
-            ConditionalWeakTable energyAmount = CardLogicManifest.energyAmount;
-            ConditionalWeakTable aEnergyMode = CardLogicManifest.aEnergyMode;
+            List<CardAction> result = new List<CardAction>();
 
-            List result = new List<CardAction>();
+            AVariableHintEnergy hint = new AVariableHintEnergy
+            {
+                setAmount = Manifest.getEnergyAmount(s, c, this)
+            };
+            result.Add(hint);
 
-            AVariableHint hint = new AVariableHint();
-            int amount = CardLogicManifest.getEnergyAmount(s, c, this);
-            isEnergy.Add(hint, new Boolean(true));
-            energyAmount.Add(hint, new Integer(amount));
-            result.add(hint);
-
-
-            result.add(new AAttack {
-                damage = GetDmg(s, (upgrade == Upgrade.B ? 3 : 2) * amount)
+            int multiplier = (upgrade == Upgrade.B ? 3 : 2);
+            int cost = GetDataWithOverrides(s).cost;
+            result.Add(new AAttackAdjusted {
+                damage = GetDmg(s, multiplier * Manifest.getEnergyAmount(s, c, this)),
+                damageDisplayAdjustment = -cost * multiplier,
+                xHint = multiplier
             });
             
-            AEnergy energy = new AEnergy {
-                changeAmount = 0
+            AEnergySet energy = new AEnergySet {
+                setTo = 0
             };
-            aEnergyMode.Add(energy, AStatusMode.Set);
 
-            result.add(energy);
+            result.Add(energy);
+
+            return result;
         }
     }
 }

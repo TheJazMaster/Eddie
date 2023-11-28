@@ -33,9 +33,9 @@ namespace Eddie.Cards
                             dir = 1,
                             targetPlayer = true
                         },
-                        new ADraw
+                        new ADrawCard
                         {
-                            amount = 1
+                            count = 1
                         }
                     };
                 case Upgrade.B:
@@ -47,13 +47,14 @@ namespace Eddie.Cards
                             isRandom = true,
                             targetPlayer = true
                         },
-                        new ADraw
+                        new ADrawCard
                         {
-                            amount = 1
+                            count = 1
                         }
                     };
+                default:
+                    return new List<CardAction>();
             }
-            return result;
         }
     }
 }

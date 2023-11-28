@@ -43,12 +43,14 @@ namespace Eddie.Cards
                 case Upgrade.B:
                     return new List<CardAction> {
                         new AAttack {
-                            damage = GetDmg(s, 4),
+                            damage = GetDmg(s, 5),
                             piercing = true,
                             status = Status.shield,
                             statusAmount = 2
                         }
                     };
+                default:
+                    return new List<CardAction>();
             }
         }
     }

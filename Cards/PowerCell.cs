@@ -1,5 +1,4 @@
-﻿using Eddie.Actions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 namespace Eddie.Cards
 {
     [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class DoubleHook : Card
+    public class PowerCell : Card
     {
         public override string Name() => "Power Cell";
 
@@ -16,8 +15,8 @@ namespace Eddie.Cards
         {
             return new CardData()
             {
-				cost = upgrade == Upgrade.B ? 2 : 1,
-                discount = upgrade == Upgrade.A ? 1 : 0
+				cost = upgrade == Upgrade.B ? 2 : 1
+                // discount = upgrade == Upgrade.A ? 1 : 0
             };
         }
 
@@ -49,9 +48,9 @@ namespace Eddie.Cards
                             }
                         }
                     };
+                default:
+                    return new List<CardAction>();
             }
-
-            return list;
         }
     }
 }

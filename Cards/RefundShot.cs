@@ -1,7 +1,7 @@
 ﻿namespace Eddie.Cards
 {
     [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class ClusterRocket : Card
+    public class RefundShot : Card
     {
         public override string Name() => "Refund Shot";
 
@@ -9,14 +9,13 @@
         {
             return new CardData
             {
-                cost = upgrade == Upgrade.B ? 2 : 1,
-                discount = upgrade == Upgrade.A ? 1 : 0
+                cost = upgrade == Upgrade.B ? 2 : 1
+                // discount = upgrade == Upgrade.A ? 1 : 0
             };
         }
 
         public override List<CardAction> GetActions(State s, Combat c)
         {
-            var result = new List<CardAction>();
             switch (upgrade)
             {
                 case Upgrade.None:
@@ -27,7 +26,7 @@
                             disabled = flipped
                         },
                         new ADiscard {
-                            amount = 1
+                            count = 1
                         },
                         new AEnergy {
                             changeAmount = 1
@@ -40,14 +39,15 @@
                             disabled = flipped
                         },
                         new ADiscard {
-                            amount = 1
+                            count = 1
                         },
                         new AEnergy {
                             changeAmount = 2
                         }
                     };
+                default:
+                    return new List<CardAction>();
             }
-            return result;
         }
     }
 }
