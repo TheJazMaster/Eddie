@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Eddie.Cards;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,19 +8,24 @@ using System.Threading.Tasks;
 namespace Eddie.Cards
 {
     [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class PowerCell : Card
+    public class PowerCell : CheapCard
     {
         public override string Name() => "Power Cell";
 
+        public override int GetCheapDiscount()
+        {
+            if (upgrade == Upgrade.A)
+                return -1;
+            return 0;
+        }
+
         public override CardData GetData(State state)
         {
-            var data = new CardData()
+            base.GetData(state);
+            return new CardData()
             {
 				cost = upgrade == Upgrade.B ? 2 : 1
             };
-            if (upgrade == Upgrade.A)
-                MakeCheap(data);
-            return data;
         }
 
         public override List<CardAction> GetActions(State s, Combat c)

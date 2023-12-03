@@ -6,6 +6,7 @@ using HarmonyLib;
 using Eddie.Cards;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using static System.Reflection.BindingFlags;
 
 namespace Eddie
 {
@@ -18,6 +19,8 @@ namespace Eddie
 
         public static ExternalGlossary? AddShortCircuitGlossary { get; private set; }
         public static ExternalGlossary? ShortCircuitGlossary { get; private set; }
+        public static ExternalGlossary? AddInfiniteGlossary { get; private set; }
+        public static ExternalGlossary? MakeFreeGlossary { get; private set; }
         public static ExternalGlossary? CheapGlossary { get; private set; }
         public static ExternalGlossary? CircuitGlossary { get; private set; }
         public static ExternalGlossary? ClosedCircuitGlossary { get; private set; }
@@ -75,7 +78,7 @@ namespace Eddie
         public static ExternalCard? ChargeShieldsCard { get; private set; }
         public static ExternalCard? ChargeThrustersCard { get; private set; }
         public static ExternalCard? GarageSaleCard { get; private set; }
-        public static ExternalCard? UnsustainableAssaultCard { get; private set; }
+        public static ExternalCard? ShortTermSolutionCard { get; private set; }
         public static ExternalCard? AmplifyCard { get; private set; }
         // public static ExternalCard? OrganizeCard { get; private set; }
         public static ExternalCard? InnovationCard { get; private set; }
@@ -99,7 +102,7 @@ namespace Eddie
             // Artifacts
             {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("decorative_salmon.png"));
-                FrazzledWiresSprite = new ExternalSprite("Eddie.frazzled_wires", new FileInfo(path));
+                FrazzledWiresSprite = new ExternalSprite("Eddie.FrazzledWires", new FileInfo(path));
                 artRegistry.RegisterArt(FrazzledWiresSprite);
             }
             {
@@ -134,7 +137,7 @@ namespace Eddie
             // }
             {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("quantum_lure_box.png"));
-                FissionChamberSprite = new ExternalSprite("Eddie.fission_chamber", new FileInfo(path));
+                FissionChamberSprite = new ExternalSprite("Eddie.FissionChamber", new FileInfo(path));
                 artRegistry.RegisterArt(FissionChamberSprite);
             }
 
@@ -265,6 +268,14 @@ namespace Eddie
             ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "This card activates its effects twice, but costs 1 more <c=energy>ENERGY</c> to play.", null);
             registry.RegisterGlossary(ShortCircuitGlossary);
 
+            AddInfiniteGlossary = new ExternalGlossary("Eddie.Glossary.AddInfiniteDesc", "EddieAddInfiniteAction", false, ExternalGlossary.GlossayType.actionMisc, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_infinite")));
+            AddInfiniteGlossary.AddLocalisation("en", "Make infinite", "Make a card infinite {0}.", null);
+            registry.RegisterGlossary(AddInfiniteGlossary);
+
+            MakeFreeGlossary = new ExternalGlossary("Eddie.Glossary.MakeFreeDesc", "EddieMakeFreeAction", false, ExternalGlossary.GlossayType.actionMisc, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discount")));
+            MakeFreeGlossary.AddLocalisation("en", "Make free", "Make a card cost 0 <c=energy>ENERGY</c> {0}.", null);
+            registry.RegisterGlossary(MakeFreeGlossary);
+
             CheapGlossary = new ExternalGlossary("Eddie.Glossary.CheapDesc", "EddieCheapTrait", false, ExternalGlossary.GlossayType.cardtrait, CheapIcon ?? throw MakeInformativeException(Logger, "Missing Cheap Icon"));
             CheapGlossary.AddLocalisation("en", "Cheap", "This card starts each combat with a {0}-energy <c=cardtrait>discount</c>.", null);
             registry.RegisterGlossary(CheapGlossary);
@@ -360,9 +371,9 @@ namespace Eddie
             registry.RegisterCard(GarageSaleCard);
             GarageSaleCard.AddLocalisation("Garage Sale");
 
-            UnsustainableAssaultCard = new ExternalCard("Eddie.Cards.UnsustainableAssault", typeof(UnsustainableAssault), card_art, EddieDeck);
-            registry.RegisterCard(UnsustainableAssaultCard);
-            UnsustainableAssaultCard.AddLocalisation("Short-Term Solution");
+            ShortTermSolutionCard = new ExternalCard("Eddie.Cards.ShortTermSolution", typeof(ShortTermSolution), card_art, EddieDeck);
+            registry.RegisterCard(ShortTermSolutionCard);
+            ShortTermSolutionCard.AddLocalisation("Short-Term Solution");
 
             AmplifyCard = new ExternalCard("Eddie.Cards.Amplify", typeof(Amplify), card_art, EddieDeck);
             registry.RegisterCard(AmplifyCard);
@@ -434,31 +445,56 @@ namespace Eddie
             Harmony harmony = new("Eddie");
             {
                 var render_action_method = typeof(Card).GetMethod("RenderAction") ?? throw MakeInformativeException(Logger, "Couldn't find Card.RenderAction method");
-                var patch = typeof(RenderingPatch).GetMethod("XEqualsPatch", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");
+                var patch = typeof(RenderingPatch).GetMethod("XEqualsPatch", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");
                 harmony.Patch(render_action_method, transpiler: new HarmonyMethod(patch));
             }
             {
                 var card_get_data_with_overrides_method = typeof(Card).GetMethod("GetDataWithOverrides") ?? throw MakeInformativeException(Logger, "Couldn't find Card.GetDataWithOverrides method");
-                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitIncreaseCost", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitIncreaseCost method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitIncreaseCost", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitIncreaseCost method");
                 harmony.Patch(card_get_data_with_overrides_method, postfix: new HarmonyMethod(patch));
             }
             {
                 var combat_try_play_card_method = typeof(Combat).GetMethod("TryPlayCard") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.TryPlayCard method");
-                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitPlayTwice", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitPlayTwice method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitPlayTwice", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitPlayTwice method");
                 harmony.Patch(combat_try_play_card_method, transpiler: new HarmonyMethod(patch));
             }
             {
                 var combat_return_cards_to_deck_method = typeof(Combat).GetMethod("ReturnCardsToDeck") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.ReturnCardsToDeck method");
-                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitRemoveOverride", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitRemoveOverride method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitRemoveOverride method");
                 harmony.Patch(combat_return_cards_to_deck_method, postfix: new HarmonyMethod(patch));
             }
             {
+                var card_get_data_with_overrides_method = typeof(Card).GetMethod("GetDataWithOverrides") ?? throw MakeInformativeException(Logger, "Couldn't find Card.GetDataWithOverrides method");
+                var patch = typeof(InfiniteOverride).GetMethod("OverrideInfinite", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find InfiniteOverride.InfiniteOverride method");
+                harmony.Patch(card_get_data_with_overrides_method, postfix: new HarmonyMethod(patch));
+            }
+            {
                 var combat_return_cards_to_deck_method = typeof(Combat).GetMethod("ReturnCardsToDeck") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.ReturnCardsToDeck method");
-                var patch = typeof(Cheap).GetMethod("SetDefaultDiscount", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.SetDefaultDiscount method");
-                harmony.Patch(combat_return_cards_to_deck_method, transpiler: new HarmonyMethod(patch));
+                var patch = typeof(InfiniteOverride).GetMethod("InfiniteRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find InfiniteOverride.InfiniteRemoveOverride method");
+                harmony.Patch(combat_return_cards_to_deck_method, postfix: new HarmonyMethod(patch));
+            }
+            {
+                var combat_make_method = typeof(Combat).GetMethod("Make", BindingFlags.Static | BindingFlags.Public) ?? throw MakeInformativeException(Logger, "Couldn't find Combat.Make method");
+                var patch = typeof(Cheap).GetMethod("SetCheapDiscount", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.SetCheapDiscount method");
+                harmony.Patch(combat_make_method, postfix: new HarmonyMethod(patch));
+            }
+            {
+                var card_get_data_with_overrides_method = typeof(Card).GetMethod("GetDataWithOverrides") ?? throw MakeInformativeException(Logger, "Couldn't find Card.GetDataWithOverrides method");
+                var patch = typeof(Cheap).GetMethod("SetFree", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.SetFree method");
+                harmony.Patch(card_get_data_with_overrides_method, postfix: new HarmonyMethod(patch));
+            }
+            {
+                var combat_return_cards_to_deck_method = typeof(Combat).GetMethod("ReturnCardsToDeck") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.ReturnCardsToDeck method");
+                var patch = typeof(Cheap).GetMethod("RemoveFree", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.RemoveFree method");
+                harmony.Patch(combat_return_cards_to_deck_method, postfix: new HarmonyMethod(patch));
             }
             // {
-            //     var patch = typeof(RenderingPatch).GetMethod("EqualsXPatch", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");
+            //     var combat_player_won_method = typeof(Combat).GetMethod("PlayerWon", BindingFlags.NonPublic | BindingFlags.Instance) ?? throw MakeInformativeException(Logger, "Couldn't find Combat.PlayerWon method");
+            //     var patch = typeof(Cheap).GetMethod("SetDefaultDiscount", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.SetDefaultDiscount method");
+            //     harmony.Patch(combat_player_won_method, transpiler: new HarmonyMethod(patch));
+            // }
+            // {
+            //     var patch = typeof(RenderingPatch).GetMethod("EqualsXPatch", BindingFlags.Static | BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");
             //     harmony.Patch(render_action_method, transpiler: new HarmonyMethod(patch));
             // }
         }

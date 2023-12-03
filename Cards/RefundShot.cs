@@ -1,16 +1,23 @@
 ﻿namespace Eddie.Cards
 {
     [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class RefundShot : Card
+    public class RefundShot : CheapCard
     {
         public override string Name() => "Refund Shot";
 
+        public override int GetCheapDiscount()
+        {
+            if (upgrade == Upgrade.A)
+                return 1;
+            return 0;
+        }
+
         public override CardData GetData(State state)
         {
+            base.GetData(state);
             return new CardData
             {
                 cost = upgrade == Upgrade.B ? 3 : 1
-                // discount = upgrade == Upgrade.A ? 1 : 0
             };
         }
 
