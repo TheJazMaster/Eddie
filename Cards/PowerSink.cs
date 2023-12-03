@@ -34,7 +34,7 @@ namespace Eddie.Cards
             result.Add(hint);
 
             int multiplier = (upgrade == Upgrade.B ? 3 : 2);
-            int cost = GetDataWithOverrides(s).cost;
+            int cost = GetCurrentCost(s);
             result.Add(new AAttackAdjusted {
                 damage = GetDmg(s, multiplier * Manifest.getEnergyAmount(s, c, this)),
                 damageDisplayAdjustment = -cost * multiplier,

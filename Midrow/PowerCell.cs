@@ -29,9 +29,8 @@ namespace Eddie.Midrow
 
         public override List<Tooltip> GetTooltips()
         {
-            List<Tooltip> list = new List<Tooltip>
-            {
-                // new TTGlossary(MKGlossary("asteroidShard"))
+            List<Tooltip> list = new List<Tooltip> {
+                new TTGlossary(Manifest.PowerCellGlossary?.Head ?? throw new Exception("Missing Power Cell glossary"))
             };
             if (bubbleShield)
             {

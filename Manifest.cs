@@ -16,20 +16,26 @@ namespace Eddie
 
         public ILogger? Logger { get; set; }
 
+        public static ExternalGlossary? AddShortCircuitGlossary { get; private set; }
         public static ExternalGlossary? ShortCircuitGlossary { get; private set; }
+        public static ExternalGlossary? CheapGlossary { get; private set; }
         public static ExternalGlossary? CircuitGlossary { get; private set; }
         public static ExternalGlossary? ClosedCircuitGlossary { get; private set; }
         public static ExternalGlossary? PowerCellGlossary { get; private set; }
-
         public static ExternalGlossary? LeftmostCardGlossary { get; private set; }
+        public static ExternalGlossary? TemporaryHurtGlossary { get; private set; }
+        public static ExternalGlossary? XIsEnergyGlossary { get; private set; }
 
         public static ExternalSprite? ShortCircuitIcon { get; private set; }
+        public static ExternalSprite? CheapIcon { get; private set; }
         public static ExternalSprite? CircuitIcon { get; private set; }
         public static ExternalSprite? ClosedCircuitIcon { get; private set; }
         public static ExternalSprite? LoseEnergyEveryTurnIcon { get; private set; }
         public static ExternalSprite? PowerCellSprite { get; private set; }
         public static ExternalSprite? PowerCellIcon { get; private set; }
         public static ExternalSprite? LeftmostCardIcon { get; private set; }
+        public static ExternalSprite? TemporaryHurtIcon { get; private set; }
+        public static ExternalSprite? HealNextTurnIcon { get; private set; }
         public static ExternalSprite? EnergyIcon { get; private set; }
 
         public static ExternalSprite? EddieCardFrame { get; private set; }
@@ -37,9 +43,13 @@ namespace Eddie
         public static ExternalSprite? EddieRareCardFrame { get; private set; }
         public static ExternalSprite? EddiePanelFrame { get; private set; }
         public static ExternalSprite? FrazzledWiresSprite { get; private set; }
-        public static ExternalSprite? SolarLampSprite { get; private set; }
-        public static ExternalSprite? RoboVacuumSprite { get; private set; }
-        public static ExternalSprite? PerpetualMotionEngineSprite { get; private set; }
+        public static ExternalSprite? SolarLampOnSprite { get; private set; }
+        public static ExternalSprite? SolarLampOffSprite { get; private set; }
+        public static ExternalSprite? ElectromagneticCoilSprite { get; private set; }
+        // public static ExternalSprite? PerpetualMotionEngineSprite { get; private set; }
+        public static ExternalSprite? SolarPanelsOnSprite { get; private set; }
+        public static ExternalSprite? SolarPanelsOffSprite { get; private set; }
+
         public static ExternalSprite? FissionChamberSprite { get; private set; }
 
         public static ExternalCharacter? EddieCharacter { get; private set; }
@@ -51,6 +61,7 @@ namespace Eddie
         public static ExternalAnimation? EddieGameoverAnimation { get; private set; }
         
         public static ExternalCard? ChannelCard { get; private set; }
+        public static ExternalCard? PowerNapCard { get; private set; }
         public static ExternalCard? RepurposeCard { get; private set; }
         public static ExternalCard? PowerCellCard { get; private set; }
         public static ExternalCard? RefundShotCard { get; private set; }
@@ -62,10 +73,11 @@ namespace Eddie
         public static ExternalCard? InterferenceCard { get; private set; }
         public static ExternalCard? ChargeCannonsCard { get; private set; }
         public static ExternalCard? ChargeShieldsCard { get; private set; }
+        public static ExternalCard? ChargeThrustersCard { get; private set; }
         public static ExternalCard? GarageSaleCard { get; private set; }
         public static ExternalCard? UnsustainableAssaultCard { get; private set; }
         public static ExternalCard? AmplifyCard { get; private set; }
-        public static ExternalCard? OrganizeCard { get; private set; }
+        // public static ExternalCard? OrganizeCard { get; private set; }
         public static ExternalCard? InnovationCard { get; private set; }
         public static ExternalCard? CircuitCard { get; private set; }
         public static ExternalCard? RenewableResourceCard { get; private set; }
@@ -91,20 +103,35 @@ namespace Eddie
                 artRegistry.RegisterArt(FrazzledWiresSprite);
             }
             {
-                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("intertial_engine.png"));
-                SolarLampSprite = new ExternalSprite("Eddie.solar_lamo", new FileInfo(path));
-                artRegistry.RegisterArt(SolarLampSprite);
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("decorative_salmon.png"));
+                SolarLampOnSprite = new ExternalSprite("Eddie.SolarLampOn", new FileInfo(path));
+                artRegistry.RegisterArt(SolarLampOnSprite);
+            }
+            {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("decorative_salmon.png"));
+                SolarLampOffSprite = new ExternalSprite("Eddie.SolarLampOff", new FileInfo(path));
+                artRegistry.RegisterArt(SolarLampOffSprite);
+            }
+            {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("decorative_salmon.png"));
+                SolarPanelsOnSprite = new ExternalSprite("Eddie.SolarPanelsOn", new FileInfo(path));
+                artRegistry.RegisterArt(SolarPanelsOnSprite);
+            }
+            {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("decorative_salmon.png"));
+                SolarPanelsOffSprite = new ExternalSprite("Eddie.SolarPanelsOff", new FileInfo(path));
+                artRegistry.RegisterArt(SolarPanelsOffSprite);
             }
             {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("lucky_lore.png"));
-                RoboVacuumSprite = new ExternalSprite("Eddie.robo_vacuum", new FileInfo(path));
-                artRegistry.RegisterArt(RoboVacuumSprite);
+                ElectromagneticCoilSprite = new ExternalSprite("Eddie.ElectromagneticCoil", new FileInfo(path));
+                artRegistry.RegisterArt(ElectromagneticCoilSprite);
             }
-            {
-                var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("freebies.png"));
-                PerpetualMotionEngineSprite = new ExternalSprite("Eddie.perpetual_motion_engine", new FileInfo(path));
-                artRegistry.RegisterArt(PerpetualMotionEngineSprite);
-            }
+            // {
+            //     var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("freebies.png"));
+            //     PerpetualMotionEngineSprite = new ExternalSprite("Eddie.perpetual_motion_engine", new FileInfo(path));
+            //     artRegistry.RegisterArt(PerpetualMotionEngineSprite);
+            // }
             {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("quantum_lure_box.png"));
                 FissionChamberSprite = new ExternalSprite("Eddie.fission_chamber", new FileInfo(path));
@@ -169,9 +196,24 @@ namespace Eddie
                 artRegistry.RegisterArt(ShortCircuitIcon);
             }
             {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites/action_icons", Path.GetFileName("scm.png"));
+                CheapIcon = new ExternalSprite("Eddie.CheapIcon", new FileInfo(path));
+                artRegistry.RegisterArt(CheapIcon);
+            }
+            {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites/action_icons", Path.GetFileName("hcm.png"));
                 LeftmostCardIcon = new ExternalSprite("Eddie.LeftmostCardIcon", new FileInfo(path));
                 artRegistry.RegisterArt(LeftmostCardIcon);
+            }
+            {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites/action_icons", Path.GetFileName("scm.png"));
+                TemporaryHurtIcon = new ExternalSprite("Eddie.TemporaryHurtIcon", new FileInfo(path));
+                artRegistry.RegisterArt(TemporaryHurtIcon);
+            }
+            {
+                var path = Path.Combine(ModRootFolder.FullName, "Sprites/action_icons", Path.GetFileName("scm.png"));
+                HealNextTurnIcon = new ExternalSprite("Eddie.HealNextTurnIcon", new FileInfo(path));
+                artRegistry.RegisterArt(HealNextTurnIcon);
             }
             {
                 var path = Path.Combine(ModRootFolder.FullName, "Sprites/action_icons", Path.GetFileName("cm.png"));
@@ -197,7 +239,7 @@ namespace Eddie
             }
         }
 
-        private static System.Drawing.Color Eddie_PrimaryColor = System.Drawing.Color.FromArgb(230, 255, 163);
+        private static System.Drawing.Color Eddie_PrimaryColor = System.Drawing.Color.FromArgb(230, 225, 100);
 
         public void LoadManifest(IDeckRegistry registry)
         {
@@ -215,9 +257,17 @@ namespace Eddie
 
         void IGlossaryManifest.LoadManifest(IGlossaryRegisty registry)
         {
+            AddShortCircuitGlossary = new ExternalGlossary("Eddie.Glossary.AddShortCircuitDesc", "EddieAddShortCircuitAction", false, ExternalGlossary.GlossayType.actionMisc, ShortCircuitIcon ?? throw MakeInformativeException(Logger, "Missing Short Circuit Icon"));
+            AddShortCircuitGlossary.AddLocalisation("en", "Apply short-circuit", "Make a card short-circuit {0}.", null);
+            registry.RegisterGlossary(AddShortCircuitGlossary);
+
             ShortCircuitGlossary = new ExternalGlossary("Eddie.Glossary.ShortCircuitDesc", "EddieShortCircuitTrait", false, ExternalGlossary.GlossayType.cardtrait, ShortCircuitIcon ?? throw MakeInformativeException(Logger, "Missing Short Circuit Icon"));
-            ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "This card activates its effects twice. When a card gains Short-Circuit, its energy cost increases by 1.", null);
+            ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "This card activates its effects twice, but costs 1 more <c=energy>ENERGY</c> to play.", null);
             registry.RegisterGlossary(ShortCircuitGlossary);
+
+            CheapGlossary = new ExternalGlossary("Eddie.Glossary.CheapDesc", "EddieCheapTrait", false, ExternalGlossary.GlossayType.cardtrait, CheapIcon ?? throw MakeInformativeException(Logger, "Missing Cheap Icon"));
+            CheapGlossary.AddLocalisation("en", "Cheap", "This card starts each combat with a {0}-energy <c=cardtrait>discount</c>.", null);
+            registry.RegisterGlossary(CheapGlossary);
 
             PowerCellGlossary = new ExternalGlossary("Eddie.Glossary.PowerCellGlossary", "EddiePowerCellMidrow", false, ExternalGlossary.GlossayType.midrow, PowerCellIcon ?? throw MakeInformativeException(Logger, "Missing Power Cell Icon"));
             PowerCellGlossary.AddLocalisation("en", "Power Cell", "Blocks one attack. Gain 1 energy when this is destroyed.", null);
@@ -234,6 +284,14 @@ namespace Eddie
             ClosedCircuitGlossary = new ExternalGlossary("Eddie.Glossary.ClosedCircuitGlossary", "EddieClosedCircuitStatus", false, ExternalGlossary.GlossayType.actionMisc, ClosedCircuitIcon ?? throw MakeInformativeException(Logger, "Missing Closed Circuit Icon"));
             ClosedCircuitGlossary.AddLocalisation("en", "Closed Circuit", "When a card would be discarded, lose 1 Closed Circuit instead.", null);
             registry.RegisterGlossary(ClosedCircuitGlossary);
+
+            TemporaryHurtGlossary = new ExternalGlossary("Eddie.Glossary.TemporaryHurtGlossary", "EddieTemporaryHurtAction", false, ExternalGlossary.GlossayType.actionMisc, TemporaryHurtIcon ?? throw MakeInformativeException(Logger, "Missing Temporary Hurt Icon"));
+            TemporaryHurtGlossary.AddLocalisation("en", "Temporary Hull Loss", "Lose {0} hull. Regain that hull at the start of next turn.", null);
+            registry.RegisterGlossary(TemporaryHurtGlossary);
+
+            XIsEnergyGlossary = new ExternalGlossary("Eddie.Glossary.XIsEnergyGlossary", "EddieXIsEnergyAction", false, ExternalGlossary.GlossayType.actionMisc, EnergyIcon ?? throw MakeInformativeException(Logger, "Missing Energy Icon"));
+            XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=status>ENERGY</c> after paying the card's cost{0}.", null);
+            registry.RegisterGlossary(XIsEnergyGlossary);
         }
 
         void ICardManifest.LoadManifest(ICardRegistry registry)
@@ -246,9 +304,13 @@ namespace Eddie
             registry.RegisterCard(ChannelCard);
             ChannelCard.AddLocalisation("Channel");
 
-            RepurposeCard = new ExternalCard("Eddie.Cards.Repurpose", typeof(Repurpose), card_art, EddieDeck);
+            RepurposeCard = new ExternalCard("Eddie.Cards.Repurpose", typeof(Repurpose), card_art, null);
             registry.RegisterCard(RepurposeCard);
             RepurposeCard.AddLocalisation("Repurpose");
+
+            PowerNapCard = new ExternalCard("Eddie.Cards.PowerNap", typeof(PowerNap), card_art, EddieDeck);
+            registry.RegisterCard(PowerNapCard);
+            PowerNapCard.AddLocalisation("Power Nap");
 
             PowerCellCard = new ExternalCard("Eddie.Cards.PowerCell", typeof(PowerCell), card_art, EddieDeck);
             registry.RegisterCard(PowerCellCard);
@@ -290,21 +352,25 @@ namespace Eddie
             registry.RegisterCard(ChargeShieldsCard);
             ChargeShieldsCard.AddLocalisation("Charge Shields");
 
+            ChargeThrustersCard = new ExternalCard("Eddie.Cards.ChargeThrusters", typeof(ChargeThrusters), card_art, EddieDeck);
+            registry.RegisterCard(ChargeThrustersCard);
+            ChargeThrustersCard.AddLocalisation("Charge Thrusters");
+
             GarageSaleCard = new ExternalCard("Eddie.Cards.GarageSale", typeof(GarageSale), card_art, EddieDeck);
             registry.RegisterCard(GarageSaleCard);
             GarageSaleCard.AddLocalisation("Garage Sale");
 
             UnsustainableAssaultCard = new ExternalCard("Eddie.Cards.UnsustainableAssault", typeof(UnsustainableAssault), card_art, EddieDeck);
             registry.RegisterCard(UnsustainableAssaultCard);
-            UnsustainableAssaultCard.AddLocalisation("Unsustainable Assault");
+            UnsustainableAssaultCard.AddLocalisation("Short-Term Solution");
 
             AmplifyCard = new ExternalCard("Eddie.Cards.Amplify", typeof(Amplify), card_art, EddieDeck);
             registry.RegisterCard(AmplifyCard);
             AmplifyCard.AddLocalisation("Amplify");
 
-            OrganizeCard = new ExternalCard("Eddie.Cards.Organize", typeof(Organize), card_art, EddieDeck);
-            registry.RegisterCard(OrganizeCard);
-            OrganizeCard.AddLocalisation("Organize");
+            // OrganizeCard = new ExternalCard("Eddie.Cards.Organize", typeof(Organize), card_art, EddieDeck);
+            // registry.RegisterCard(OrganizeCard);
+            // OrganizeCard.AddLocalisation("Organize");
 
             InnovationCard = new ExternalCard("Eddie.Cards.Innovation", typeof(Innovation), card_art, EddieDeck);
             registry.RegisterCard(InnovationCard);
@@ -332,14 +398,14 @@ namespace Eddie
             EddieCharacter = new ExternalCharacter("Eddie.Character.Eddie",
                 EddieDeck ?? throw MakeInformativeException(Logger, "Missing Deck"),
                 EddiePanelFrame ?? throw MakeInformativeException(Logger, "Missing Potrait"),
-                new Type[] { typeof(Channel), typeof(Repurpose) },
+                new Type[] { typeof(Channel), typeof(PowerNap) },
                 new Type[0],
                 EddieDefaultAnimation ?? throw MakeInformativeException(Logger, "missing default animation"),
                 EddieMiniAnimation ?? throw MakeInformativeException(Logger, "missing mini animation"));
 
             EddieCharacter.AddNameLocalisation("Eddie");
 
-            EddieCharacter.AddDescLocalisation("<c=dizzy>EDDIE</c>\nYour energy specialist. His cards focus on different ways to gain or spend energy.");
+            EddieCharacter.AddDescLocalisation("<c=e6e164>EDDIE</c>\nYour electrician. His cards offer flexible ways to spend, store and gain energy.");
 
             registry.RegisterCharacter(EddieCharacter);
         }
@@ -365,11 +431,31 @@ namespace Eddie
         }
 
         public void BootMod(IModLoaderContact contact) {
-            var render_action_method = typeof(Card).GetMethod("RenderAction") ?? throw MakeInformativeException(Logger, "Couldn't find Card.RenderAction method");
             Harmony harmony = new("Eddie");
             {
+                var render_action_method = typeof(Card).GetMethod("RenderAction") ?? throw MakeInformativeException(Logger, "Couldn't find Card.RenderAction method");
                 var patch = typeof(RenderingPatch).GetMethod("XEqualsPatch", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");
                 harmony.Patch(render_action_method, transpiler: new HarmonyMethod(patch));
+            }
+            {
+                var card_get_data_with_overrides_method = typeof(Card).GetMethod("GetDataWithOverrides") ?? throw MakeInformativeException(Logger, "Couldn't find Card.GetDataWithOverrides method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitIncreaseCost", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitIncreaseCost method");
+                harmony.Patch(card_get_data_with_overrides_method, postfix: new HarmonyMethod(patch));
+            }
+            {
+                var combat_try_play_card_method = typeof(Combat).GetMethod("TryPlayCard") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.TryPlayCard method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitPlayTwice", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitPlayTwice method");
+                harmony.Patch(combat_try_play_card_method, transpiler: new HarmonyMethod(patch));
+            }
+            {
+                var combat_return_cards_to_deck_method = typeof(Combat).GetMethod("ReturnCardsToDeck") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.ReturnCardsToDeck method");
+                var patch = typeof(ShortCircuit).GetMethod("ShortCircuitRemoveOverride", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find ShortCircuit.ShortCircuitRemoveOverride method");
+                harmony.Patch(combat_return_cards_to_deck_method, postfix: new HarmonyMethod(patch));
+            }
+            {
+                var combat_return_cards_to_deck_method = typeof(Combat).GetMethod("ReturnCardsToDeck") ?? throw MakeInformativeException(Logger, "Couldn't find Combat.ReturnCardsToDeck method");
+                var patch = typeof(Cheap).GetMethod("SetDefaultDiscount", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find Cheap.SetDefaultDiscount method");
+                harmony.Patch(combat_return_cards_to_deck_method, transpiler: new HarmonyMethod(patch));
             }
             // {
             //     var patch = typeof(RenderingPatch).GetMethod("EqualsXPatch", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw MakeInformativeException(Logger, "Couldnt find RenderingPatch.MidRenderAssign method");

@@ -25,9 +25,9 @@ namespace Eddie.Cards
                 case Upgrade.None:
                     return new List<CardAction> {
                         new AAttack {
-                            damage = GetDmg(s, 3),
+                            damage = GetDmg(s, 2),
                             piercing = true,
-                            status = Status.shield,
+                            status = Status.tempShield,
                             statusAmount = 1
                         }
                     };
@@ -43,7 +43,7 @@ namespace Eddie.Cards
                 case Upgrade.B:
                     return new List<CardAction> {
                         new AAttack {
-                            damage = GetDmg(s, 5),
+                            damage = GetDmg(s, 4),
                             piercing = true,
                             status = Status.shield,
                             statusAmount = 2

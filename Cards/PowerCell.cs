@@ -13,11 +13,13 @@ namespace Eddie.Cards
 
         public override CardData GetData(State state)
         {
-            return new CardData()
+            var data = new CardData()
             {
 				cost = upgrade == Upgrade.B ? 2 : 1
-                // discount = upgrade == Upgrade.A ? 1 : 0
             };
+            if (upgrade == Upgrade.A)
+                MakeCheap(data);
+            return data;
         }
 
         public override List<CardAction> GetActions(State s, Combat c)
@@ -25,7 +27,6 @@ namespace Eddie.Cards
             switch (upgrade)
             {
                 case Upgrade.None:
-                case Upgrade.A:
                     return new List<CardAction>
                     {
                         new ASpawn
@@ -36,7 +37,7 @@ namespace Eddie.Cards
                             }
                         }
                     };
-                case Upgrade.B:
+                case Upgrade.A:
                     return new List<CardAction>
                     {
                         new ASpawn
@@ -45,6 +46,29 @@ namespace Eddie.Cards
                             {
                                 yAnimation = 0.0,
                                 bubbleShield = true
+                            }
+                        }
+                    };
+                case Upgrade.B:
+                    return new List<CardAction>
+                    {
+                        new ASpawn
+                        {
+                            thing = new Midrow.PowerCell
+                            {
+                                yAnimation = 0.0
+                            }
+                        },
+                        new AMove
+                        {
+                            dir = -1,
+                            targetPlayer = true
+                        },
+                        new ASpawn
+                        {
+                            thing = new Midrow.PowerCell
+                            {
+                                yAnimation = 0.0
                             }
                         }
                     };

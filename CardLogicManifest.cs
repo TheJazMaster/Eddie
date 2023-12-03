@@ -12,11 +12,13 @@ using FMOD;
 using FSPRO;
 using HarmonyLib;
 using Eddie.Cards;
+using Eddie.Actions;
 
 namespace Eddie
 {
     public partial class Manifest
     {
+
         // private static ICustomEventHub? _eventHub;
 
         // internal static ICustomEventHub EventHub { get => _eventHub ?? throw MakeInformativeException(Logger, ); set => _eventHub = value; }
@@ -89,7 +91,7 @@ namespace Eddie
         {
             if (s.route is Combat combat)
             {
-                return c.energy;// - (card == null ? 0 : card.GetDataWithOverrides(s).cost);
+                return c.energy;// - (card == null ? 0 : card.GetCurrentCost(s));
             }
             return 0;
         }
@@ -106,9 +108,16 @@ namespace Eddie
                     uuid = card.uuid
                 });
             }
+            else
+            {
+                c.Queue(new ADiscardPosition
+                {
+                    handPosition = c.hand.Contains(card) ? c.hand.IndexOf(card) : null
+                });
+            }
             action.timer = 0.2;
 
-            int cost = card.GetDataWithOverrides(s).cost;
+            int cost = card.GetCurrentCost(s);
 
             c.Queue(new AEnergy
             {

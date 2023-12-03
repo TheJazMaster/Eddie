@@ -9,7 +9,7 @@
         {
             return new CardData
             {
-                cost = upgrade == Upgrade.B ? 2 : 1
+                cost = upgrade == Upgrade.B ? 3 : 1
                 // discount = upgrade == Upgrade.A ? 1 : 0
             };
         }
@@ -42,7 +42,7 @@
                             count = 1
                         },
                         new AEnergy {
-                            changeAmount = 2
+                            changeAmount = 3
                         }
                     };
                 default:

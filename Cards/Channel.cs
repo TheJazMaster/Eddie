@@ -26,28 +26,69 @@ namespace Eddie.Cards
 
         public override List<CardAction> GetActions(State s, Combat c)
         {
-            if (upgrade == Upgrade.B) {
-                return new List<CardAction> {
-                    new AAttack {
-                        damage = GetDmg(s, 1),
-                        disabled = flipped
-                    },
-                    new ADummyAction(),
-                    new ADrawCard {
-                        count = 1,
-                        disabled = !flipped
-                    }
+            switch(upgrade)
+            {
+                case Upgrade.None:
+                    return new List<CardAction> {
+                        // new AAttack {
+                        //     damage = GetDmg(s, 1)
+                        // },
+                        new AStatus {
+                            status = Status.shield,
+                            statusAmount = 1,
+                            targetPlayer = true,
+                            disabled = flipped
+                        },
+                        new ADrawCard {
+                            count = 1
+                        }
+                    };
+                case Upgrade.A:
+                    return new List<CardAction> {
+                        // new AAttack {
+                        //     damage = GetDmg(s, 1)
+                        // },
+                        new AStatus {
+                            status = Status.shield,
+                            statusAmount = 1,
+                            targetPlayer = true,
+                            disabled = flipped
+                        },
+                        new ADrawCard {
+                            count = 1,
+                            disabled = flipped
+                        },
+                        new ADummyAction(),
+                        new AAttack {
+                            damage = GetDmg(s, 1),
+                            disabled = !flipped
+                        },
+                        new ADrawCard {
+                            count = 1,
+                            disabled = !flipped
+                        }
+                    };
+                case Upgrade.B:
+                    return new List<CardAction> {
+                        // new AAttack {
+                        //     damage = GetDmg(s, 1),
+                        //     disabled = flipped
+                        // },
+                        new AStatus {
+                            status = Status.shield,
+                            statusAmount = 1,
+                            targetPlayer = true,
+                            disabled = flipped
+                        },
+                        new ADummyAction(),
+                        new ADrawCard {
+                            count = 1,
+                            disabled = !flipped
+                        }
 
-                };
-            } else {
-                return new List<CardAction> {
-                    new AAttack {
-                        damage = GetDmg(s, 1)
-                    },
-                    new ADrawCard {
-                        count = 1
-                    }
-                };
+                    };
+                default:
+                    return new List<CardAction>();
             }
         }
     }
