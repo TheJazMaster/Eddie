@@ -1,4 +1,4 @@
-# Eddie, the electrician 0.9.4
+# Eddie, the Electrician 0.9.4
 A work-in-progress Cobalt Core mod.
 
 Take this lazy snake for a spin and play around with **infinite cards**, **X-costs**, **hand/energy management** and **big attacks**.
