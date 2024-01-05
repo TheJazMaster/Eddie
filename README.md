@@ -8,6 +8,6 @@ Take this lazy snake for a spin and play around with **infinite cards**, **X-cos
 
 Huge thanks to **Arin** for doing the character sprite, border and card frame, and for design advice.
 
-All visuals (and lack thereof) besides those are placeholders and will most likely be changed before 1.0.0
+All visuals (and lack thereof) besides those are placeholders and will most likely be changed before 1.0.0. Dialogue will also be added for 1.0.0 or after.
 
 Links to the [GitHub page](https://github.com/TheJazMaster/Eddie) and the [modloader](https://github.com/Ewanderer/CobaltCoreModLoader)'s
