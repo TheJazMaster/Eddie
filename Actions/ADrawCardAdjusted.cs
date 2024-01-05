@@ -12,24 +12,27 @@ namespace Eddie.Actions
 
         public override void Begin(G g, State s, Combat c)
 	    {
-            count += countAdjustment;
+            var oldCount = count;
+            count = Math.Max(0, count + countAdjustment);
             base.Begin(g, s, c);
-            count -= countAdjustment;
+            count = oldCount;
         }
 
         public override Icon? GetIcon(State s)
         {
-            count += countDisplayAdjustment;
+            var oldCount = count;
+            count = Math.Max(0, count + countDisplayAdjustment);
             Icon? icon = base.GetIcon(s);
-            count -= countDisplayAdjustment;
+            count = oldCount;
             return icon;   
         }
 
         public override List<Tooltip> GetTooltips(State s)
         {
-            count += countDisplayAdjustment;
+            var oldCount = count;
+            count = Math.Max(0, count + countDisplayAdjustment);
             List<Tooltip> tooltips = base.GetTooltips(s);
-            count -= countDisplayAdjustment;
+            count = oldCount;
             return tooltips;
         }
     }

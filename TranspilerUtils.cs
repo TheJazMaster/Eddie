@@ -6,7 +6,6 @@ using System.Reflection.Emit;
 using FMOD;
 using FSPRO;
 using Microsoft.Xna.Framework.Input;
-using ILInstruction = Mono.Cecil.Cil.Instruction;
 using HarmonyLib;
 
 
@@ -30,7 +29,7 @@ namespace Eddie
                 return null;
         }
 
-        public static int? ExtractLocalIndex(object? operand)
+        private static int? ExtractLocalIndex(object? operand)
         {
             if (operand is LocalBuilder local)
                 return local.LocalIndex;

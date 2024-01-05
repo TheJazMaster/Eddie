@@ -12,15 +12,17 @@ namespace Eddie.Actions
 
         public override void Begin(G g, State s, Combat c)
 	    {
-            damage += damageAdjustment;
+            var oldDamage = damage;
+            damage = Math.Max(0, damage + damageAdjustment);
             base.Begin(g, s, c);
-            damage -= damageAdjustment;
+            damage = oldDamage;
         }
         public override Icon? GetIcon(State s)
         {
-            damage += damageDisplayAdjustment;
+            var oldDamage = damage;
+            damage = Math.Max(0, damage + damageDisplayAdjustment);
             Icon? icon = base.GetIcon(s);
-            damage -= damageDisplayAdjustment;
+            damage = oldDamage;
             return icon;   
         }
     }

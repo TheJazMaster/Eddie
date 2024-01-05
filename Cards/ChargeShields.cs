@@ -23,18 +23,19 @@ namespace Eddie.Cards
 
         public override List<CardAction> GetActions(State s, Combat c)
         {
+            var currentCost = this.GetCurrentCostNoRecursion(s);
             return new List<CardAction>
             {
                 new AVariableHintEnergy
                 {
-                    setAmount = Manifest.getEnergyAmount(s, c, this)
+                    setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
                 },
                 new AStatusAdjusted
                 {
                     targetPlayer = true,
                     status = upgrade == Upgrade.A ? Status.maxShield : Status.tempShield,
                     statusAmount = Manifest.getEnergyAmount(s, c, this),
-                    amountDisplayAdjustment = -GetCurrentCost(s),
+                    amountDisplayAdjustment = -currentCost,
                     xHint = 1
                 },
                 new AStatusAdjusted
@@ -42,7 +43,7 @@ namespace Eddie.Cards
                     targetPlayer = true,
                     status = Status.shield,
                     statusAmount = Manifest.getEnergyAmount(s, c, this),
-                    amountDisplayAdjustment = -GetCurrentCost(s),
+                    amountDisplayAdjustment = -currentCost,
                     xHint = 1
                 },
                 new AEnergySet {

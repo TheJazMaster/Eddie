@@ -10,7 +10,6 @@ using HarmonyLib;
 using FMOD;
 using FSPRO;
 using Microsoft.Xna.Framework.Input;
-using ILInstruction = Mono.Cecil.Cil.Instruction;
 
 namespace Eddie
 {

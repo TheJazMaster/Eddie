@@ -12,32 +12,26 @@ namespace Eddie.Actions
 
         public override void Begin(G g, State s, Combat c)
 	    {
-            statusAmount += amountAdjustment;
+            var oldStatusAmount = statusAmount;
+            statusAmount = Math.Max(0, statusAmount + amountAdjustment);
             base.Begin(g, s, c);
-            statusAmount -= amountAdjustment;
+            statusAmount = oldStatusAmount;
         }
         public override Icon? GetIcon(State s)
         {
-            statusAmount += amountDisplayAdjustment;
+            var oldStatusAmount = statusAmount;
+            statusAmount = Math.Max(0, statusAmount + amountDisplayAdjustment);
             Icon? icon = base.GetIcon(s);
-            statusAmount -= amountDisplayAdjustment;
+            statusAmount = oldStatusAmount;
             return icon;
         }
 
         public override List<Tooltip> GetTooltips(State s)
         {
             var oldStatusAmount = statusAmount;
-            if (xHint == null) {
-                statusAmount += amountDisplayAdjustment;
-            } else {
-                statusAmount = 0;
-            }
+            statusAmount = Math.Max(0, statusAmount + amountDisplayAdjustment);
             List<Tooltip> tooltips = base.GetTooltips(s);
-            if (xHint == null) {
-                statusAmount -= amountDisplayAdjustment;
-            } else {
-                statusAmount += oldStatusAmount;
-            }
+            statusAmount = oldStatusAmount;
             return tooltips;
         }
     }

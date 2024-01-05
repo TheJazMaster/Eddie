@@ -13,14 +13,17 @@ namespace Eddie.Cards
 
         public override CardData GetData(State state)
         {
+            Spr? art = null;
+            if (upgrade != Upgrade.None)
+                art = (flipped ? (Spr)Manifest.ChannelBottomCardArt!.Id! : (Spr)Manifest.ChannelTopCardArt!.Id!);
             return new CardData()
             {
                 cost = 1,
-                // discount = upgrade == Upgrade.A ? 1 : 0,
-                floppable = upgrade == Upgrade.B,
+                floppable = upgrade != Upgrade.None,
                 buoyant = upgrade == Upgrade.B,
                 retain = upgrade == Upgrade.B,
                 infinite = true,
+                art = art
             };
         }
 

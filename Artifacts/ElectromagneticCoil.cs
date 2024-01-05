@@ -1,6 +1,6 @@
 namespace Eddie.Artifacts
 {
-	[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+	[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
     public class ElectromagneticCoil : Artifact
     {
 		public override Spr GetSprite()
@@ -25,7 +25,7 @@ namespace Eddie.Artifacts
 
 		public override List<Tooltip>? GetExtraTooltips()
 		{
-			List<Tooltip> list = new List<Tooltip>();
+			var list = base.GetExtraTooltips() ?? new();
 			list.Add(new TTGlossary("status.evade", "1"));
 			return list;
 		}

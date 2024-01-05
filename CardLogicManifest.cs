@@ -117,7 +117,7 @@ namespace Eddie
             }
             action.timer = 0.2;
 
-            int cost = card.GetCurrentCost(s);
+            int cost = card.GetCurrentCostNoRecursion(s);
 
             c.Queue(new AEnergy
             {

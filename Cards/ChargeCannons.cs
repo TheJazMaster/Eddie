@@ -25,9 +25,10 @@ namespace Eddie.Cards
         {
             List<CardAction> result = new List<CardAction>();
 
+            var currentCost = this.GetCurrentCostNoRecursion(s);
             result.Add(new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - GetCurrentCost(s)
+                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost
             });
 
             result.Add(new AStatusAdjusted
@@ -35,7 +36,7 @@ namespace Eddie.Cards
                 targetPlayer = true,
                 status = Status.overdrive,
                 statusAmount = Manifest.getEnergyAmount(s, c, this),
-                amountDisplayAdjustment = -GetCurrentCost(s),
+                amountDisplayAdjustment = -currentCost,
                 xHint = 1
             });
             

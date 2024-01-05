@@ -21,16 +21,17 @@ namespace Eddie.Actions
         {
 			List<Tooltip> list = new List<Tooltip>();
 			string parentheses = "";
-			if (s.route is Combat)
+			if (s.route is Combat && setAmount >= 0)
 			{
 				DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(22, 1);
 				defaultInterpolatedStringHandler.AppendLiteral(" </c>(<c=keyword>");
-				defaultInterpolatedStringHandler.AppendFormatted(((Combat)s.route).energy);
+				defaultInterpolatedStringHandler.AppendFormatted(setAmount);
 				defaultInterpolatedStringHandler.AppendLiteral("</c>)");
 				
 			    parentheses = defaultInterpolatedStringHandler.ToStringAndClear();
 			}
-			list.Add(new TTGlossary(Manifest.XIsEnergyGlossary?.Head ?? throw new Exception("Missing X = energy glossary"), parentheses));
+			list.Add(new TTText(Loc.T(Manifest.XIsEnergyGlossary?.Head + ".desc" ?? throw new Exception("Missing X = energy glossary"), true, parentheses)));
+			// list.Add(new TTGlossary((Manifest.XIsEnergyGlossary?.Head + ".desc") ?? throw new Exception("Missing X = energy glossary"), parentheses));
 			return list;
 		}
     }

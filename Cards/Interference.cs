@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Eddie.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +27,7 @@ namespace Eddie.Cards
             switch (upgrade) {
                 case Upgrade.None:
                     return new List<CardAction> {
-                        new AMove
+                        new AMoveImproved
                         {
                             dir = 1,
                             targetPlayer = false
@@ -34,7 +35,7 @@ namespace Eddie.Cards
                     };
                 case Upgrade.A:
                     return new List<CardAction> {
-                        new AMove
+                        new AMoveImproved
                         {
                             dir = 2,
                             targetPlayer = false
@@ -42,9 +43,9 @@ namespace Eddie.Cards
                     };
                 case Upgrade.B:
                     return new List<CardAction> {
-                        new AMove
+                        new AMoveImproved
                         {
-                            dir = 2,
+                            dir = 3,
                             targetPlayer = false
                         },
                         new AStatus

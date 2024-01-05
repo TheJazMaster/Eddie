@@ -15,9 +15,8 @@ namespace Eddie.Cards
         {
             return new CardData
             {
-                cost = 2,
-                exhaust = upgrade != Upgrade.B,
-                recycle = upgrade == Upgrade.B
+                cost = upgrade == Upgrade.B ? 3 : 2,
+                exhaust = true
             };
         }
 
@@ -30,13 +29,13 @@ namespace Eddie.Cards
                 {
                     targetPlayer = true,
                     status = Status.powerdrive,
-                    statusAmount = 1
+                    statusAmount = upgrade == Upgrade.B ? 2: 1
                 },
                 new AStatus
                 {
                     targetPlayer = true,
                     status = lose_energy_status,
-                    statusAmount = 1
+                    statusAmount = upgrade == Upgrade.B ? 2: 1
                 }
             };
 

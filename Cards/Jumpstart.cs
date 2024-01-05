@@ -16,8 +16,8 @@ namespace Eddie.Cards
         {
             return new CardData
             {
-                cost = upgrade == Upgrade.B ? 0 : 1,
-                buoyant = upgrade == Upgrade.A,
+                cost = 0,
+                buoyant = upgrade == Upgrade.B,
                 exhaust = true
             };
         }
@@ -26,23 +26,23 @@ namespace Eddie.Cards
         {
             List<CardAction> result = new List<CardAction>();
 
+            int cost = this.GetCurrentCostNoRecursion(s);
             AVariableHintEnergy hint = new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this)
+                setAmount = Manifest.getEnergyAmount(s, c, this) - cost
             };
             result.Add(hint);
 
-            int cost = GetCurrentCost(s);
             result.Add(new ADrawCardAdjusted {
                 count = Manifest.getEnergyAmount(s, c, this),
                 countDisplayAdjustment = -cost,
                 xHint = 1
             });
 
-            if (upgrade != Upgrade.B)
+            if (upgrade == Upgrade.A)
                 result.Add(new ADrawCard
                 {
-                    count = 1
+                    count = 2
                 });
 
             return result;

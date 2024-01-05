@@ -25,18 +25,20 @@ namespace Eddie.Cards
         {
             List<CardAction> result = new List<CardAction>();
 
+            var currentCost = this.GetCurrentCostNoRecursion(s);
             result.Add(new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this)
+                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
             });
 
+            int multiplier = upgrade == Upgrade.None ? 1 : 2;
             result.Add(new AStatusAdjusted
             {
                 targetPlayer = true,
-                status = Status.overdrive,
-                statusAmount = Manifest.getEnergyAmount(s, c, this),
-                amountDisplayAdjustment = -GetCurrentCost(s),
-                xHint = 1
+                status = Status.evade,
+                statusAmount = multiplier * Manifest.getEnergyAmount(s, c, this),
+                amountDisplayAdjustment = -multiplier * currentCost,
+                xHint = multiplier
             });
             
             result.Add(new AEnergySet {

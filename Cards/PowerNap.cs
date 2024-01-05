@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eddie.Cards
 {
-    [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+    [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
     public class PowerNap : CheapCard
     {
         public override string Name() => "Power Nap";
@@ -26,7 +26,9 @@ namespace Eddie.Cards
             {
                 cost = 1,
                 exhaust = upgrade == Upgrade.B,
-                floppable = true
+                floppable = true,
+		        art = (flipped ? (Spr)Manifest.PowerNapBottomCardArt!.Id! : (Spr)Manifest.PowerNapTopCardArt!.Id!),
+		        artTint = "ffffff"
             };
         }
 
@@ -38,50 +40,50 @@ namespace Eddie.Cards
                 case Upgrade.A:
                     return new List<CardAction>
                     {
-                        new AEnergy {
-                            changeAmount = 1,
-                            disabled = flipped
-                        },
-                        new ADrawCard {
-                            count = 1,
-                            disabled = flipped
-                        },
-                        new ADummyAction(),
                         new AStatus {
                             status = Status.energyNextTurn,
                             statusAmount = 1,
                             targetPlayer = true,
-                            disabled = !flipped
+                            disabled = flipped
                         },
                         new AStatus {
                             status = Status.drawNextTurn,
                             statusAmount = 1,
                             targetPlayer = true,
+                            disabled = flipped
+                        },
+                        new ADummyAction(),
+                        new AEnergy {
+                            changeAmount = 1,
+                            disabled = !flipped
+                        },
+                        new ADrawCard {
+                            count = 1,
                             disabled = !flipped
                         }
                     };
                 case Upgrade.B:
                     return new List<CardAction>
                     {
-                        new AEnergy {
-                            changeAmount = 2,
-                            disabled = flipped
-                        },
-                        new ADrawCard {
-                            count = 2,
-                            disabled = flipped
-                        },
-                        new ADummyAction(),
                         new AStatus {
                             status = Status.energyNextTurn,
                             statusAmount = 2,
                             targetPlayer = true,
-                            disabled = !flipped
+                            disabled = flipped
                         },
                         new AStatus {
                             status = Status.drawNextTurn,
                             statusAmount = 2,
                             targetPlayer = true,
+                            disabled = flipped
+                        },
+                        new ADummyAction(),
+                        new AEnergy {
+                            changeAmount = 2,
+                            disabled = !flipped
+                        },
+                        new ADrawCard {
+                            count = 2,
                             disabled = !flipped
                         }
                     };

@@ -22,7 +22,7 @@ namespace Eddie.Cards
             base.GetData(state);
             return new CardData
             {
-                cost = upgrade == Upgrade.A ? 3 : 2
+                cost = upgrade == Upgrade.B ? 3 : 2
             };
         }
 
@@ -39,25 +39,67 @@ namespace Eddie.Cards
                 case Upgrade.A:
                     return new List<CardAction> {
                         new AAttack {
-                            damage = GetDmg(s, 5)
+                            damage = GetDmg(s, 3)
+                        },
+                        new AStatus {
+                            status = Status.tempShield,
+                            statusAmount = 1,
+                            targetPlayer = true
                         },
                     };
                 case Upgrade.B:
                     return new List<CardAction> {
                         new AAttack {
-                            damage = GetDmg(s, 3),
-                            disabled = flipped
-                        },
-                        new AAddCard {
-                            card = new ShortTermSolution {
-                                temporaryOverride = true
-                            },
-                            destination = CardDestination.Deck
+                            damage = GetDmg(s, 6)
                         }
                     };
                 default:
                     return new List<CardAction>();
             }
         }
+
+        // public override CardData GetData(State state)
+        // {
+        //     base.GetData(state);
+        //     return new CardData
+        //     {
+        //         cost = upgrade == Upgrade.A ? 3 : 2
+        //     };
+        // }
+
+        // public override List<CardAction> GetActions(State s, Combat c)
+        // {
+        //     switch (upgrade)
+        //     {
+        //         case Upgrade.None:
+        //             return new List<CardAction> {
+        //                 new AAttack {
+        //                     damage = GetDmg(s, 3)
+        //                 },
+        //             };
+        //         case Upgrade.A:
+        //             return new List<CardAction> {
+        //                 new AAttack {
+        //                     damage = GetDmg(s, 5)
+        //                 },
+        //             };
+        //         case Upgrade.B:
+        //             return new List<CardAction> {
+        //                 new AAttack {
+        //                     damage = GetDmg(s, 3),
+        //                     disabled = flipped
+        //                 },
+        //                 new AAddCard {
+        //                     card = new ShortTermSolution {
+        //                         temporaryOverride = true,
+        //                         upgrade = Upgrade.B
+        //                     },
+        //                     destination = CardDestination.Deck
+        //                 }
+        //             };
+        //         default:
+        //             return new List<CardAction>();
+        //     }
+        // }
     }
 }

@@ -4,57 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eddie.Cards
+namespace Eddie.Cards;
+
+[CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+public class SolarSailing : Card
 {
-    [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-    public class SolarSailing : Card
+    public override string Name() => "Solar Sailing";
+
+    public override CardData GetData(State state)
     {
-        public override string Name() => "Solar Sailing";
-
-        public override CardData GetData(State state)
+        return new CardData
         {
-            return new CardData
-            {
-                cost = 0,
-                flippable = upgrade == Upgrade.A
-            };
-        }
+            cost = 0,
+            flippable = upgrade == Upgrade.B,
+            retain = upgrade == Upgrade.A
+        };
+    }
 
-        public override List<CardAction> GetActions(State s, Combat c)
+    public override List<CardAction> GetActions(State s, Combat c)
+    {
+        return new List<CardAction>
         {
-            switch (upgrade)
+            new AMove
             {
-                case Upgrade.None:
-                case Upgrade.A:
-                    return new List<CardAction>
-                    {
-                        new AMove
-                        {
-                            dir = 1,
-                            targetPlayer = true
-                        },
-                        new ADrawCard
-                        {
-                            count = 1
-                        }
-                    };
-                case Upgrade.B:
-                    return new List<CardAction>
-                    {
-                        new AMove
-                        {
-                            dir = 2,
-                            isRandom = true,
-                            targetPlayer = true
-                        },
-                        new ADrawCard
-                        {
-                            count = 1
-                        }
-                    };
-                default:
-                    return new List<CardAction>();
+                dir = 1,
+                targetPlayer = true
+            },
+            new ADrawCard
+            {
+                count = 1
             }
-        }
+        };
     }
 }

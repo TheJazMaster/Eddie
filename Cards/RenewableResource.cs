@@ -18,7 +18,7 @@ namespace Eddie.Cards
             {
                 cost = upgrade == Upgrade.A ? 0 : 1,
                 exhaust = upgrade != Upgrade.B,
-                description = "Leftmost non-<c=cardtrait>infinite</c> card gains <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c>."
+                description = "Rightmost non-<c=cardtrait>infinite</c> card gains <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c>."
             };
         }
 
@@ -26,10 +26,10 @@ namespace Eddie.Cards
         {
             return new List<CardAction>
             {
-                new AAddShortCircuitToLeftmostCard {
+                new AAddShortCircuitToRightmostCard {
                     skipInfinite = true
                 },
-                new AAddInfiniteToLeftmostCard {
+                new AAddInfiniteToRightmostCard {
                     skipInfinite = true
                 }
             };

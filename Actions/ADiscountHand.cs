@@ -7,7 +7,7 @@ namespace Eddie.Actions
 {
     public class ADiscountHand : CardAction
     {
-        public int discountAmount = 0;
+        public int discountAmount = -1;
         
         public override void Begin(G g, State s, Combat c)
         {
@@ -21,5 +21,23 @@ namespace Eddie.Actions
                 });
             }
         }
+
+        public override Icon? GetIcon(State s)
+        {
+            return new Icon(Enum.Parse<Spr>("icons_discount"), null, Colors.textMain);
+        }
+
+        public override List<Tooltip> GetTooltips(State s)
+        {
+			List<Tooltip> list = new List<Tooltip>();
+            if (discountAmount < 0) {
+                list.Add(new TTGlossary((Manifest.DiscountHandGlossary?.Head) ?? throw new Exception("Missing discount hand glossary"), Math.Abs(discountAmount)));
+                list.Add(new TTGlossary("cardtrait.discount", Math.Abs(discountAmount)));
+            } else {
+                list.Add(new TTGlossary((Manifest.ExpensiveHandGlossary?.Head) ?? throw new Exception("Missing expensive hand glossary"), discountAmount));
+                list.Add(new TTGlossary("cardtrait.expensive", discountAmount));
+            }
+			return list;
+		}
     }
 }

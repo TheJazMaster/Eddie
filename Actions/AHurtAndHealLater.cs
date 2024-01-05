@@ -29,7 +29,7 @@ namespace Eddie.Actions
         public override Icon? GetIcon(State s)
         {
             if (Manifest.TemporaryHurtIcon?.Id != null)
-                return new Icon((Spr)Manifest.TemporaryHurtIcon.Id, null, Colors.textMain);
+                return new Icon((Spr)Manifest.TemporaryHurtIcon.Id, hurtAmount, Colors.textMain);
             return null;
         }
 

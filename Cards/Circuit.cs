@@ -9,7 +9,7 @@ namespace Eddie.Cards
     [CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
     public class Circuit : Card
     {
-        public override string Name() => "";
+        public override string Name() => "Circuit";
 
         public override CardData GetData(State state)
         {

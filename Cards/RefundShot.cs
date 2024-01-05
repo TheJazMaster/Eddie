@@ -8,7 +8,7 @@
         public override int GetCheapDiscount()
         {
             if (upgrade == Upgrade.A)
-                return 1;
+                return -1;
             return 0;
         }
 

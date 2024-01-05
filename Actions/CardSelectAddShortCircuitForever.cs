@@ -5,19 +5,20 @@ using System.Threading.Tasks;
 
 namespace Eddie.Actions
 {
-    public class CardSelectAddShortCircuitForever : CardAction
+    public class CardSelectAddShortCircuitAndMakeFreeForever : CardAction
     {
         public override Route? BeginWithRoute(G g, State s, Combat c)
         {
-            Card? card = selectedCard;
-            if (card != null)
+            if (selectedCard != null)
             {
-                ShortCircuit.short_circuit_override_is_permanent.Add(card, true);
-                ShortCircuit.short_circuit_override.Add(card, true);
+                ShortCircuit.short_circuit_override_is_permanent.AddOrUpdate(selectedCard, true);
+                ShortCircuit.short_circuit_override.AddOrUpdate(selectedCard, true);
+                Cheap.free.AddOrUpdate(selectedCard, true);
+                Cheap.free_permanent.AddOrUpdate(selectedCard, true);
                 return new ShowCards
                 {
-                    messageKey = "showcards.addedRetain",
-                    cardIds = new List<int> { card.uuid }
+                    messageKey = "showcards.addedShortCircuit",
+                    cardIds = new List<int> { selectedCard.uuid }
                 };
             }
             return null;
@@ -25,7 +26,7 @@ namespace Eddie.Actions
 
         public override string? GetCardSelectText(State s)
         {
-            return "Select a card to add <c=cardtrait>short-circuit</c> to, forever.\n(<c=cardtrait>Short-circuit</c> cards cost 1 more energy, but their actions happen twice!)";
+            return "Select a card to make free but <c=downside>add <c=cardtrait>short-circuit</c> to</c>, forever.";
         }
     }
 }

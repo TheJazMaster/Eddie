@@ -27,17 +27,17 @@ namespace Eddie.Cards
         {
             List<CardAction> result = new List<CardAction>();
 
+            int currentCost = this.GetCurrentCostNoRecursion(s);
             AVariableHintEnergy hint = new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this)
+                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
             };
             result.Add(hint);
 
             int multiplier = (upgrade == Upgrade.B ? 3 : 2);
-            int cost = GetCurrentCost(s);
             result.Add(new AAttackAdjusted {
                 damage = GetDmg(s, multiplier * Manifest.getEnergyAmount(s, c, this)),
-                damageDisplayAdjustment = -cost * multiplier,
+                damageDisplayAdjustment = -currentCost * multiplier,
                 xHint = multiplier
             });
             

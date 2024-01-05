@@ -9,7 +9,9 @@ namespace Eddie.Artifacts
 		{
 			state.GetCurrentQueue().QueueImmediate(new ACardSelect
 			{
-				browseAction = new CardSelectAddShortCircuitForever(),
+				filterMinCost = 1,
+				filterMaxCost = 1,
+				browseAction = new CardSelectAddShortCircuitAndMakeFreeForever(),
 				browseSource = CardBrowse.Source.Deck
 			});
 		}
