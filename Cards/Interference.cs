@@ -18,7 +18,8 @@ namespace Eddie.Cards
             {
                 cost = upgrade == Upgrade.B ? 0 : 1,
                 infinite = upgrade != Upgrade.B,
-                recycle = upgrade == Upgrade.B
+                recycle = upgrade == Upgrade.B,
+                flippable = upgrade == Upgrade.A
             };
         }
 
@@ -26,6 +27,7 @@ namespace Eddie.Cards
         {
             switch (upgrade) {
                 case Upgrade.None:
+                case Upgrade.A:
                     return new List<CardAction> {
                         new AMoveImproved
                         {
@@ -33,19 +35,19 @@ namespace Eddie.Cards
                             targetPlayer = false
                         }
                     };
-                case Upgrade.A:
-                    return new List<CardAction> {
-                        new AMoveImproved
-                        {
-                            dir = 2,
-                            targetPlayer = false
-                        }
-                    };
+                // case Upgrade.A:
+                //     return new List<CardAction> {
+                //         new AMoveImproved
+                //         {
+                //             dir = 2,
+                //             targetPlayer = false
+                //         }
+                //     };
                 case Upgrade.B:
                     return new List<CardAction> {
                         new AMoveImproved
                         {
-                            dir = 3,
+                            dir = 2,
                             targetPlayer = false
                         },
                         new AStatus
