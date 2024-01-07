@@ -289,7 +289,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         registry.RegisterGlossary(TemporaryHurtGlossary);
 
         XIsEnergyGlossary = new ExternalGlossary("Eddie.Glossary.XIsEnergyGlossary", "EddieXIsEnergyAction", false, ExternalGlossary.GlossayType.action, EnergyIcon ?? throw new Exception("Missing Energy Icon"));
-        XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.", null);
+        XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=energy>ENERGY</c> after paying for this card{0}.", null);
         registry.RegisterGlossary(XIsEnergyGlossary);
 
         DiscountHandGlossary = new ExternalGlossary("Eddie.Glossary.DiscountHandGlossary", "EddieDiscountHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discount")));
