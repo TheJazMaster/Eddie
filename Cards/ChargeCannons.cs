@@ -14,10 +14,16 @@ namespace Eddie.Cards
 
         public override CardData GetData(State state)
         {
+            string description = upgrade switch {
+                Upgrade.A => "Spend all energy, add 1 <c=card>Surge A</c> to your draw pile for each.",
+                Upgrade.B => "Spend all energy, add 1 <c=card>Surge B</c> to your draw pile for each.",
+                _ => "Spend all energy, add 1 <c=card>Surge</c> to your draw pile for each."
+            };
             return new CardData
             {
-                cost = 1,
-                exhaust = true
+                cost = 0,
+                exhaust = true,
+                description = description
             };
         }
 
@@ -26,33 +32,34 @@ namespace Eddie.Cards
             List<CardAction> result = new List<CardAction>();
 
             var currentCost = this.GetCurrentCostNoRecursion(s);
-            result.Add(new AVariableHintEnergy
-            {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost
-            });
+            // result.Add(new AVariableHintEnergy
+            // {
+            //     setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost
+            // });
 
-            result.Add(new AStatusAdjusted
+            // result.Add(new AStatusAdjusted
+            // {
+            //     targetPlayer = true,
+            //     status = Status.overdrive,
+            //     statusAmount = Manifest.getEnergyAmount(s, c, this),
+            //     amountDisplayAdjustment = -currentCost,
+            //     xHint = 1
+            // });
+
+            result.Add(new AAddCardAdjusted
             {
-                targetPlayer = true,
-                status = Status.overdrive,
-                statusAmount = Manifest.getEnergyAmount(s, c, this),
+                card = new Surge {
+                    upgrade = upgrade
+                },
+                amount = Manifest.getEnergyAmount(s, c, this) - currentCost,
                 amountDisplayAdjustment = -currentCost,
+                destination = CardDestination.Deck,
                 xHint = 1
             });
             
             result.Add(new AEnergySet {
-                setTo = upgrade == Upgrade.B ? 2 : 1
+                setTo = 0
             });
-            
-            if (upgrade == Upgrade.A)
-            {
-                result.Add(new AStatus
-                {
-                    targetPlayer = true,
-                    status = Status.stunCharge,
-                    statusAmount = 1
-                });
-            }
 
             return result;
         }

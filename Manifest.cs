@@ -54,6 +54,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     // public static ExternalSprite? LeftmostCardIcon { get; private set; }
     public static ExternalSprite? TemporaryHurtIcon { get; private set; }
     public static ExternalSprite? HealNextTurnIcon { get; private set; }
+    // public static ExternalSprite? OverchargeIcon { get; private set; }
     public static ExternalSprite? EnergyIcon { get; private set; }
     public static ExternalSprite? ApplyShortCircuitIcon { get; private set; }
     public static ExternalSprite? ApplyInfiniteIcon { get; private set; }
@@ -127,7 +128,9 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalCard? RenewableResourceCard { get; private set; }
     public static ExternalCard? GammaRayCard { get; private set; }
     public static ExternalCard? JumpstartCard { get; private set; }
+
     public static ExternalCard? LightweightCard { get; private set; }
+    public static ExternalCard? SurgeCard { get; private set; }
     
 
     public static List<ExternalSprite> TalkScaredSprites { get; private set; } = new List<ExternalSprite>();
@@ -178,6 +181,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         CheapIcon = RegisterSprite(registry, "CheapIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("cheap.png")));
         TemporaryHurtIcon = RegisterSprite(registry, "TemporaryHurtIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("temporary_hurt.png")));
         HealNextTurnIcon = RegisterSprite(registry, "HealNextTurnIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("heal_next_turn.png")));
+        // OverchargeIcon = RegisterSprite(registry, "OverchargeIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("overcharge.png")));
         PowerCellIcon = RegisterSprite(registry, "PowerCellIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("power_cell.png")));
         EnergyIcon = RegisterSprite(registry, "EnergyIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("energy.png")));
         ApplyShortCircuitIcon = RegisterSprite(registry, "ApplyShortCircuitIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("apply_short_circuit.png")));
@@ -285,7 +289,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         registry.RegisterGlossary(TemporaryHurtGlossary);
 
         XIsEnergyGlossary = new ExternalGlossary("Eddie.Glossary.XIsEnergyGlossary", "EddieXIsEnergyAction", false, ExternalGlossary.GlossayType.action, EnergyIcon ?? throw new Exception("Missing Energy Icon"));
-        XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=status>ENERGY</c> after paying the card's cost{0}.", null);
+        XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.", null);
         registry.RegisterGlossary(XIsEnergyGlossary);
 
         DiscountHandGlossary = new ExternalGlossary("Eddie.Glossary.DiscountHandGlossary", "EddieDiscountHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discount")));
@@ -301,7 +305,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         registry.RegisterGlossary(MoveEnemyLeftGlossary);
 
         MoveEnemyRightGlossary = new ExternalGlossary("Eddie.Glossary.MoveEnemyRightGlossary", "EddieMoveEnemyRightAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_moveRightEnemy")));
-        MoveEnemyRightGlossary.AddLocalisation("en", "Move Enemy Left", "The enemy will instantly move {0} spaces to the <c=keyword>RIGHT</c>.", null);
+        MoveEnemyRightGlossary.AddLocalisation("en", "Move Enemy Right", "The enemy will instantly move {0} spaces to the <c=keyword>RIGHT</c>.", null);
         registry.RegisterGlossary(MoveEnemyRightGlossary);
     }
 
@@ -369,7 +373,11 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
         GammaRayCard = RegisterCard(registry, typeof(GammaRay), GammaRayCardArt, "Gamma Ray");
 
-        LightweightCard = RegisterCard(registry, typeof(Lightweight), ExternalSprite.GetRaw((int)Enum.Parse<Spr>("cards_Fleetfoot")), "Lightweight");
+
+        SurgeCard = RegisterCard(registry, typeof(Surge), cardArtDefault, "Surge");
+
+        if (DuoArtifactsApi != null)
+            LightweightCard = RegisterCard(registry, typeof(Lightweight), ExternalSprite.GetRaw((int)Enum.Parse<Spr>("cards_Fleetfoot")), "Lightweight", DuoArtifactsApi.DuoArtifactDeck);
     }
 
     void ICharacterManifest.LoadManifest(ICharacterRegistry registry)

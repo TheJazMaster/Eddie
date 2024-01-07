@@ -18,6 +18,7 @@ namespace Eddie
         public static ExternalStatus? ClosedCircuitStatus { get; private set; }
         public static ExternalStatus? LoseEnergyEveryTurnStatus { get; private set; }
         public static ExternalStatus? HealNextTurnStatus { get; private set; }
+        public static ExternalStatus? OverchargeStatus { get; private set; }
 
         public void LoadManifest(IStatusRegistry statusRegistry)
         {
@@ -36,8 +37,12 @@ namespace Eddie
             statusRegistry.RegisterStatus(LoseEnergyEveryTurnStatus);
 
             HealNextTurnStatus = new ExternalStatus("Eddie.Status.HealNextTurn", true, Eddie_PrimaryColor, null, HealNextTurnIcon ?? throw new Exception("Missing Heal Next Turn Icon for status"), true);
-            HealNextTurnStatus.AddLocalisation("Regain Hull Next Turn", "Regain {0} hull at the start of your next turn or at the end of combat. <c=downside>This does not count as healing</c>");
+            HealNextTurnStatus.AddLocalisation("Regain Hull Next Turn", "Regain {0} hull at the start of your next turn or at the end of combat. <c=downside>This does not count as healing.</c>");
             statusRegistry.RegisterStatus(HealNextTurnStatus);
+
+            // OverchargeStatus = new ExternalStatus("Eddie.Status.Overcharge", true, System.Drawing.Color.FromArgb(255, 56, 56), null, OverchargeIcon ?? throw new Exception("Missing Overcharge Icon for status"), true);
+            // OverchargeStatus.AddLocalisation("Overcharge", "At the beginning of your turn, lose 1 <c=status>OVERCHARGE</c> and gain 1 <c=status>OVERDRIVE</c>.");
+            // statusRegistry.RegisterStatus(OverchargeStatus);
 
             // Patching status logic
             var harmony = new Harmony("Eddie.Status");
