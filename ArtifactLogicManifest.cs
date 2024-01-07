@@ -380,6 +380,8 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
                 status.statusAmount += xBonus;
             } else if (action is ADrawCard draw) {
                 draw.count += xBonus;
+            } else if (action is AAddCard add) {
+                add.amount += xBonus;
             } else if (action is ADiscard discard) {
                 discard.count += xBonus;
             } else if (action is AHeal heal) {
