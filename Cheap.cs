@@ -76,7 +76,7 @@ public static class Cheap
 
 	
 	private static void FreeIcon(Card card, State state, Vec vec, bool playable) {
-		if (free.TryGetValue(card, out StructRef<bool>? value) && value) {
+		if (free.TryGetValue(card, out StructRef<bool>? value) && value && free_once_per_turn.TryGetValue(card, out StructRef<bool>? value2) && value2) {
 			var deckDef = DB.decks[card.GetMeta().deck];
 			var color = playable ? Color.Lerp(deckDef.color, Colors.white, 0.6) : Color.Lerp(Colors.textMain.fadeAlpha(0.55), Colors.redd, card.shakeNoAnim);
 			Draw.Sprite((Spr)Manifest.FreeMarkerSprite!.Id!, vec.x + 11, vec.y + 18, flipX: false, flipY: false, color: color);
