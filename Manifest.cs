@@ -18,71 +18,75 @@ namespace Eddie;
 public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, IModManifest//, ICustomEventManifest, IArtifactManifest
 {
     internal static Manifest Instance { get; private set; } = null!;
+    internal static ApiImplementation Api { get; private set; } = null!;
+
+    internal IKokoroApi KokoroApi { get; private set; } = null!;
     internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
     internal ISogginsApi? SogginsApi { get; private set; } = null!;
 
     public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[]
     {
+        new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
         new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true),
         new DependencyEntry<IModManifest>("Shockah.Soggins", ignoreIfMissing: true)
     };
 
     public ILogger? Logger { get; set; }
 
-    public static ExternalGlossary? AddShortCircuitGlossary { get; private set; }
-    public static ExternalGlossary? ShortCircuitGlossary { get; private set; }
-    public static ExternalGlossary? AddInfiniteGlossary { get; private set; }
-    public static ExternalGlossary? DiscardLeftmostGlossary { get; private set; }
-    public static ExternalGlossary? MakeFreeGlossary { get; private set; }
-    public static ExternalGlossary? CheapGlossary { get; private set; }
-    public static ExternalGlossary? PowerCellGlossary { get; private set; }
-    // public static ExternalGlossary? LeftmostCardGlossary { get; private set; }
-    public static ExternalGlossary? TemporaryHurtGlossary { get; private set; }
-    public static ExternalGlossary? XIsEnergyGlossary { get; private set; }
-    public static ExternalGlossary? DiscountHandGlossary { get; private set; }
-    public static ExternalGlossary? ExpensiveHandGlossary { get; private set; }
-    public static ExternalGlossary? MoveEnemyLeftGlossary { get; private set; }
-    public static ExternalGlossary? MoveEnemyRightGlossary { get; private set; }
+    public static ExternalGlossary? AddShortCircuitGlossary { get; private set; } = null!;
+    public static ExternalGlossary? ShortCircuitGlossary { get; private set; } = null!;
+    public static ExternalGlossary? AddInfiniteGlossary { get; private set; } = null!;
+    public static ExternalGlossary? DiscardLeftmostGlossary { get; private set; } = null!;
+    public static ExternalGlossary? MakeFreeGlossary { get; private set; } = null!;
+    public static ExternalGlossary? CheapGlossary { get; private set; } = null!;
+    public static ExternalGlossary? PowerCellGlossary { get; private set; } = null!;
+    // public static ExternalGlossary? LeftmostCardGlossary { get; private set; } = null!;
+    public static ExternalGlossary? TemporaryHurtGlossary { get; private set; } = null!;
+    public static ExternalGlossary? XIsEnergyGlossary { get; private set; } = null!;
+    public static ExternalGlossary? DiscountHandGlossary { get; private set; } = null!;
+    public static ExternalGlossary? ExpensiveHandGlossary { get; private set; } = null!;
+    public static ExternalGlossary? MoveEnemyLeftGlossary { get; private set; } = null!;
+    public static ExternalGlossary? MoveEnemyRightGlossary { get; private set; } = null!;
 
-    public static ExternalSprite? ShortCircuitIcon { get; private set; }
-    public static ExternalSprite? CheapIcon { get; private set; }
-    public static ExternalSprite? CircuitIcon { get; private set; }
-    public static ExternalSprite? ClosedCircuitIcon { get; private set; }
-    public static ExternalSprite? LoseEnergyEveryTurnIcon { get; private set; }
-    public static ExternalSprite? PowerCellSprite { get; private set; }
-    public static ExternalSprite? PowerCellIcon { get; private set; }
-    // public static ExternalSprite? LeftmostCardIcon { get; private set; }
-    public static ExternalSprite? TemporaryHurtIcon { get; private set; }
-    public static ExternalSprite? HealNextTurnIcon { get; private set; }
-    // public static ExternalSprite? OverchargeIcon { get; private set; }
-    public static ExternalSprite? EnergyIcon { get; private set; }
-    public static ExternalSprite? ApplyShortCircuitIcon { get; private set; }
-    public static ExternalSprite? ApplyInfiniteIcon { get; private set; }
+    public static ExternalSprite? ShortCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite? CheapIcon { get; private set; } = null!;
+    public static ExternalSprite? CircuitIcon { get; private set; } = null!;
+    public static ExternalSprite? ClosedCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite? LoseEnergyEveryTurnIcon { get; private set; } = null!;
+    public static ExternalSprite? PowerCellSprite { get; private set; } = null!;
+    public static ExternalSprite? PowerCellIcon { get; private set; } = null!;
+    // public static ExternalSprite? LeftmostCardIcon { get; private set; } = null!;
+    public static ExternalSprite? TemporaryHurtIcon { get; private set; } = null!;
+    public static ExternalSprite? HealNextTurnIcon { get; private set; } = null!;
+    // public static ExternalSprite? OverchargeIcon { get; private set; } = null!;
+    public static ExternalSprite? EnergyIcon { get; private set; } = null!;
+    public static ExternalSprite? ApplyShortCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite? ApplyInfiniteIcon { get; private set; } = null!;
 
     public static ExternalSprite? EddieCardFrame { get; private set; }
     public static ExternalSprite? EddieUncommonCardFrame { get; private set; }
     public static ExternalSprite? EddieRareCardFrame { get; private set; }
     public static ExternalSprite? EddiePanelFrame { get; private set; }
 
-    public static ExternalSprite? ChannelCardArt { get; private set; }
-    public static ExternalSprite? ChannelTopCardArt { get; private set; }
-    public static ExternalSprite? ChannelBottomCardArt { get; private set; }
-    public static ExternalSprite? GammaRayCardArt { get; private set; }
-    public static ExternalSprite? CircuitCardArt { get; private set; }
-    public static ExternalSprite? EnergyBoltCardArt { get; private set; }
-    public static ExternalSprite? RummageCardArt { get; private set; }
-    public static ExternalSprite? PowerNapBottomCardArt { get; private set; }
-    public static ExternalSprite? PowerNapTopCardArt { get; private set; }
+    public static ExternalSprite? ChannelCardArt { get; private set; } = null!;
+    public static ExternalSprite? ChannelTopCardArt { get; private set; } = null!;
+    public static ExternalSprite? ChannelBottomCardArt { get; private set; } = null!;
+    public static ExternalSprite? GammaRayCardArt { get; private set; } = null!;
+    public static ExternalSprite? CircuitCardArt { get; private set; } = null!;
+    public static ExternalSprite? EnergyBoltCardArt { get; private set; } = null!;
+    public static ExternalSprite? RummageCardArt { get; private set; } = null!;
+    public static ExternalSprite? PowerNapBottomCardArt { get; private set; } = null!;
+    public static ExternalSprite? PowerNapTopCardArt { get; private set; } = null!;
 
-    public static ExternalSprite? FrazzledWiresSprite { get; private set; }
-    public static ExternalSprite? SunLampOnSprite { get; private set; }
-    public static ExternalSprite? SunLampOffSprite { get; private set; }
-    public static ExternalSprite? SunLampUnchargedSprite { get; private set; }
-    public static ExternalSprite? ElectromagneticCoilSprite { get; private set; }
-    public static ExternalSprite? SolarPanelsOnSprite { get; private set; }
-    public static ExternalSprite? SolarPanelsOffSprite { get; private set; }
-    public static ExternalSprite? DeconstructionGogglesSprite { get; private set; }
-    public static ExternalSprite? FissionChamberSprite { get; private set; }
+    public static ExternalSprite? FrazzledWiresSprite { get; private set; } = null!;
+    public static ExternalSprite? SunLampOnSprite { get; private set; } = null!;
+    public static ExternalSprite? SunLampOffSprite { get; private set; } = null!;
+    public static ExternalSprite? SunLampUnchargedSprite { get; private set; } = null!;
+    public static ExternalSprite? ElectromagneticCoilSprite { get; private set; } = null!;
+    public static ExternalSprite? SolarPanelsOnSprite { get; private set; } = null!;
+    public static ExternalSprite? SolarPanelsOffSprite { get; private set; } = null!;
+    public static ExternalSprite? DeconstructionGogglesSprite { get; private set; } = null!;
+    public static ExternalSprite? FissionChamberSprite { get; private set; } = null!;
 
     public static ExternalSprite? PerfectInsulationSprite { get; private set; }
     public static ExternalSprite? UltraLightBatteriesSprite { get; private set; }
@@ -96,41 +100,41 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public static ExternalSprite? FreeMarkerSprite { get; private set; }
 
-    public static ExternalCharacter? EddieCharacter { get; private set; }
-    public static ExternalDeck? EddieDeck { get; private set; }
-    public static ExternalAnimation? EddieDefaultAnimation { get; private set; }
-    public static ExternalSprite? EddiePortrait { get; private set; }
-    public static ExternalSprite? EddieMini { get; private set; }
-    public static ExternalAnimation? EddieMiniAnimation { get; private set; }
-    public static ExternalAnimation? EddieGameoverAnimation { get; private set; }
-    public static ExternalAnimation? EddieSquintAnimation { get; private set; }
+    public static ExternalCharacter? EddieCharacter { get; private set; } = null!;
+    public static ExternalDeck EddieDeck { get; private set; } = null!;
+    public static ExternalAnimation? EddieDefaultAnimation { get; private set; } = null!;
+    public static ExternalSprite? EddiePortrait { get; private set; } = null!;
+    public static ExternalSprite? EddieMini { get; private set; } = null!;
+    public static ExternalAnimation? EddieMiniAnimation { get; private set; } = null!;
+    public static ExternalAnimation? EddieGameoverAnimation { get; private set; } = null!;
+    public static ExternalAnimation? EddieSquintAnimation { get; private set; } = null!;
     
-    public static ExternalCard? ChannelCard { get; private set; }
-    public static ExternalCard? PowerNapCard { get; private set; }
-    public static ExternalCard? ReverseEngineerCard { get; private set; }
-    public static ExternalCard? PowerCellCard { get; private set; }
-    public static ExternalCard? RefundShotCard { get; private set; }
-    public static ExternalCard? SolarSailingCard { get; private set; }
-    public static ExternalCard? EnergyBoltCard { get; private set; }
-    public static ExternalCard? PowerSinkCard { get; private set; }
-    public static ExternalCard? RummageCard { get; private set; }
-    public static ExternalCard? BorrowCard { get; private set; }
-    public static ExternalCard? InterferenceCard { get; private set; }
-    public static ExternalCard? ChargeCannonsCard { get; private set; }
-    public static ExternalCard? ChargeShieldsCard { get; private set; }
-    public static ExternalCard? ChargeThrustersCard { get; private set; }
-    public static ExternalCard? GarageSaleCard { get; private set; }
-    public static ExternalCard? ShortTermSolutionCard { get; private set; }
-    public static ExternalCard? AmplifyCard { get; private set; }
-    // public static ExternalCard? OrganizeCard { get; private set; }
-    public static ExternalCard? InnovationCard { get; private set; }
-    public static ExternalCard? CircuitCard { get; private set; }
-    public static ExternalCard? RenewableResourceCard { get; private set; }
-    public static ExternalCard? GammaRayCard { get; private set; }
-    public static ExternalCard? JumpstartCard { get; private set; }
+    public static ExternalCard? ChannelCard { get; private set; } = null!;
+    public static ExternalCard? PowerNapCard { get; private set; } = null!;
+    public static ExternalCard? ReverseEngineerCard { get; private set; } = null!;
+    public static ExternalCard? PowerCellCard { get; private set; } = null!;
+    public static ExternalCard? RefundShotCard { get; private set; } = null!;
+    public static ExternalCard? SolarSailingCard { get; private set; } = null!;
+    public static ExternalCard? EnergyBoltCard { get; private set; } = null!;
+    public static ExternalCard? PowerSinkCard { get; private set; } = null!;
+    public static ExternalCard? RummageCard { get; private set; } = null!;
+    public static ExternalCard? BorrowCard { get; private set; } = null!;
+    public static ExternalCard? InterferenceCard { get; private set; } = null!;
+    public static ExternalCard? ChargeCannonsCard { get; private set; } = null!;
+    public static ExternalCard? ChargeShieldsCard { get; private set; } = null!;
+    public static ExternalCard? ChargeThrustersCard { get; private set; } = null!;
+    public static ExternalCard? GarageSaleCard { get; private set; } = null!;
+    public static ExternalCard? ShortTermSolutionCard { get; private set; } = null!;
+    public static ExternalCard? AmplifyCard { get; private set; } = null!;
+    // public static ExternalCard? OrganizeCard { get; private set; } = null!;
+    public static ExternalCard? InnovationCard { get; private set; } = null!;
+    public static ExternalCard? CircuitCard { get; private set; } = null!;
+    public static ExternalCard? RenewableResourceCard { get; private set; } = null!;
+    public static ExternalCard? GammaRayCard { get; private set; } = null!;
+    public static ExternalCard? JumpstartCard { get; private set; } = null!;
 
     public static ExternalCard? LightweightCard { get; private set; }
-    public static ExternalCard? SurgeCard { get; private set; }
+    public static ExternalCard? SurgeCard { get; private set; } = null!;
     
 
     public static List<ExternalSprite> TalkScaredSprites { get; private set; } = new List<ExternalSprite>();
@@ -228,7 +232,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         VersionControlSprite = RegisterSprite(registry, "VersionControl", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("version_control.png")));
         SpellboardSprite = RegisterSprite(registry, "Spellboard", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("spellboard.png")));
         VirtualTreadmillSprite = RegisterSprite(registry, "VirtualTreadmill", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("virtual_treadmill.png")));
-        WaxWingsSprite = RegisterSprite(registry, "WaxWings", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", Path.GetFileName("wax_wings.png")));
+        WaxWingsSprite = RegisterSprite(registry, "WaxWings", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("wax_wings.png")));
     }
 
     public static System.Drawing.Color Eddie_PrimaryColor = System.Drawing.Color.FromArgb(230, 225, 100);
@@ -424,6 +428,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
         
+        KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+        KokoroApi.RegisterTypeForExtensionData(typeof(Card));
         DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
         SogginsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.Soggins") ? contact.GetApi<ISogginsApi>("Shockah.Soggins") : null;
         
@@ -516,6 +522,9 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 			postfix: new HarmonyMethod(typeof(Manifest).GetMethod("DB_SetLocale_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
 		);
     }
+
+	public object? GetApi(IManifest requestingMod)
+		=> new ApiImplementation();
 
     private static IEnumerable<CodeInstruction> TraitTooltips(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
     {

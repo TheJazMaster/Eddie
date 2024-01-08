@@ -25,10 +25,11 @@ namespace Eddie.Actions
                     }
                     howManyCards--;
                     
-                    Cheap.free.AddOrUpdate(card, true);
-                    Cheap.free_once_per_turn.AddOrUpdate(card, true);
-                    if (permanent)
-                        Cheap.free_permanent.AddOrUpdate(card, true);
+                    Cheap.SetFree(card, true, true, permanent ? true : null);
+                    // Cheap.free.AddOrUpdate(card, true);
+                    // Cheap.free_once_per_turn.AddOrUpdate(card, true);
+                    // if (permanent)
+                    //     Cheap.free_permanent.AddOrUpdate(card, true);
                 }
             }
         }

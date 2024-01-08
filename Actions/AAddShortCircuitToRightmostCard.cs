@@ -23,11 +23,13 @@ namespace Eddie.Actions
                         break;
                     }
                     howManyCards--;
-                    ShortCircuit.short_circuit_override.AddOrUpdate(c.hand[num], true);
-                    if (permanent)
-                    {
-                        ShortCircuit.short_circuit_override_is_permanent.AddOrUpdate(c.hand[num], true);
-                    }
+
+                    ShortCircuit.SetShortCircuit(c.hand[num], true, permanent ? true : null);
+                    // ShortCircuit.short_circuit_override.AddOrUpdate(c.hand[num], true);
+                    // if (permanent)
+                    // {
+                    //     ShortCircuit.short_circuit_override_is_permanent.AddOrUpdate(c.hand[num], true);
+                    // }
                 }
             }
         }

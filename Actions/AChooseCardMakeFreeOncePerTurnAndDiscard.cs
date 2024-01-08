@@ -14,8 +14,9 @@ namespace Eddie.Actions
             Card? card = selectedCard;
 			if (card != null)
 			{
-                Cheap.free.AddOrUpdate(card, true);
-				Cheap.free_once_per_turn.AddOrUpdate(card, true);
+                Cheap.SetFree(card, true, true, false);
+                // Cheap.free.AddOrUpdate(card, true);
+				// Cheap.free_once_per_turn.AddOrUpdate(card, true);
 				
                 c.hand.Remove(card);
                 card.flipped = false;

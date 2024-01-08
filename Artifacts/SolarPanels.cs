@@ -9,7 +9,7 @@ namespace Eddie.Artifacts
 		{
 			if (!turnedOn)
 			{
-				return (Spr)(Manifest.SunLampOnSprite?.Id ?? throw new Exception("No Solar Panels Off sprite"));
+				return (Spr)(Manifest.SolarPanelsOffSprite?.Id ?? throw new Exception("No Solar Panels Off sprite"));
 			}
 			return (Spr)(Manifest.SolarPanelsOnSprite?.Id ?? throw new Exception("No Solar Panels On sprite"));
 		}

@@ -23,9 +23,16 @@ public static class Cheap
 {	
 	internal static Manifest Instance => Manifest.Instance;
 
-	public static ConditionalWeakTable<Card, StructRef<bool>> free = new ConditionalWeakTable<Card, StructRef<bool>>();
-	public static ConditionalWeakTable<Card, StructRef<bool>> free_once_per_turn = new ConditionalWeakTable<Card, StructRef<bool>>();
-	public static ConditionalWeakTable<Card, StructRef<bool>> free_permanent = new ConditionalWeakTable<Card, StructRef<bool>>();
+	private static IKokoroApi KokoroApi => Instance.KokoroApi;
+
+	internal const string FreeKey = "Free";
+	internal const string FreeOncePerTurnKey = "FreeOncePerTurn";
+	internal const string FreeIsPermanentKey = "FreeIsPermanent";
+
+	// public static ConditionalWeakTable<Card, StructRef<bool>> free = new ConditionalWeakTable<Card, StructRef<bool>>();
+	// public static ConditionalWeakTable<Card, StructRef<bool>> free_once_per_turn = new ConditionalWeakTable<Card, StructRef<bool>>();
+	// public static ConditionalWeakTable<Card, StructRef<bool>> free_permanent = new ConditionalWeakTable<Card, StructRef<bool>>();
+
 
 	private static void SetCheapDiscount(ref Combat __result, State s, AI ai, bool doForReal)
 	{
@@ -37,11 +44,39 @@ public static class Cheap
 			}
 		}
 	}
+
+
+	public static void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null) {
+		if (overrideValue != null) {
+			KokoroApi.SetExtensionData<bool>(card, FreeKey, overrideValue.Value);
+		}
+		if (oncePerTurnOnlyValue != null) {
+			KokoroApi.SetExtensionData<bool>(card, FreeOncePerTurnKey, oncePerTurnOnlyValue.Value);
+		}
+		if (permanentValue != null) {
+			KokoroApi.SetExtensionData<bool>(card, FreeIsPermanentKey, permanentValue.Value);
+		}
+	}
+
+	public static bool UsedFreeOncePerTurn(Card card) {
+		return KokoroApi.TryGetExtensionData<bool>(card, FreeOncePerTurnKey, out var available) && !available;
+	}
+
+	public static bool IsFree(Card card, bool withOncePerTurnLimit = true) {
+		return KokoroApi.TryGetExtensionData<bool>(card, FreeKey, out var free) && free && !(withOncePerTurnLimit && UsedFreeOncePerTurn(card));
+	}
+
+	public static bool IsFreeOncePerTurn(Card card) {
+		return KokoroApi.TryGetExtensionData<bool>(card, FreeOncePerTurnKey, out var _);
+	}
+
+	public static bool IsFreePermanent(Card card) {
+		return KokoroApi.TryGetExtensionData<bool>(card, FreeIsPermanentKey, out var isPermanent) && isPermanent;
+	}
 	
 	private static void SetFree(Card __instance, ref CardData __result, State state)
 	{
-		if (free.TryGetValue(__instance, out StructRef<bool>? value) && value && (!free_once_per_turn.TryGetValue(__instance, out StructRef<bool>? onceValue) || onceValue))
-		{
+		if (IsFree(__instance)) {
 			__result.cost = 0;
 		}
 	}
@@ -50,16 +85,16 @@ public static class Cheap
 	{
 		foreach (Card card in state.deck)
 		{
-			if (!free_permanent.TryGetValue(card, out StructRef<bool>? value) || !value)
-				free.Remove(card);
-			free_once_per_turn.Remove(card);
+			if (!IsFreePermanent(card))
+				KokoroApi.RemoveExtensionData(card, FreeKey);
+			KokoroApi.RemoveExtensionData(card, FreeOncePerTurnKey);
 		}
 	}
 
 	private static void RemoveOncePerTurn(State s, Combat c, Card card)
 	{
-		if (free_once_per_turn.TryGetValue(card, out StructRef<bool>? value) && value)
-			free_once_per_turn.AddOrUpdate(card, false);
+		if (IsFree(card) && IsFreeOncePerTurn(card))
+			KokoroApi.SetExtensionData<bool>(card, FreeOncePerTurnKey, false);
 	}
 
 	private static void ResetFreeForTurn(Ship __instance, State s, Combat c)
@@ -68,15 +103,15 @@ public static class Cheap
 
 		foreach (List<Card> list in new List<Card>[] {c.discard, s.deck, c.hand, c.exhausted}) {
 			foreach (Card card in list) {
-				if (free_once_per_turn.TryGetValue(card, out StructRef<bool>? value) && !value)
-					free_once_per_turn.AddOrUpdate(card, true);
+				if (IsFreeOncePerTurn(card))
+					KokoroApi.SetExtensionData<bool>(card, FreeOncePerTurnKey, true);
 			}
 		}
 	}
 
 	
 	private static void FreeIcon(Card card, State state, Vec vec, bool playable) {
-		if (free.TryGetValue(card, out StructRef<bool>? value) && value && free_once_per_turn.TryGetValue(card, out StructRef<bool>? value2) && value2) {
+		if (IsFreeOncePerTurn(card)) {
 			var deckDef = DB.decks[card.GetMeta().deck];
 			var color = playable ? Color.Lerp(deckDef.color, Colors.white, 0.6) : Color.Lerp(Colors.textMain.fadeAlpha(0.55), Colors.redd, card.shakeNoAnim);
 			Draw.Sprite((Spr)Manifest.FreeMarkerSprite!.Id!, vec.x + 11, vec.y + 18, flipX: false, flipY: false, color: color);
