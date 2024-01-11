@@ -29,11 +29,6 @@ public static class Cheap
 	internal const string FreeOncePerTurnKey = "FreeOncePerTurn";
 	internal const string FreeIsPermanentKey = "FreeIsPermanent";
 
-	// public static ConditionalWeakTable<Card, StructRef<bool>> free = new ConditionalWeakTable<Card, StructRef<bool>>();
-	// public static ConditionalWeakTable<Card, StructRef<bool>> free_once_per_turn = new ConditionalWeakTable<Card, StructRef<bool>>();
-	// public static ConditionalWeakTable<Card, StructRef<bool>> free_permanent = new ConditionalWeakTable<Card, StructRef<bool>>();
-
-
 	private static void SetCheapDiscount(ref Combat __result, State s, AI ai, bool doForReal)
 	{
 		if (doForReal) {

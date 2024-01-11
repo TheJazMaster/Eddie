@@ -430,6 +430,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         
         KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
         KokoroApi.RegisterTypeForExtensionData(typeof(Card));
+        KokoroApi.RegisterTypeForExtensionData(typeof(CardAction));
         DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
         SogginsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.Soggins") ? contact.GetApi<ISogginsApi>("Shockah.Soggins") : null;
         

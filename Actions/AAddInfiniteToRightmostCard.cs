@@ -16,18 +16,15 @@ namespace Eddie.Actions
         {
             for (int num = c.hand.Count-1; num >= 0; num--)
             {
-                if (!(skipInfinite && c.hand[num].GetDataWithOverrides(s).infinite))
+                var card = c.hand[num];
+                if (!(skipInfinite && card.GetDataWithOverrides(s).infinite))
                 {
                     if (howManyCards <= 0)
                     {
                         break;
                     }
                     howManyCards--;
-                    InfiniteOverride.infinite_override.AddOrUpdate(c.hand[num], true);
-                    if (permanent)
-                    {
-                        InfiniteOverride.infinite_override_is_permanent.AddOrUpdate(c.hand[num], true);
-                    }
+                    InfiniteOverride.SetInfiniteOverride(card, true, permanent);
                 }
             }
         }

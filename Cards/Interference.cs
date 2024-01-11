@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eddie.Cards
 {
-    [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+    [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
     public class Interference : Card
     {
         public override string Name() => "Interference";

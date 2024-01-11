@@ -28,13 +28,13 @@ namespace Eddie.Cards
             {
                 new AVariableHintEnergy
                 {
-                    setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
+                    setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
                 },
                 new AStatusAdjusted
                 {
                     targetPlayer = true,
                     status = upgrade == Upgrade.A ? Status.maxShield : Status.tempShield,
-                    statusAmount = Manifest.getEnergyAmount(s, c, this),
+                    statusAmount = Manifest.GetEnergyAmount(s, c, this),
                     amountDisplayAdjustment = -currentCost,
                     xHint = 1
                 },
@@ -42,7 +42,7 @@ namespace Eddie.Cards
                 {
                     targetPlayer = true,
                     status = Status.shield,
-                    statusAmount = Manifest.getEnergyAmount(s, c, this),
+                    statusAmount = Manifest.GetEnergyAmount(s, c, this),
                     amountDisplayAdjustment = -currentCost,
                     xHint = 1
                 },

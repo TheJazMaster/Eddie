@@ -21,19 +21,9 @@ public static class ShortCircuit
 	internal const string ShortCircuitOverrideKey = "ShortCircuitOverride";
 	internal const string ShortCircuitOverrideIsPermanentKey = "ShortCircuitOverrideIsPermanent";
 
-	// public static ConditionalWeakTable<Card, StructRef<bool>> short_circuit = new ConditionalWeakTable<Card, StructRef<bool>>();
-	// public static ConditionalWeakTable<Card, StructRef<bool>> short_circuit_override = new ConditionalWeakTable<Card, StructRef<bool>>();
-	// public static ConditionalWeakTable<Card, StructRef<bool>> short_circuit_override_is_permanent = new ConditionalWeakTable<Card, StructRef<bool>>();
-
 	private static void ShortCircuitRemoveOverride(Combat __instance, State state) {
 		foreach (Card card in state.deck)
 		{
-			// StructRef<bool>? value;
-			// short_circuit_override_is_permanent.TryGetValue(card, out value);
-			// if (value == null || !value)
-			// {
-			// 	short_circuit_override.Remove(card);
-			// }
 			if (!IsShortCircuitOverridePermanent(card)) {
 				KokoroApi.RemoveExtensionData(card, ShortCircuitOverrideKey);
 			}
@@ -54,15 +44,11 @@ public static class ShortCircuit
 
 	public static bool DoesShortCircuit(Card card, bool withOverrides = true)
 	{
-		// StructRef<bool>? is_innate;
-		// StructRef<bool>? is_overridden;
-		// return (short_circuit.TryGetValue(card, out is_innate) && is_innate) || (with_overrides && short_circuit_override.TryGetValue(card, out is_overridden) && is_overridden);
 		return (KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitKey, out var isInnate) && isInnate) || (withOverrides && KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitOverrideKey, out var isOverridden) && isOverridden);
 	}
 
 	public static bool IsShortCircuitOverridePermanent(Card card)
 	{
-		// return (short_circuit_override.TryGetValue(card, out var is_innate)) || (with_overrides && short_circuit_override.TryGetValue(card, out var is_overridden) && is_overridden);
 		return KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitOverrideIsPermanentKey, out var isPermanent) && isPermanent;
 	}
 

@@ -28,7 +28,7 @@ namespace Eddie.Cards
             var currentCost = this.GetCurrentCostNoRecursion(s);
             result.Add(new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
+                setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
             });
 
             int multiplier = upgrade == Upgrade.None ? 1 : 2;
@@ -36,7 +36,7 @@ namespace Eddie.Cards
             {
                 targetPlayer = true,
                 status = Status.evade,
-                statusAmount = multiplier * Manifest.getEnergyAmount(s, c, this),
+                statusAmount = multiplier * Manifest.GetEnergyAmount(s, c, this),
                 amountDisplayAdjustment = -multiplier * currentCost,
                 xHint = multiplier
             });

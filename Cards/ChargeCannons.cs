@@ -37,14 +37,14 @@ namespace Eddie.Cards
             var currentCost = this.GetCurrentCostNoRecursion(s);
             result.Add(new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost
+                setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost
             });
 
             // result.Add(new AStatusAdjusted
             // {
             //     targetPlayer = true,
             //     status = Status.overdrive,
-            //     statusAmount = Manifest.getEnergyAmount(s, c, this),
+            //     statusAmount = Manifest.GetEnergyAmount(s, c, this),
             //     amountDisplayAdjustment = -currentCost,
             //     xHint = 1
             // });
@@ -54,7 +54,7 @@ namespace Eddie.Cards
                 card = new Surge {
                     upgrade = upgrade
                 },
-                amount = Manifest.getEnergyAmount(s, c, this) - currentCost,
+                amount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
                 amountDisplayAdjustment = -currentCost,
                 destination = CardDestination.Deck,
                 xHint = 1

@@ -29,12 +29,12 @@ namespace Eddie.Cards
             int cost = this.GetCurrentCostNoRecursion(s);
             AVariableHintEnergy hint = new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - cost
+                setAmount = Manifest.GetEnergyAmount(s, c, this) - cost
             };
             result.Add(hint);
 
             result.Add(new ADrawCardAdjusted {
-                count = Manifest.getEnergyAmount(s, c, this),
+                count = Manifest.GetEnergyAmount(s, c, this),
                 countDisplayAdjustment = -cost,
                 xHint = 1
             });

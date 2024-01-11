@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eddie.Cards
 {
-    [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+    [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
     public class PowerSink : Card
     {
         // int cardsPlayedBefore = 0;
@@ -18,7 +18,7 @@ namespace Eddie.Cards
         {
             return new CardData()
             {
-                cost = upgrade == Upgrade.B ? 2 : upgrade == Upgrade.A ? 0 : 1,
+                cost = upgrade == Upgrade.A ? 0 : 1,
                 exhaust = upgrade == Upgrade.B
             };
         }
@@ -30,13 +30,13 @@ namespace Eddie.Cards
             int currentCost = this.GetCurrentCostNoRecursion(s);
             AVariableHintEnergy hint = new AVariableHintEnergy
             {
-                setAmount = Manifest.getEnergyAmount(s, c, this) - currentCost,
+                setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
             };
             result.Add(hint);
 
             int multiplier = (upgrade == Upgrade.B ? 3 : 2);
             result.Add(new AAttackAdjusted {
-                damage = GetDmg(s, multiplier * Manifest.getEnergyAmount(s, c, this)),
+                damage = GetDmg(s, multiplier * Manifest.GetEnergyAmount(s, c, this)),
                 damageDisplayAdjustment = -currentCost * multiplier,
                 xHint = multiplier
             });

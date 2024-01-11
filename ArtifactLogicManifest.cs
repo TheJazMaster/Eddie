@@ -1,4 +1,5 @@
 using Eddie.Artifacts;
+using HarmonyLib;
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
@@ -12,8 +13,6 @@ using FMOD;
 using FSPRO;
 using Microsoft.Xna.Framework.Input;
 using static System.Reflection.BindingFlags;
-
-using HarmonyLib;
 
 namespace Eddie;
 
@@ -339,61 +338,72 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
 
     private void FissionChamberLogic(Harmony harmony) {
         {
-            var getActionsOverridden = typeof(Card).GetMethod("GetActionsOverridden", BindingFlags.Public | BindingFlags.Instance);
-            var patch = typeof(Manifest).GetMethod("FissionChamberEffect", BindingFlags.NonPublic | BindingFlags.Static);
+            var getActionsOverridden = typeof(Card).GetMethod("GetActionsOverridden", AccessTools.all);
+            var patch = typeof(Manifest).GetMethod("FissionChamberEffect", AccessTools.all);
             harmony.Patch(getActionsOverridden, postfix: new HarmonyMethod(patch));
         } {
-            var renderAction = typeof(Card).GetMethod("RenderAction", BindingFlags.Public | BindingFlags.Static);
-            var patch = typeof(Manifest).GetMethod("RenderActionPatch", BindingFlags.NonPublic | BindingFlags.Static);
+            var renderAction = typeof(Card).GetMethod("RenderAction", AccessTools.all);
+            var patch = typeof(Manifest).GetMethod("RenderActionPatch", AccessTools.all);
             harmony.Patch(renderAction, transpiler: new HarmonyMethod(patch));
         } {
-            var getTooltips = typeof(AVariableHint).GetMethod("GetTooltips", BindingFlags.Public | BindingFlags.Instance) ?? throw new Exception("Couldn't find AVariableHint.GetTooltips method");
-            var patch = typeof(Manifest).GetMethod("GetTooltipsPatch", BindingFlags.NonPublic | BindingFlags.Static) ?? throw new Exception("Couldn't find Manifest.GetTooltipsPatch method");
+            var getTooltips = typeof(AVariableHint).GetMethod("GetTooltips", AccessTools.all) ?? throw new Exception("Couldn't find AVariableHint.GetTooltips method");
+            var patch = typeof(Manifest).GetMethod("GetTooltipsPatch", AccessTools.all) ?? throw new Exception("Couldn't find Manifest.GetTooltipsPatch method");
             harmony.Patch(getTooltips, postfix: new HarmonyMethod(patch));
         }
     }
 
 
-    public static ConditionalWeakTable<CardAction, StructRef<int>> increasedHints = new ConditionalWeakTable<CardAction, StructRef<int>>();
+    internal const string IncreasedHintsKey = "ShortCircuit";
 
-    private static void FissionChamberEffect(Card __instance, List<CardAction> __result, State s, Combat c) {
+    private static int GetXBonus(State s) {
         int baseXBonus = 0;
         foreach (Artifact item in s.EnumerateAllArtifacts()) {
             if (item is XAffectorArtifact xAffector) 
                 baseXBonus += xAffector.AffectX(baseXBonus);
         }
+        return baseXBonus;
+    }
+
+    private static void ImproveActionX(CardAction action, int baseXBonus) {
+        if (action is AVariableHint) {
+            Instance.KokoroApi.SetExtensionData<int>(action, IncreasedHintsKey, baseXBonus);
+        }
+        var xHint = action.xHint;
+        if (xHint == null)
+            return;
+
+        int xBonus = (int)xHint * baseXBonus;
+
+        if (action is AAttack attack) {
+            attack.damage += xBonus;
+        } else if (action is AStatus status) {
+            status.statusAmount += xBonus;
+        } else if (action is ADrawCard draw) {
+            draw.count += xBonus;
+        } else if (action is AAddCard add) {
+            add.amount += xBonus;
+        } else if (action is ADiscard discard) {
+            discard.count += xBonus;
+        } else if (action is AHeal heal) {
+            heal.healAmount += xBonus;
+        } else if (action is AHurt hurt) {
+            hurt.hurtAmount += xBonus;
+        } else if (action is AMove move) {
+            if (move.dir > 0) {
+                move.dir += xBonus;
+            } else {
+                move.dir -= xBonus;
+            }
+        }
+    }
+
+    private static void FissionChamberEffect(Card __instance, ref List<CardAction> __result, State s, Combat c) {
+        int baseXBonus = GetXBonus(s);
         if (baseXBonus == 0) return;
 
-        foreach (CardAction action in __result) {
-            if (action is AVariableHint) {
-                increasedHints.Add(action, baseXBonus);
-            }
-            var xHint = action.xHint;
-            if (xHint == null)
-                continue;
-
-            int xBonus = (int)xHint * baseXBonus;
-
-            if (action is AAttack attack) {
-                attack.damage += xBonus;
-            } else if (action is AStatus status) {
-                status.statusAmount += xBonus;
-            } else if (action is ADrawCard draw) {
-                draw.count += xBonus;
-            } else if (action is AAddCard add) {
-                add.amount += xBonus;
-            } else if (action is ADiscard discard) {
-                discard.count += xBonus;
-            } else if (action is AHeal heal) {
-                heal.healAmount += xBonus;
-            } else if (action is AHurt hurt) {
-                hurt.hurtAmount += xBonus;
-            } else if (action is AMove move) {
-                if (move.dir > 0) {
-                    move.dir += xBonus;
-                } else {
-                    move.dir -= xBonus;
-                }
+        foreach (CardAction wrappedAction in __result) {
+            foreach (CardAction action in Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(wrappedAction, false)) {
+                ImproveActionX(action, baseXBonus);
             }
         }
     }
@@ -598,8 +608,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
     }
 
     private static int RenderXIncrease(CardAction action, Color color, bool dontDraw, G g, int iconWidth, int w) {
-        StructRef<int>? value;
-        if (increasedHints.TryGetValue(action, out value) && value != 0) {
+        if (Manifest.Instance.KokoroApi.TryGetExtensionData<int>(action, IncreasedHintsKey, out var value) && value != 0) {
             // Plus
             // w += 3;
             w--;
@@ -622,7 +631,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
                 Rect? rect = new Rect(w - 1);
                 Vec xy = g.Push(null, rect).rect.xy;
                 Color textColor = (action.disabled ? Colors.disabledText : Colors.textMain);;
-                Draw.Text(value.Value + "", xy.x, xy.y + 2, null, textColor, null, null, null, null, dontDraw: false, null, color, null, null, null, dontSubstituteLocFont: true);
+                Draw.Text(value + "", xy.x, xy.y + 2, null, textColor, null, null, null, null, dontDraw: false, null, color, null, null, null, dontSubstituteLocFont: true);
                 g.Pop();
             }
             w += iconWidth - 5;
