@@ -22,6 +22,7 @@ public static class InfiniteOverride
 
 	private static void OverrideInfinite(Card __instance, ref CardData __result, State state)
 	{
+		
 		if (HasInfiniteOverride(__instance))
 		{
 			__result.infinite = true;
@@ -40,7 +41,7 @@ public static class InfiniteOverride
 
 	public static bool HasInfiniteOverride(Card card)
 	{
-		return KokoroApi.TryGetExtensionData<bool>(card, InfiniteOverrideIsPermanentKey, out var value) && value;
+		return KokoroApi.TryGetExtensionData<bool>(card, InfiniteOverrideKey, out var value) && value;
 	}
 
 	public static void SetInfiniteOverride(Card card, bool? overrideValue = null, bool? permanentValue = null)
