@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eddie.Cards;
+namespace TheJazMaster.Eddie.Cards;
 
 [CardMeta(rarity = Rarity.common, dontOffer = true)]
 public class Lightweight : Card

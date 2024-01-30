@@ -1,4 +1,4 @@
-namespace Eddie.Artifacts;
+namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.heat" })]
 public class EmergencyVentilator : Artifact

@@ -5,7 +5,7 @@ using System.Linq;
 using FMOD;
 using FSPRO;
 
-namespace Eddie.Actions
+namespace TheJazMaster.Eddie.Actions
 {
 	public class AMoveImproved : AMove
 	{

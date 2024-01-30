@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Eddie.Actions
+namespace TheJazMaster.Eddie.Actions
 {
     public class AMakeCardTemporarilyFreeOncePerTurn : CardAction
     {

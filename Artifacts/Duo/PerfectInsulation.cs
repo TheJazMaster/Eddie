@@ -1,4 +1,4 @@
-namespace Eddie.Artifacts
+namespace TheJazMaster.Eddie.Artifacts
 {
 	
 	[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]

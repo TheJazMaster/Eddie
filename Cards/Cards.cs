@@ -1,11 +1,6 @@
-using Eddie.Actions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TheJazMaster.Eddie.Actions;
 
-namespace Eddie.Cards;
+namespace TheJazMaster.Eddie.Cards;
 
 [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class Amplify : Card
@@ -57,7 +52,7 @@ public class Amplify : Card
 [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class Borrow : Card
 {
-	public override string Name() => "";
+	public override string Name() => "Borrow";
 
 	public override CardData GetData(State state)
 	{
@@ -306,7 +301,7 @@ public class ChargeShields : Card
 	{
 		return new CardData
 		{
-			cost = upgrade == Upgrade.B ? 0 : 1,
+			cost = upgrade == Upgrade.A ? 0 : 1,
 			exhaust = true
 		};
 	}
@@ -323,7 +318,7 @@ public class ChargeShields : Card
 			new AStatusAdjusted
 			{
 				targetPlayer = true,
-				status = upgrade == Upgrade.A ? Status.maxShield : Status.tempShield,
+				status = upgrade == Upgrade.B ? Status.maxShield : Status.tempShield,
 				statusAmount = Manifest.GetEnergyAmount(s, c, this),
 				amountDisplayAdjustment = -currentCost,
 				xHint = 1
@@ -512,7 +507,8 @@ public class GammaRay : Card
 			new AAttack
 			{
 				damage = upgrade == Upgrade.B ? 13 : 9,
-				piercing = true
+				piercing = true,
+				dialogueSelector = ".GammaRay"
 			}
 		};
 	}
@@ -524,7 +520,7 @@ public class GammaRay : Card
 [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class GarageSale : Card
 {
-	public override string Name() => "";
+	public override string Name() => "Garage Sale";
 
 	public override CardData GetData(State state)
 	{
@@ -660,7 +656,7 @@ public class Interference : Card
 [CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class Jumpstart : Card
 {
-	public override string Name() => "";
+	public override string Name() => "Jumpstart";
 
 	public override CardData GetData(State state)
 	{
@@ -802,69 +798,39 @@ public class PowerNap : CheapCard
 			cost = 1,
 			exhaust = upgrade == Upgrade.B,
 			floppable = true,
-			art = (flipped ? (Spr)Manifest.PowerNapBottomCardArt!.Id! : (Spr)Manifest.PowerNapTopCardArt!.Id!),
+			art = flipped ? (Spr)Manifest.PowerNapBottomCardArt!.Id! : (Spr)Manifest.PowerNapTopCardArt!.Id!,
 			artTint = "ffffff"
 		};
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		switch (upgrade)
+		return new List<CardAction>
 		{
-			case Upgrade.None:
-			case Upgrade.A:
-				return new List<CardAction>
-				{
-					new AStatus {
-						status = Status.energyNextTurn,
-						statusAmount = 1,
-						targetPlayer = true,
-						disabled = flipped
-					},
-					new AStatus {
-						status = Status.drawNextTurn,
-						statusAmount = 1,
-						targetPlayer = true,
-						disabled = flipped
-					},
-					new ADummyAction(),
-					new AEnergy {
-						changeAmount = 1,
-						disabled = !flipped
-					},
-					new ADrawCard {
-						count = 1,
-						disabled = !flipped
-					}
-				};
-			case Upgrade.B:
-				return new List<CardAction>
-				{
-					new AStatus {
-						status = Status.energyNextTurn,
-						statusAmount = 2,
-						targetPlayer = true,
-						disabled = flipped
-					},
-					new AStatus {
-						status = Status.drawNextTurn,
-						statusAmount = 2,
-						targetPlayer = true,
-						disabled = flipped
-					},
-					new ADummyAction(),
-					new AEnergy {
-						changeAmount = 2,
-						disabled = !flipped
-					},
-					new ADrawCard {
-						count = 2,
-						disabled = !flipped
-					}
-				};
-			default:
-				return new List<CardAction>();
-		}
+			new AStatus {
+				status = Status.energyNextTurn,
+				statusAmount = upgrade == Upgrade.B ? 2 : 1,
+				targetPlayer = true,
+				disabled = flipped
+			},
+			new AStatus {
+				status = Status.drawNextTurn,
+				statusAmount = upgrade == Upgrade.B ? 2 : 1,
+				targetPlayer = true,
+				disabled = flipped,
+				dialogueSelector = ".PowerNapNap"
+			},
+			new ADummyAction(),
+			new AEnergy {
+				changeAmount = upgrade == Upgrade.B ? 2 : 1,
+				disabled = !flipped
+			},
+			new ADrawCard {
+				count = upgrade == Upgrade.B ? 2 : 1,
+				disabled = !flipped,
+				dialogueSelector = ".PowerNapAwake"
+			}
+		};
 	}
 }
 
@@ -980,7 +946,7 @@ public class RefundShot : CheapCard
 [CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class RenewableResource : Card
 {
-	public override string Name() => "";
+	public override string Name() => "Renewable Resource";
 
 	public override CardData GetData(State state)
 	{
@@ -1129,7 +1095,7 @@ public class ReverseEngineer : Card
 [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class Rummage : Card
 {
-	public override string Name() => "";
+	public override string Name() => "Rummage";
 
 	public override CardData GetData(State state)
 	{

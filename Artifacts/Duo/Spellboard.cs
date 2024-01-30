@@ -1,9 +1,9 @@
-using Eddie.Cards;
+using TheJazMaster.Eddie.Cards;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace Eddie.Artifacts;
+namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class Spellboard : Artifact, CardDataAffectorArtifact

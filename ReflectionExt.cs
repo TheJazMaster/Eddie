@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Loader;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public static class ReflectionExt
 {

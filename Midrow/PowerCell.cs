@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using static System.Linq.Enumerable;
 
-namespace Eddie.Midrow
+namespace TheJazMaster.Eddie.Midrow
 {
     public class PowerCell : StuffBase
     {

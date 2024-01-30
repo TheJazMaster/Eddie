@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 using HarmonyLib;
 
-namespace Eddie
+namespace TheJazMaster.Eddie
 {
     public partial class Manifest : IStatusManifest
     {
@@ -80,11 +80,11 @@ namespace Eddie
                 return;
             {
                 var try_play_method = typeof(Combat).GetMethod("TryPlayCard") ?? throw new Exception("Couldn't find Combat.TryPlayCard method");
-                var patch = typeof(Manifest).GetMethod("ClosedCircuitPreventDiscard", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.ClosedCircuitPreventDiscard method");
+                var patch = typeof(Manifest).GetMethod("ClosedCircuitPreventDiscard", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.ClosedCircuitPreventDiscard method");
                 harmony.Patch(try_play_method, transpiler: new HarmonyMethod(patch));
             } {
                 var discard_hand_method = typeof(Combat).GetMethod("DiscardHand") ?? throw new Exception("Couldn't find Combat.DiscardHand method");
-                var patch = typeof(Manifest).GetMethod("ClosedCircuitPreventHandDiscard", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.ClosedCircuitPreventHandDiscard method");
+                var patch = typeof(Manifest).GetMethod("ClosedCircuitPreventHandDiscard", BindingFlags.Static |  BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.ClosedCircuitPreventHandDiscard method");
                 harmony.Patch(discard_hand_method, transpiler: new HarmonyMethod(patch));
             }
         }

@@ -1,6 +1,6 @@
 using CobaltCoreModding.Definitions.ExternalItems;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public interface ISogginsApi
 {

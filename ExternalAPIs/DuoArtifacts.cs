@@ -2,7 +2,7 @@ using CobaltCoreModding.Definitions.ExternalItems;
 using System;
 using System.Collections.Generic;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public interface IDuoArtifactsApi
 {

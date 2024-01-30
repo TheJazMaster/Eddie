@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 internal static class Extensions
 {

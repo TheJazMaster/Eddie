@@ -1,4 +1,4 @@
-using Eddie.Actions;
+using TheJazMaster.Eddie.Actions;
 using CobaltCoreModding.Definitions;
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using Microsoft.Xna.Framework.Input;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 // [HarmonyPatch]
 [HarmonyDebug]

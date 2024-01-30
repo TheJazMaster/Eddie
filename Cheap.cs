@@ -1,23 +1,12 @@
-using Eddie.Actions;
-using Eddie.Cards;
+using TheJazMaster.Eddie.Cards;
 using Microsoft.Extensions.Logging;
-using CobaltCoreModding.Definitions;
-using CobaltCoreModding.Definitions.ExternalItems;
-using CobaltCoreModding.Definitions.ModContactPoints;
-using CobaltCoreModding.Definitions.ModManifests;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
-using FMOD;
-using FSPRO;
-using Microsoft.Xna.Framework.Input;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public static class Cheap
 {	
@@ -43,13 +32,13 @@ public static class Cheap
 
 	public static void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null) {
 		if (overrideValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, FreeKey, overrideValue.Value);
+			KokoroApi.SetExtensionData(card, FreeKey, overrideValue.Value);
 		}
 		if (oncePerTurnOnlyValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, FreeOncePerTurnKey, oncePerTurnOnlyValue.Value);
+			KokoroApi.SetExtensionData(card, FreeOncePerTurnKey, oncePerTurnOnlyValue.Value);
 		}
 		if (permanentValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, FreeIsPermanentKey, permanentValue.Value);
+			KokoroApi.SetExtensionData(card, FreeIsPermanentKey, permanentValue.Value);
 		}
 	}
 

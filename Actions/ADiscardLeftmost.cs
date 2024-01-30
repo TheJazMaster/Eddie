@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FSPRO;
 
-namespace Eddie.Actions;
+namespace TheJazMaster.Eddie.Actions;
 
 public class ADiscardLeftmost : ADiscard
 {

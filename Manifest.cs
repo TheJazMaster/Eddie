@@ -3,7 +3,7 @@ using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
-using Eddie.Cards;
+using TheJazMaster.Eddie.Cards;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -12,8 +12,9 @@ using daisyowl.text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheJazMaster.Eddie.Dialogue;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, IModManifest//, ICustomEventManifest, IArtifactManifest
 {
@@ -88,6 +89,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalSprite? DeconstructionGogglesSprite { get; private set; } = null!;
     public static ExternalSprite? FissionChamberSprite { get; private set; } = null!;
 
+
     public static ExternalSprite? PerfectInsulationSprite { get; private set; }
     public static ExternalSprite? UltraLightBatteriesSprite { get; private set; }
     public static ExternalSprite? OverdriveFeedbackSprite { get; private set; }
@@ -100,14 +102,21 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public static ExternalSprite? FreeMarkerSprite { get; private set; }
 
-    public static ExternalCharacter? EddieCharacter { get; private set; } = null!;
+    public static ExternalCharacter EddieCharacter { get; private set; } = null!;
     public static ExternalDeck EddieDeck { get; private set; } = null!;
-    public static ExternalAnimation? EddieDefaultAnimation { get; private set; } = null!;
-    public static ExternalSprite? EddiePortrait { get; private set; } = null!;
-    public static ExternalSprite? EddieMini { get; private set; } = null!;
-    public static ExternalAnimation? EddieMiniAnimation { get; private set; } = null!;
-    public static ExternalAnimation? EddieGameoverAnimation { get; private set; } = null!;
-    public static ExternalAnimation? EddieSquintAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieDefaultAnimation { get; private set; } = null!;
+    public static ExternalSprite EddiePortrait { get; private set; } = null!;
+    public static ExternalSprite EddieMini { get; private set; } = null!;
+    public static ExternalAnimation EddieMiniAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieGameoverAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieSquintAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieFurtiveAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieExplainsAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieAnnoyedAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieWorriedAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieDisappointedAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieExcitedAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieRestingAnimation { get; private set; } = null!;
     
     public static ExternalCard? ChannelCard { get; private set; } = null!;
     public static ExternalCard? PowerNapCard { get; private set; } = null!;
@@ -137,8 +146,6 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalCard? SurgeCard { get; private set; } = null!;
     
 
-    public static List<ExternalSprite> TalkScaredSprites { get; private set; } = new List<ExternalSprite>();
-
     public DirectoryInfo? ModRootFolder { get; set; }
     public string Name { get; init; } = "TheJazMaster.Eddie";
     public DirectoryInfo? GameRootFolder { get; set; }
@@ -148,6 +155,30 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         var sprite = new ExternalSprite("Eddie." + globalName, new FileInfo(path));
         registry.RegisterArt(sprite);
         return sprite;
+    }
+
+    Dictionary<string, List<ExternalSprite>> talkSprites = new();
+    private void RegisterTalkSprites(ISpriteRegistry registry, string fileSuffix)
+    {
+        var dir_path = Path.Combine(ModRootFolder!.FullName, "Sprites", "portraits", fileSuffix);
+        var files = Directory.GetFiles(dir_path).Select(e => new FileInfo(e)).ToArray();
+        List<ExternalSprite> sprites = new();
+        for (int i = 0; i < files.Length; i++)
+        {
+            var spr = new ExternalSprite("Eddie.Talk" + fileSuffix + "_" + i, files[i]);
+            sprites.Add(spr);
+            registry.RegisterArt(spr);
+        }
+        talkSprites.Add(fileSuffix, sprites);
+    }
+    
+    private ExternalAnimation RegisterAnimation(IAnimationRegistry registry, ExternalDeck deck, string tag, string fileSuffix)
+    {
+        var animation = new ExternalAnimation("Eddie.Animation.Eddie" + fileSuffix,
+            EddieDeck!, tag, false, talkSprites[fileSuffix]);
+
+        registry.RegisterAnimation(animation);
+        return animation;
     }
 
 
@@ -204,20 +235,13 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         PowerNapTopCardArt = RegisterSprite(registry, "PowerNapTopCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("power_nap_top.png")));
         PowerNapBottomCardArt = RegisterSprite(registry, "PowerNapBottomCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("power_nap_bottom.png")));
 
-        // Animations
-        // {
-        //     var dir_path = Path.Combine(ModRootFolder.FullName, "Sprites", "talk_scared");
-        //     var files = Directory.GetFiles(dir_path).Select(e => new FileInfo(e)).ToArray();
-        //     for (int i = 0; i < files.Length; i++)
-        //     {
-        //         TalkScaredSprites.Add(RegisterSprite(registry, "TalkScared" + i, files[i].Name));
-        //     }
-        // }
-
-
         // Duos
 
         if (DuoArtifactsApi != null) RegisterDuoSprites(registry);
+
+
+        RegisterTalkSprites(registry, "Neutral");
+        RegisterTalkSprites(registry, "Mini");
     }
 
     void RegisterDuoSprites(ISpriteRegistry registry) {
@@ -403,22 +427,18 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     void IAnimationManifest.LoadManifest(IAnimationRegistry registry)
     {
-        EddieDefaultAnimation = new ExternalAnimation("Eddie.Animation.EddieDefault",
-            EddieDeck ?? throw new Exception("missing deck"),
-            "neutral", false,
-            new ExternalSprite[] { EddiePortrait ?? throw new Exception("missing potrait") });
-
-        registry.RegisterAnimation(EddieDefaultAnimation);
-
-        EddieMiniAnimation = new ExternalAnimation("Eddie.Animation.EddieMini",
-            EddieDeck ?? throw new Exception("missing deck"),
-            "mini", false,
-            new ExternalSprite[] { EddieMini ?? throw new Exception("missing mini") });
-
-        registry.RegisterAnimation(EddieMiniAnimation);
+        EddieDefaultAnimation = RegisterAnimation(registry, EddieDeck, "neutral", "Neutral");
+        EddieMiniAnimation = RegisterAnimation(registry, EddieDeck, "mini", "Mini");
 
         EddieGameoverAnimation = new ExternalAnimation("Eddie.Animation.GameOver", EddieDeck, "gameover", false, new ExternalSprite[] { EddiePortrait! });
         EddieSquintAnimation = new ExternalAnimation("Eddie.Animation.Squint", EddieDeck, "squint", false, new ExternalSprite[] { EddiePortrait! });
+        EddieExplainsAnimation = new ExternalAnimation("Eddie.Animation.Explains", EddieDeck, "explains", false, new ExternalSprite[] { EddiePortrait! });
+        EddieDisappointedAnimation = new ExternalAnimation("Eddie.Animation.Disappointed", EddieDeck, "disappointed", false, new ExternalSprite[] { EddiePortrait! });
+        EddieExcitedAnimation = new ExternalAnimation("Eddie.Animation.Excited", EddieDeck, "excited", false, new ExternalSprite[] { EddiePortrait! });
+        EddieRestingAnimation = new ExternalAnimation("Eddie.Animation.Resting", EddieDeck, "resting", false, new ExternalSprite[] { EddiePortrait! });
+        EddieFurtiveAnimation = new ExternalAnimation("Eddie.Animation.Furtive", EddieDeck, "furtive", false, new ExternalSprite[] { EddiePortrait! });
+        EddieAnnoyedAnimation = new ExternalAnimation("Eddie.Animation.Annoyed", EddieDeck, "annoyed", false, new ExternalSprite[] { EddiePortrait! });
+        EddieWorriedAnimation = new ExternalAnimation("Eddie.Animation.Worried", EddieDeck, "worried", false, new ExternalSprite[] { EddiePortrait! });
         registry.RegisterAnimation(EddieGameoverAnimation);
     }
 
@@ -431,6 +451,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
         KokoroApi.RegisterTypeForExtensionData(typeof(Card));
         KokoroApi.RegisterTypeForExtensionData(typeof(CardAction));
+        KokoroApi.RegisterTypeForExtensionData(typeof(StoryVars));
+        KokoroApi.RegisterTypeForExtensionData(typeof(StoryNode));
         DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
         SogginsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.Soggins") ? contact.GetApi<ISogginsApi>("Shockah.Soggins") : null;
         
@@ -521,6 +543,24 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             logger: Logger!,
 			original: typeof(DB).GetMethod("SetLocale", BindingFlags.Public | BindingFlags.Static),
 			postfix: new HarmonyMethod(typeof(Manifest).GetMethod("DB_SetLocale_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
+		);
+
+        harmony.TryPatch(
+            logger: Logger!,
+            original: typeof(Combat).GetMethod("TryPlayCard"),
+            prefix: new HarmonyMethod(typeof(StoryVarsAdditions).GetMethod("Combat_TryPlayCard_Prefix", BindingFlags.Static | BindingFlags.NonPublic))
+        );
+        harmony.TryPatch(
+            logger: Logger!,
+            original: typeof(StoryNode).GetMethod("Filter"),
+            postfix: new HarmonyMethod(typeof(StoryVarsAdditions).GetMethod("StoryNode_Filter_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
+        );
+
+        harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: typeof(MG).GetMethod("DrawLoadingScreen", AccessTools.all),
+			prefix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Prefix)),
+			postfix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Postfix))
 		);
     }
 

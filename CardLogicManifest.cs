@@ -11,10 +11,10 @@ using CobaltCoreModding.Definitions.ModManifests;
 using FMOD;
 using FSPRO;
 using HarmonyLib;
-using Eddie.Cards;
-using Eddie.Actions;
+using TheJazMaster.Eddie.Cards;
+using TheJazMaster.Eddie.Actions;
 
-namespace Eddie
+namespace TheJazMaster.Eddie
 {
     public partial class Manifest
     {

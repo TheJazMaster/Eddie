@@ -1,19 +1,42 @@
-using Eddie.Actions;
+using TheJazMaster.Eddie.Actions;
 
-namespace Eddie.Artifacts
+namespace TheJazMaster.Eddie.Artifacts;
+
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+public class FrazzledWires : Artifact, IRegisterableArtifact
 {
-	[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-    public class FrazzledWires : Artifact
-    {
-		public override void OnReceiveArtifact(State state)
+	public override void OnReceiveArtifact(State state)
+	{
+		state.GetCurrentQueue().QueueImmediate(new ACardSelect
 		{
-			state.GetCurrentQueue().QueueImmediate(new ACardSelect
+			filterMinCost = 1,
+			filterMaxCost = 1,
+			browseAction = new CardSelectAddShortCircuitAndMakeFreeForever(),
+			browseSource = CardBrowse.Source.Deck
+		});
+	}
+
+	public void InjectDialogue()
+	{
+		var eddie = Manifest.EddieDeck.GlobalName;
+
+		DB.story.all[$"Artifact{Key()}_0"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			oncePerCombatTags = new() { $"{Key()}Tag" },
+			allPresent = new() { eddie },
+			hasArtifacts = new() { Key() },
+			maxTurnsThisCombat = 1,
+			lines = new()
 			{
-				filterMinCost = 1,
-				filterMaxCost = 1,
-				browseAction = new CardSelectAddShortCircuitAndMakeFreeForever(),
-				browseSource = CardBrowse.Source.Deck
-			});
-		}
-    }
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "I tried fixing some broken wiring in the back. Let's see if it explodes.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			}
+		};
+	}
 }

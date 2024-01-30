@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using HarmonyLib;
 
 
-namespace Eddie
+namespace TheJazMaster.Eddie
 {
     public static class TranspilerUtils
     {

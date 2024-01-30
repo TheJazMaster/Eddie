@@ -1,6 +1,6 @@
-using Eddie.Cards;
+using TheJazMaster.Eddie.Cards;
 
-namespace Eddie.Artifacts;
+namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class UltraLightBatteries : Artifact

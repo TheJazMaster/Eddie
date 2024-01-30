@@ -1,4 +1,4 @@
-using Eddie.Artifacts;
+using TheJazMaster.Eddie.Artifacts;
 using HarmonyLib;
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
@@ -14,7 +14,7 @@ using FSPRO;
 using Microsoft.Xna.Framework.Input;
 using static System.Reflection.BindingFlags;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public partial class Manifest : IArtifactManifest, ICustomEventManifest
 {
@@ -29,6 +29,16 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
     // Boss
     public static ExternalArtifact? SolarPanelsArtifact { get; private set; }
     public static ExternalArtifact? DeconstructionGogglesArtifact { get; private set; }
+
+
+    internal static Type[] AllArtifacts => new Type[] {
+        typeof(FrazzledWires),
+        typeof(SunLamp),
+        typeof(ElectromagneticCoil),
+        typeof(FissionChamber),
+        typeof(SolarPanels),
+        typeof(DeconstructionGoggles)
+    };
 
     // Duos
     public static ExternalArtifact? PerfectInsulationArtifact { get; private set; }

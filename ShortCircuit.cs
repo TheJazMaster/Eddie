@@ -1,4 +1,4 @@
-using Eddie.Actions;
+using TheJazMaster.Eddie.Actions;
 using CobaltCoreModding.Definitions;
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
@@ -11,7 +11,7 @@ using FMOD;
 using FSPRO;
 using Microsoft.Xna.Framework.Input;
 
-namespace Eddie;
+namespace TheJazMaster.Eddie;
 
 public static class ShortCircuit
 {
