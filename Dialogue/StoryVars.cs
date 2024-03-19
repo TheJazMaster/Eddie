@@ -26,25 +26,29 @@ public static class StoryVarsAdditions
 		KokoroApi.SetExtensionData(s.storyVars, DiscountOfCardJustPlayedKey, -card.discount);
 	}
 
+	private static void StoryVars_ResetAfterCombatLine_Postfix(StoryVars __instance)
+	{	
+		KokoroApi.RemoveExtensionData(__instance, LastCardPlayedWasInfiniteKey);
+		KokoroApi.RemoveExtensionData(__instance, DiscountOfCardJustPlayedKey);
+	}
+
 	private static void StoryNode_Filter_Postfix(ref bool __result, string key, StoryNode n, State s, StorySearch ctx) {
 		if (!__result) return;
 
 		if (KokoroApi.TryGetExtensionData<bool>(n, CardJustPlayedWasInfiniteKey, out var needs) &&
-			KokoroApi.TryGetExtensionData<bool>(s.storyVars, LastCardPlayedWasInfiniteKey, out var was) && was != needs) {
+			(!KokoroApi.TryGetExtensionData<bool>(s.storyVars, LastCardPlayedWasInfiniteKey, out var was) || was != needs)) {
 			__result = false;
 			return;
 		}
 
-		if (KokoroApi.TryGetExtensionData<int>(s.storyVars, DiscountOfCardJustPlayedKey, out var discount)) {
-
-			if (KokoroApi.TryGetExtensionData<int>(n, MinDiscountOfCardJustPlayedKey, out var minDiscount) && discount < minDiscount) {
-				__result = false;
-				return;
-			}
-			if (KokoroApi.TryGetExtensionData<int>(n, MaxDiscountOfCardJustPlayedKey, out var maxDiscount) && discount > maxDiscount) {
-				__result = false;
-				return;
-			}
+		bool discountExists = KokoroApi.TryGetExtensionData<int>(s.storyVars, DiscountOfCardJustPlayedKey, out var discount);
+		if (KokoroApi.TryGetExtensionData<int>(n, MinDiscountOfCardJustPlayedKey, out var minDiscount) && (!discountExists || discount < minDiscount)) {
+			__result = false;
+			return;
+		}
+		if (KokoroApi.TryGetExtensionData<int>(n, MaxDiscountOfCardJustPlayedKey, out var maxDiscount) && (!discountExists || discount > maxDiscount)) {
+			__result = false;
+			return;
 		}
 	}
 

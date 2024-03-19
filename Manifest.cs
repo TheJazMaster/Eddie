@@ -7,16 +7,13 @@ using TheJazMaster.Eddie.Cards;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Reflection.Emit;
-using static System.Reflection.BindingFlags;
-using daisyowl.text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using TheJazMaster.Eddie.Dialogue;
+using Nanoray.Shrike.Harmony;
+using Nanoray.Shrike;
 
 namespace TheJazMaster.Eddie;
 
-public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, IModManifest//, ICustomEventManifest, IArtifactManifest
+public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, IModManifest, IApiProviderManifest
 {
     internal static Manifest Instance { get; private set; } = null!;
     internal static ApiImplementation Api { get; private set; } = null!;
@@ -24,73 +21,86 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     internal IKokoroApi KokoroApi { get; private set; } = null!;
     internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
     internal ISogginsApi? SogginsApi { get; private set; } = null!;
+    internal IMoreDifficultiesApi? MoreDifficultiesApi  { get; private set; } = null!;
+    internal IDraculaApi? DraculaApi  { get; private set; } = null!;
 
     public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[]
     {
         new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
         new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true),
-        new DependencyEntry<IModManifest>("Shockah.Soggins", ignoreIfMissing: true)
+        new DependencyEntry<IModManifest>("Shockah.Soggins", ignoreIfMissing: true),
+        new DependencyEntry<IModManifest>("TheJazMaster.MoreDifficulties", ignoreIfMissing: true)
     };
 
     public ILogger? Logger { get; set; }
 
-    public static ExternalGlossary? AddShortCircuitGlossary { get; private set; } = null!;
-    public static ExternalGlossary? ShortCircuitGlossary { get; private set; } = null!;
-    public static ExternalGlossary? AddInfiniteGlossary { get; private set; } = null!;
-    public static ExternalGlossary? DiscardLeftmostGlossary { get; private set; } = null!;
-    public static ExternalGlossary? MakeFreeGlossary { get; private set; } = null!;
-    public static ExternalGlossary? CheapGlossary { get; private set; } = null!;
-    public static ExternalGlossary? PowerCellGlossary { get; private set; } = null!;
+    public static ExternalGlossary AddShortCircuitGlossary { get; private set; } = null!;
+    public static ExternalGlossary ShortCircuitGlossary { get; private set; } = null!;
+    public static ExternalGlossary AddInfiniteGlossary { get; private set; } = null!;
+    public static ExternalGlossary DiscardLeftmostGlossary { get; private set; } = null!;
+    public static ExternalGlossary MakeFreeGlossary { get; private set; } = null!;
+    public static ExternalGlossary CheapGlossary { get; private set; } = null!;
+    public static ExternalGlossary PowerCellGlossary { get; private set; } = null!;
     // public static ExternalGlossary? LeftmostCardGlossary { get; private set; } = null!;
-    public static ExternalGlossary? TemporaryHurtGlossary { get; private set; } = null!;
-    public static ExternalGlossary? XIsEnergyGlossary { get; private set; } = null!;
-    public static ExternalGlossary? DiscountHandGlossary { get; private set; } = null!;
-    public static ExternalGlossary? ExpensiveHandGlossary { get; private set; } = null!;
-    public static ExternalGlossary? MoveEnemyLeftGlossary { get; private set; } = null!;
-    public static ExternalGlossary? MoveEnemyRightGlossary { get; private set; } = null!;
+    public static ExternalGlossary TemporaryHurtGlossary { get; private set; } = null!;
+    public static ExternalGlossary XIsEnergyGlossary { get; private set; } = null!;
+    public static ExternalGlossary DiscountHandGlossary { get; private set; } = null!;
+    public static ExternalGlossary ExpensiveHandGlossary { get; private set; } = null!;
+    public static ExternalGlossary MoveEnemyLeftGlossary { get; private set; } = null!;
+    public static ExternalGlossary MoveEnemyRightGlossary { get; private set; } = null!;
 
-    public static ExternalSprite? ShortCircuitIcon { get; private set; } = null!;
-    public static ExternalSprite? CheapIcon { get; private set; } = null!;
-    public static ExternalSprite? CircuitIcon { get; private set; } = null!;
-    public static ExternalSprite? ClosedCircuitIcon { get; private set; } = null!;
-    public static ExternalSprite? LoseEnergyEveryTurnIcon { get; private set; } = null!;
-    public static ExternalSprite? PowerCellSprite { get; private set; } = null!;
-    public static ExternalSprite? PowerCellIcon { get; private set; } = null!;
+    public static ExternalSprite ShortCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite CheapIcon { get; private set; } = null!;
+    public static ExternalSprite CircuitIcon { get; private set; } = null!;
+    public static ExternalSprite ClosedCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite LoseEnergyEveryTurnIcon { get; private set; } = null!;
+    public static ExternalSprite GainEnergyEveryTurnIcon { get; private set; } = null!;
+    public static ExternalSprite PowerCellSprite { get; private set; } = null!;
+    public static ExternalSprite PowerCellIcon { get; private set; } = null!;
     // public static ExternalSprite? LeftmostCardIcon { get; private set; } = null!;
-    public static ExternalSprite? TemporaryHurtIcon { get; private set; } = null!;
-    public static ExternalSprite? HealNextTurnIcon { get; private set; } = null!;
+    public static ExternalSprite TemporaryHurtIcon { get; private set; } = null!;
+    public static ExternalSprite HealNextTurnIcon { get; private set; } = null!;
     // public static ExternalSprite? OverchargeIcon { get; private set; } = null!;
-    public static ExternalSprite? EnergyIcon { get; private set; } = null!;
-    public static ExternalSprite? ApplyShortCircuitIcon { get; private set; } = null!;
-    public static ExternalSprite? ApplyInfiniteIcon { get; private set; } = null!;
+    public static ExternalSprite EnergyIcon { get; private set; } = null!;
+    public static ExternalSprite ApplyShortCircuitIcon { get; private set; } = null!;
+    public static ExternalSprite ApplyInfiniteIcon { get; private set; } = null!;
 
-    public static ExternalSprite? EddieCardFrame { get; private set; }
-    public static ExternalSprite? EddieUncommonCardFrame { get; private set; }
-    public static ExternalSprite? EddieRareCardFrame { get; private set; }
-    public static ExternalSprite? EddiePanelFrame { get; private set; }
+    public static ExternalSprite EddieCardFrame { get; private set; } = null!;
+    public static ExternalSprite EddieUncommonCardFrame { get; private set; } = null!;
+    public static ExternalSprite EddieRareCardFrame { get; private set; } = null!;
+    public static ExternalSprite EddiePanelFrame { get; private set; } = null!;
 
-    public static ExternalSprite? ChannelCardArt { get; private set; } = null!;
-    public static ExternalSprite? ChannelTopCardArt { get; private set; } = null!;
-    public static ExternalSprite? ChannelBottomCardArt { get; private set; } = null!;
-    public static ExternalSprite? GammaRayCardArt { get; private set; } = null!;
-    public static ExternalSprite? CircuitCardArt { get; private set; } = null!;
-    public static ExternalSprite? EnergyBoltCardArt { get; private set; } = null!;
-    public static ExternalSprite? RummageCardArt { get; private set; } = null!;
-    public static ExternalSprite? PowerNapBottomCardArt { get; private set; } = null!;
-    public static ExternalSprite? PowerNapTopCardArt { get; private set; } = null!;
+    public static ExternalSprite ChannelCardArt { get; private set; } = null!;
+    public static ExternalSprite ChannelTopCardArt { get; private set; } = null!;
+    public static ExternalSprite ChannelBottomCardArt { get; private set; } = null!;
+    public static ExternalSprite GammaRayCardArt { get; private set; } = null!;
+    public static ExternalSprite CircuitCardArt { get; private set; } = null!;
+    public static ExternalSprite EnergyBoltCardArt { get; private set; } = null!;
+    public static ExternalSprite RummageCardArt { get; private set; } = null!;
+    public static ExternalSprite PowerNapBottomCardArt { get; private set; } = null!;
+    public static ExternalSprite PowerNapTopCardArt { get; private set; } = null!;
+    public static ExternalSprite BorrowBottomCardArt { get; private set; } = null!;
+    public static ExternalSprite BorrowTopCardArt { get; private set; } = null!;
+    public static ExternalSprite ExeCardArt { get; private set; } = null!;
+    public static ExternalSprite GarageSaleCardArt { get; private set; } = null!;
+    public static ExternalSprite InnovationCardArt { get; private set; } = null!;
+    public static ExternalSprite JumpstartCardArt { get; private set; } = null!;
+    public static ExternalSprite RefundShotCardArt { get; private set; } = null!;
+    public static ExternalSprite RenewableResourceCardArt { get; private set; } = null!;
 
-    public static ExternalSprite? FrazzledWiresSprite { get; private set; } = null!;
-    public static ExternalSprite? SunLampOnSprite { get; private set; } = null!;
-    public static ExternalSprite? SunLampOffSprite { get; private set; } = null!;
-    public static ExternalSprite? SunLampUnchargedSprite { get; private set; } = null!;
-    public static ExternalSprite? ElectromagneticCoilSprite { get; private set; } = null!;
-    public static ExternalSprite? SolarPanelsOnSprite { get; private set; } = null!;
-    public static ExternalSprite? SolarPanelsOffSprite { get; private set; } = null!;
-    public static ExternalSprite? DeconstructionGogglesSprite { get; private set; } = null!;
-    public static ExternalSprite? FissionChamberSprite { get; private set; } = null!;
+    public static ExternalSprite FrazzledWiresSprite { get; private set; } = null!;
+    public static ExternalSprite SunLampOnSprite { get; private set; } = null!;
+    public static ExternalSprite SunLampOffSprite { get; private set; } = null!;
+    public static ExternalSprite SunLampUnchargedSprite { get; private set; } = null!;
+    public static ExternalSprite ElectromagneticCoilSprite { get; private set; } = null!;
+    public static ExternalSprite SolarPanelsOnSprite { get; private set; } = null!;
+    public static ExternalSprite SolarPanelsOffSprite { get; private set; } = null!;
+    public static ExternalSprite DeconstructionGogglesSprite { get; private set; } = null!;
+    public static ExternalSprite FissionChamberSprite { get; private set; } = null!;
 
 
-    public static ExternalSprite? PerfectInsulationSprite { get; private set; }
+    public static ExternalSprite? PerfectInsulationOnSprite { get; private set; }
+    public static ExternalSprite? PerfectInsulationOffSprite { get; private set; }
     public static ExternalSprite? UltraLightBatteriesSprite { get; private set; }
     public static ExternalSprite? OverdriveFeedbackSprite { get; private set; }
     public static ExternalSprite? ThunderstrikeSprite { get; private set; }
@@ -105,12 +115,10 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalCharacter EddieCharacter { get; private set; } = null!;
     public static ExternalDeck EddieDeck { get; private set; } = null!;
     public static ExternalAnimation EddieDefaultAnimation { get; private set; } = null!;
-    public static ExternalSprite EddiePortrait { get; private set; } = null!;
-    public static ExternalSprite EddieMini { get; private set; } = null!;
     public static ExternalAnimation EddieMiniAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieGameoverAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieSquintAnimation { get; private set; } = null!;
-    public static ExternalAnimation EddieFurtiveAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieOnEdgeAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieExplainsAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieAnnoyedAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieWorriedAnimation { get; private set; } = null!;
@@ -118,32 +126,33 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalAnimation EddieExcitedAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieRestingAnimation { get; private set; } = null!;
     
-    public static ExternalCard? ChannelCard { get; private set; } = null!;
-    public static ExternalCard? PowerNapCard { get; private set; } = null!;
-    public static ExternalCard? ReverseEngineerCard { get; private set; } = null!;
-    public static ExternalCard? PowerCellCard { get; private set; } = null!;
-    public static ExternalCard? RefundShotCard { get; private set; } = null!;
-    public static ExternalCard? SolarSailingCard { get; private set; } = null!;
-    public static ExternalCard? EnergyBoltCard { get; private set; } = null!;
-    public static ExternalCard? PowerSinkCard { get; private set; } = null!;
-    public static ExternalCard? RummageCard { get; private set; } = null!;
-    public static ExternalCard? BorrowCard { get; private set; } = null!;
-    public static ExternalCard? InterferenceCard { get; private set; } = null!;
-    public static ExternalCard? ChargeCannonsCard { get; private set; } = null!;
-    public static ExternalCard? ChargeShieldsCard { get; private set; } = null!;
-    public static ExternalCard? ChargeThrustersCard { get; private set; } = null!;
-    public static ExternalCard? GarageSaleCard { get; private set; } = null!;
-    public static ExternalCard? ShortTermSolutionCard { get; private set; } = null!;
-    public static ExternalCard? AmplifyCard { get; private set; } = null!;
+    public static ExternalCard ChannelCard { get; private set; } = null!;
+    public static ExternalCard PowerNapCard { get; private set; } = null!;
+    public static ExternalCard ReverseEngineerCard { get; private set; } = null!;
+    public static ExternalCard PowerCellCard { get; private set; } = null!;
+    public static ExternalCard RefundShotCard { get; private set; } = null!;
+    public static ExternalCard SolarSailingCard { get; private set; } = null!;
+    public static ExternalCard EnergyBoltCard { get; private set; } = null!;
+    public static ExternalCard PowerSinkCard { get; private set; } = null!;
+    public static ExternalCard RummageCard { get; private set; } = null!;
+    public static ExternalCard BorrowCard { get; private set; } = null!;
+    public static ExternalCard InterferenceCard { get; private set; } = null!;
+    public static ExternalCard ChargeCannonsCard { get; private set; } = null!;
+    public static ExternalCard ChargeShieldsCard { get; private set; } = null!;
+    public static ExternalCard ChargeThrustersCard { get; private set; } = null!;
+    public static ExternalCard GarageSaleCard { get; private set; } = null!;
+    public static ExternalCard ShortTermSolutionCard { get; private set; } = null!;
+    public static ExternalCard AmplifyCard { get; private set; } = null!;
     // public static ExternalCard? OrganizeCard { get; private set; } = null!;
-    public static ExternalCard? InnovationCard { get; private set; } = null!;
-    public static ExternalCard? CircuitCard { get; private set; } = null!;
-    public static ExternalCard? RenewableResourceCard { get; private set; } = null!;
-    public static ExternalCard? GammaRayCard { get; private set; } = null!;
-    public static ExternalCard? JumpstartCard { get; private set; } = null!;
+    public static ExternalCard InnovationCard { get; private set; } = null!;
+    public static ExternalCard CircuitCard { get; private set; } = null!;
+    public static ExternalCard RenewableResourceCard { get; private set; } = null!;
+    public static ExternalCard GammaRayCard { get; private set; } = null!;
+    public static ExternalCard ExeCard { get; private set; } = null!;
+    public static ExternalCard JumpstartCard { get; private set; } = null!;
 
     public static ExternalCard? LightweightCard { get; private set; }
-    public static ExternalCard? SurgeCard { get; private set; } = null!;
+    public static ExternalCard SurgeCard { get; private set; } = null!;
     
 
     public DirectoryInfo? ModRootFolder { get; set; }
@@ -172,7 +181,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         talkSprites.Add(fileSuffix, sprites);
     }
     
-    private ExternalAnimation RegisterAnimation(IAnimationRegistry registry, ExternalDeck deck, string tag, string fileSuffix)
+    private ExternalAnimation RegisterAnimation(IAnimationRegistry registry, string tag, string fileSuffix)
     {
         var animation = new ExternalAnimation("Eddie.Animation.Eddie" + fileSuffix,
             EddieDeck!, tag, false, talkSprites[fileSuffix]);
@@ -201,8 +210,6 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         PowerCellSprite = RegisterSprite(registry, "PowerCell", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("power_cell.png")));
 
         // Character sprites
-        EddiePortrait = RegisterSprite(registry, "EddiePortrait", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("EddieNeutral.png")));
-        EddieMini = RegisterSprite(registry, "EddieMini", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("EddieMini.png")));
         EddiePanelFrame = RegisterSprite(registry, "EddiePanelFrame", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("EddieFrame.png")));
 
         // Deck sprites
@@ -210,6 +217,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
         // Icons
         LoseEnergyEveryTurnIcon = RegisterSprite(registry, "LoseEnergyEveryTurnIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("energy_less_every_turn.png")));
+        GainEnergyEveryTurnIcon = RegisterSprite(registry, "GainEnergyEveryTurnIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("energy_more_every_turn.png")));
         CircuitIcon = RegisterSprite(registry, "CircuitIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("circuit.png")));
         ClosedCircuitIcon = RegisterSprite(registry, "ClosedCircuitIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("closed_circuit.png")));
         ShortCircuitIcon = RegisterSprite(registry, "ShortCircuitIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("short_circuit.png")));
@@ -234,21 +242,39 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         EnergyBoltCardArt = RegisterSprite(registry, "EnergyBoltCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("energy_bolt.png")));
         PowerNapTopCardArt = RegisterSprite(registry, "PowerNapTopCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("power_nap_top.png")));
         PowerNapBottomCardArt = RegisterSprite(registry, "PowerNapBottomCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("power_nap_bottom.png")));
+        BorrowTopCardArt = RegisterSprite(registry, "BorrowTopCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("borrow_top.png")));
+        BorrowBottomCardArt = RegisterSprite(registry, "BorrowBottomCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("borrow_bottom.png")));
+        ExeCardArt = RegisterSprite(registry, "ExeCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("exe.png")));
+        InnovationCardArt = RegisterSprite(registry, "InnovationCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("innovation.png")));
+        GarageSaleCardArt = RegisterSprite(registry, "GarageSaleCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("garage_sale.png")));
+        JumpstartCardArt = RegisterSprite(registry, "JumpstartCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("jumpstart.png")));
+        RefundShotCardArt = RegisterSprite(registry, "RefundShotCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("refund_shot.png")));
+        RenewableResourceCardArt = RegisterSprite(registry, "RenewableResourceCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("renewable_resource.png")));
 
         // Duos
 
         if (DuoArtifactsApi != null) RegisterDuoSprites(registry);
 
-
+        
         RegisterTalkSprites(registry, "Neutral");
         RegisterTalkSprites(registry, "Mini");
+        RegisterTalkSprites(registry, "Gameover");
+        RegisterTalkSprites(registry, "Disappointed");
+        RegisterTalkSprites(registry, "OnEdge");
+        RegisterTalkSprites(registry, "Excited");
+        RegisterTalkSprites(registry, "Resting");
+        RegisterTalkSprites(registry, "Annoyed");
+        RegisterTalkSprites(registry, "Explains");
+        RegisterTalkSprites(registry, "Squint");
+        RegisterTalkSprites(registry, "Worried");
     }
 
     void RegisterDuoSprites(ISpriteRegistry registry) {
         if (ModRootFolder == null)
             throw new Exception("Root Folder not set");
 
-        PerfectInsulationSprite = RegisterSprite(registry, "PerfectInsulation", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("perfect_insulation.png")));
+        PerfectInsulationOnSprite = RegisterSprite(registry, "PerfectInsulationOn", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("perfect_insulation_on.png")));
+        PerfectInsulationOffSprite = RegisterSprite(registry, "PerfectInsulationOff", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("perfect_insulation_off.png")));
         UltraLightBatteriesSprite = RegisterSprite(registry, "UltraLightBatteries", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("ultralight_batteries.png")));
         OverdriveFeedbackSprite = RegisterSprite(registry, "OverdriveFeedback", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("overdrive_feedback.png")));
         ThunderstrikeSprite = RegisterSprite(registry, "Thunderstrike", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("thunderstrike.png")));
@@ -259,7 +285,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         WaxWingsSprite = RegisterSprite(registry, "WaxWings", Path.Combine(ModRootFolder.FullName, "Sprites", "artifact_icons", "duos", Path.GetFileName("wax_wings.png")));
     }
 
-    public static System.Drawing.Color Eddie_PrimaryColor = System.Drawing.Color.FromArgb(230, 225, 100);
+    public static readonly System.Drawing.Color Eddie_PrimaryColor = System.Drawing.Color.FromArgb(230, 225, 100);
 
     public void LoadManifest(IDeckRegistry registry)
     {
@@ -273,6 +299,13 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             borderSprite,
             null);
         registry.RegisterDeck(EddieDeck);
+
+        MoreDifficultiesApi?.RegisterAltStarters((Deck) EddieDeck.Id!, new StarterDeck {
+            cards = {
+                new Interference(),
+                new PowerCell()
+            }
+        });
     }
 
     void IGlossaryManifest.LoadManifest(IGlossaryRegisty registry)
@@ -312,7 +345,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         // LeftmostCardGlossary.AddLocalisation("en", "Leftmost Card", "This affects the leftmost card in your hand.", null);
         // registry.RegisterGlossary(LeftmostCardGlossary);
 
-        TemporaryHurtGlossary = new ExternalGlossary("Eddie.Glossary.TemporaryHurtGlossary", "EddieTemporaryHurtAction", false, ExternalGlossary.GlossayType.action, TemporaryHurtIcon ?? throw new Exception("Missing Temporary Hurt Icon"));
+        TemporaryHurtGlossary = new ExternalGlossary("Eddie.Glossary.TemporaryHurtGlossary", "EddieTemporaryHurtAction", false, ExternalGlossary.GlossayType.action, TemporaryHurtIcon);
         TemporaryHurtGlossary.AddLocalisation("en", "Temporary Hull Loss", "Lose {0} hull. Regain that hull at the start of next turn or at the end of combat.", null);
         registry.RegisterGlossary(TemporaryHurtGlossary);
 
@@ -337,21 +370,20 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         registry.RegisterGlossary(MoveEnemyRightGlossary);
     }
 
-    private ExternalCard RegisterCard(ICardRegistry registry, Type type, ExternalSprite? art, string? name = null, ExternalDeck? deck = null)
+    private static ExternalCard RegisterCard(ICardRegistry registry, Type type, ExternalSprite? art, string? name = null, ExternalDeck? deck = null)
     {
-        if (deck == null)
-            deck = EddieDeck ?? throw new Exception("No default deck available");
+        deck ??= EddieDeck ?? throw new Exception("No default deck available");
         if (art == null)
             throw new Exception("Card art for " + name + " not found");
         var card = new ExternalCard("Eddie.Cards." + type.Name, type, art, deck);
-        card.AddLocalisation((name == null) ? type.Name : name);
+        card.AddLocalisation(name ?? type.Name);
         registry.RegisterCard(card);
         return card!;
     }
 
     void ICardManifest.LoadManifest(ICardRegistry registry)
     {
-        ExternalSprite cardArtDefault = ExternalSprite.GetRaw((int)Enum.Parse<Spr>("cards_colorless"));
+        ExternalSprite cardArtDefault = ExternalSprite.GetRaw((int)StableSpr.cards_colorless);
 
         ChannelCard = RegisterCard(registry, typeof(Channel), ChannelCardArt, "Channel");
 
@@ -361,11 +393,11 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
         PowerCellCard = RegisterCard(registry, typeof(PowerCell), cardArtDefault, "Power Cell");
 
-        RefundShotCard = RegisterCard(registry, typeof(RefundShot), cardArtDefault, "Refund Shot");
+        RefundShotCard = RegisterCard(registry, typeof(RefundShot), RefundShotCardArt, "Refund Shot");
 
         SolarSailingCard = RegisterCard(registry, typeof(SolarSailing), cardArtDefault, "Solar Sailing");
 
-        EnergyBoltCard = RegisterCard(registry, typeof(EnergyBolt), EnergyBoltCardArt, "Energy Bolt");
+        EnergyBoltCard = RegisterCard(registry, typeof(EnergyBolt), cardArtDefault, "Energy Bolt");
 
         PowerSinkCard = RegisterCard(registry, typeof(PowerSink), cardArtDefault, "Power Sink");
 
@@ -381,7 +413,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
         ChargeThrustersCard = RegisterCard(registry, typeof(ChargeThrusters), cardArtDefault, "Charge Thrusters");
 
-        GarageSaleCard = RegisterCard(registry, typeof(GarageSale), cardArtDefault, "Garage Sale");
+        GarageSaleCard = RegisterCard(registry, typeof(GarageSale), GarageSaleCardArt, "Garage Sale");
 
         ShortTermSolutionCard = RegisterCard(registry, typeof(ShortTermSolution), cardArtDefault, "Short-Term Solution");
 
@@ -391,32 +423,33 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         // registry.RegisterCard(OrganizeCard);
         // OrganizeCard.AddLocalisation("Organize");
 
-        InnovationCard = RegisterCard(registry, typeof(Innovation), cardArtDefault, "Innovation");
+        InnovationCard = RegisterCard(registry, typeof(Innovation), InnovationCardArt, "Innovation");
 
         CircuitCard = RegisterCard(registry, typeof(Circuit), CircuitCardArt, "Circuit");
 
-        JumpstartCard = RegisterCard(registry, typeof(Jumpstart), cardArtDefault, "Jump-Start");
+        JumpstartCard = RegisterCard(registry, typeof(Jumpstart), JumpstartCardArt, "Jump-Start");
 
-        RenewableResourceCard = RegisterCard(registry, typeof(RenewableResource), cardArtDefault, "Renewable Resource");
+        RenewableResourceCard = RegisterCard(registry, typeof(RenewableResource), RenewableResourceCardArt, "Renewable Resource");
 
         GammaRayCard = RegisterCard(registry, typeof(GammaRay), GammaRayCardArt, "Gamma Ray");
 
+        ExeCard = RegisterCard(registry, typeof(EddieExe), ExeCardArt, "Eddie.EXE", ExternalDeck.GetRaw((int)Enum.Parse<Deck>("colorless")));
 
         SurgeCard = RegisterCard(registry, typeof(Surge), cardArtDefault, "Surge");
 
         if (DuoArtifactsApi != null)
-            LightweightCard = RegisterCard(registry, typeof(Lightweight), ExternalSprite.GetRaw((int)Enum.Parse<Spr>("cards_Fleetfoot")), "Lightweight", DuoArtifactsApi.DuoArtifactDeck);
+            LightweightCard = RegisterCard(registry, typeof(Lightweight), ExternalSprite.GetRaw((int)StableSpr.cards_Fleetfoot), "Lightweight", DuoArtifactsApi.DuoArtifactDeck);
     }
 
     void ICharacterManifest.LoadManifest(ICharacterRegistry registry)
     {
         EddieCharacter = new ExternalCharacter("Eddie.Character.Eddie",
-            EddieDeck ?? throw new Exception("Missing Deck"),
-            EddiePanelFrame ?? throw new Exception("Missing Potrait"),
+            EddieDeck,
+            EddiePanelFrame,
             new Type[] { typeof(Channel), typeof(PowerNap) },
-            new Type[0],
-            EddieDefaultAnimation ?? throw new Exception("missing default animation"),
-            EddieMiniAnimation ?? throw new Exception("missing mini animation"));
+			Array.Empty<Type>(),
+            EddieDefaultAnimation,
+            EddieMiniAnimation);
 
         EddieCharacter.AddNameLocalisation("Eddie");
 
@@ -427,19 +460,18 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     void IAnimationManifest.LoadManifest(IAnimationRegistry registry)
     {
-        EddieDefaultAnimation = RegisterAnimation(registry, EddieDeck, "neutral", "Neutral");
-        EddieMiniAnimation = RegisterAnimation(registry, EddieDeck, "mini", "Mini");
+        EddieDefaultAnimation = RegisterAnimation(registry, "neutral", "Neutral");
+        EddieMiniAnimation = RegisterAnimation(registry, "mini", "Mini");
 
-        EddieGameoverAnimation = new ExternalAnimation("Eddie.Animation.GameOver", EddieDeck, "gameover", false, new ExternalSprite[] { EddiePortrait! });
-        EddieSquintAnimation = new ExternalAnimation("Eddie.Animation.Squint", EddieDeck, "squint", false, new ExternalSprite[] { EddiePortrait! });
-        EddieExplainsAnimation = new ExternalAnimation("Eddie.Animation.Explains", EddieDeck, "explains", false, new ExternalSprite[] { EddiePortrait! });
-        EddieDisappointedAnimation = new ExternalAnimation("Eddie.Animation.Disappointed", EddieDeck, "disappointed", false, new ExternalSprite[] { EddiePortrait! });
-        EddieExcitedAnimation = new ExternalAnimation("Eddie.Animation.Excited", EddieDeck, "excited", false, new ExternalSprite[] { EddiePortrait! });
-        EddieRestingAnimation = new ExternalAnimation("Eddie.Animation.Resting", EddieDeck, "resting", false, new ExternalSprite[] { EddiePortrait! });
-        EddieFurtiveAnimation = new ExternalAnimation("Eddie.Animation.Furtive", EddieDeck, "furtive", false, new ExternalSprite[] { EddiePortrait! });
-        EddieAnnoyedAnimation = new ExternalAnimation("Eddie.Animation.Annoyed", EddieDeck, "annoyed", false, new ExternalSprite[] { EddiePortrait! });
-        EddieWorriedAnimation = new ExternalAnimation("Eddie.Animation.Worried", EddieDeck, "worried", false, new ExternalSprite[] { EddiePortrait! });
-        registry.RegisterAnimation(EddieGameoverAnimation);
+        EddieGameoverAnimation = RegisterAnimation(registry, "gameover", "Gameover");
+        EddieSquintAnimation = RegisterAnimation(registry, "squint", "Squint");
+        EddieExplainsAnimation = RegisterAnimation(registry, "explains", "Explains");
+        EddieDisappointedAnimation = RegisterAnimation(registry, "disappointed", "Disappointed");
+        EddieExcitedAnimation = RegisterAnimation(registry, "excited", "Excited");
+        EddieRestingAnimation = RegisterAnimation(registry, "resting", "Resting");
+        EddieOnEdgeAnimation = RegisterAnimation(registry, "onedge", "OnEdge");
+        EddieAnnoyedAnimation = RegisterAnimation(registry, "annoyed", "Annoyed");
+        EddieWorriedAnimation = RegisterAnimation(registry, "worried", "Worried");
     }
 
     public void BootMod(IModLoaderContact contact) {
@@ -455,7 +487,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         KokoroApi.RegisterTypeForExtensionData(typeof(StoryNode));
         DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
         SogginsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.Soggins") ? contact.GetApi<ISogginsApi>("Shockah.Soggins") : null;
-        
+        MoreDifficultiesApi = contact.LoadedManifests.Any(m => m.Name == "TheJazMaster.MoreDifficulties") ? contact.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties") : null;
+
         Harmony harmony = new("TheJazMaster.Eddie");
         
         harmony.TryPatch(
@@ -552,6 +585,11 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         );
         harmony.TryPatch(
             logger: Logger!,
+            original: typeof(StoryVars).GetMethod("ResetAfterCombatLine"),
+            postfix: new HarmonyMethod(typeof(StoryVarsAdditions).GetMethod("StoryVars_ResetAfterCombatLine_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
+        );
+        harmony.TryPatch(
+            logger: Logger!,
             original: typeof(StoryNode).GetMethod("Filter"),
             postfix: new HarmonyMethod(typeof(StoryVarsAdditions).GetMethod("StoryNode_Filter_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
         );
@@ -561,6 +599,12 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 			original: typeof(MG).GetMethod("DrawLoadingScreen", AccessTools.all),
 			prefix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Prefix)),
 			postfix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Postfix))
+		);
+
+        harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: typeof(State).GetNestedTypes(AccessTools.all).SelectMany(t => t.GetMethods(AccessTools.all)).First(m => m.Name.StartsWith("<PopulateRun>") && m.ReturnType == typeof(Route)),
+			transpiler: new HarmonyMethod(typeof(Manifest), nameof(State_PopulateRun_Delegate_Transpiler))
 		);
     }
 
@@ -621,13 +665,13 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             var list_local_load_opcode = iter.Current.opcode;
             var list_local_operand = iter.Current.operand;
 
-            List<CodeInstruction> candidates = new List<CodeInstruction>();
+            List<CodeInstruction> candidates = new();
             while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
                 candidates.Add(iter.Current);
                 yield return iter.Current;
             }
 
-            if (!(iter.Current.labels is List<Label> && (iter.Current.labels as List<Label>).Contains(latestLabel)))
+            if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
                 break;
             
 
@@ -748,13 +792,13 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
                 continue;
             }
 
-            List<CodeInstruction> candidates = new List<CodeInstruction>();
+            List<CodeInstruction> candidates = new();
             while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
                 candidates.Add(iter.Current);
                 yield return iter.Current;
             }
 
-            if (!(iter.Current.labels is List<Label> && (iter.Current.labels as List<Label>).Contains(latestLabel)))
+            if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
                 break;
 
 
@@ -803,15 +847,54 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     }
 
     private static int GetShortCircuitIcon() {
-        return (int)(ShortCircuitIcon?.Id ?? throw new Exception("bruh"));
+        return ShortCircuitIcon?.Id ?? throw new Exception("bruh");
     }
 
     private static int GetCheapIcon() {
-        return (int)(CheapIcon?.Id ?? throw new Exception("bruh"));
+        return CheapIcon?.Id ?? throw new Exception("bruh");
     }
 
     private static void DB_SetLocale_Postfix() {
         DB.currentLocale.strings["showcards.addedShortCircuit"] = "Set cost to 0, added <c=cardtrait>short-circuit</c>!";
     }
 
+    private static IEnumerable<CodeInstruction> State_PopulateRun_Delegate_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("chars"),
+					ILMatches.LdcI4((int)Deck.shard),
+					ILMatches.Call("Contains"),
+					ILMatches.Brtrue,
+					ILMatches.Ldloc<List<Card>>(originalMethod).CreateLdlocInstruction(out var ldlocCards),
+					ILMatches.Instruction(OpCodes.Newobj),
+					ILMatches.Call("Add")
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.DeclaringType, "chars")),
+					ldlocCards,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(Manifest), nameof(State_PopulateRun_Delegate_Transpiler_ModifyPotentialExeCards)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+    private static void State_PopulateRun_Delegate_Transpiler_ModifyPotentialExeCards(IEnumerable<Deck> chars, List<Card> cards)
+	{
+		if (chars.Contains((Deck)EddieDeck.Id!.Value))
+			return;
+		cards.Add(new EddieExe());
+	}
 }

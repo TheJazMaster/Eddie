@@ -11,40 +11,27 @@ public class Amplify : Card
 	{
 		return new CardData
 		{
-			cost = upgrade == Upgrade.B ? 3 : 2,
-			exhaust = true
+			cost = upgrade == Upgrade.A ? 2 : 3,
+			exhaust = upgrade != Upgrade.B,
+			art = StableSpr.cards_Overclock
 		};
 	}
 
-	public override List<CardAction> GetActions(State s, Combat c)
+	public override List<CardAction> GetActions(State s, Combat c) => new()
 	{
-		Status lose_energy_status = (Status)(Manifest.LoseEnergyEveryTurnStatus?.Id ?? throw new Exception("Missing Lose Energy Status"));
-		List<CardAction> result = new List<CardAction>
+		new AStatus
 		{
-			new AStatus
-			{
-				targetPlayer = true,
-				status = Status.powerdrive,
-				statusAmount = upgrade == Upgrade.B ? 2: 1
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = lose_energy_status,
-				statusAmount = upgrade == Upgrade.B ? 2: 1
-			}
-		};
-
-		if (upgrade == Upgrade.A)
-			result.Add(new AStatus
-			{
-				targetPlayer = true,
-				status = Status.energyNextTurn,
-				statusAmount = 1
-			});
-
-		return result;
-	}
+			targetPlayer = true,
+			status = (Status)Manifest.GainEnergyEveryTurnStatus.Id!,
+			statusAmount = 1
+		},
+		new AStatus
+		{
+			targetPlayer = true,
+			status = Status.energyLessNextTurn,
+			statusAmount = 3
+		}
+	};
 }
 
 
@@ -59,7 +46,9 @@ public class Borrow : Card
 		return new CardData
 		{
 			cost = 0,
-			floppable = upgrade == Upgrade.B
+			floppable = upgrade == Upgrade.B,
+			art = upgrade == Upgrade.B ? (flipped ? (Spr)Manifest.BorrowBottomCardArt.Id! : (Spr)Manifest.BorrowTopCardArt.Id!) : StableSpr.cards_ExtraBattery,
+			artTint = upgrade == Upgrade.B ? "ffffff" : null
 		};
 	}
 
@@ -158,7 +147,7 @@ public class Channel : Card
 	{
 		Spr? art = null;
 		if (upgrade != Upgrade.None)
-			art = (flipped ? (Spr)Manifest.ChannelBottomCardArt!.Id! : (Spr)Manifest.ChannelTopCardArt!.Id!);
+			art = flipped ? (Spr)Manifest.ChannelBottomCardArt!.Id! : (Spr)Manifest.ChannelTopCardArt!.Id!;
 		return new CardData()
 		{
 			cost = 1,
@@ -239,15 +228,16 @@ public class ChargeCannons : Card
 	public override CardData GetData(State state)
 	{
 		string description = upgrade switch {
-			Upgrade.A => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge A</c>s to your draw pile, lose all <c=energy>ENERGY</c>.",
-			Upgrade.B => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge B</c>s to your draw pile, lose all <c=energy>ENERGY</c>.",
-			_ => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge</c>s to your draw pile, lose all <c=energy>ENERGY</c>.",
+			Upgrade.A => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge As</c> to your draw pile, lose all <c=energy>ENERGY</c>.",
+			Upgrade.B => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge Bs</c> to your draw pile, lose all <c=energy>ENERGY</c>.",
+			_ => "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surges</c> to your draw pile, lose all <c=energy>ENERGY</c>.",
 		};
 		return new CardData
 		{
 			cost = 0,
 			exhaust = true,
-			description = description
+			description = description,
+			art = StableSpr.cards_EndlessMagazine
 		};
 	}
 
@@ -302,7 +292,8 @@ public class ChargeShields : Card
 		return new CardData
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
-			exhaust = true
+			exhaust = true,
+			art = StableSpr.cards_BoostCapacitors
 		};
 	}
 
@@ -351,7 +342,8 @@ public class ChargeThrusters : Card
 		return new CardData
 		{
 			cost = 1,
-			exhaust = true
+			exhaust = true,
+			art = StableSpr.cards_CombustionEngine
 		};
 	}
 
@@ -412,7 +404,7 @@ public class Circuit : Card
 				Upgrade.B => 4,
 				_ => 3
 			},
-			exhaust = true
+			exhaust = true,
 		};
 	}
 
@@ -442,7 +434,8 @@ public class EnergyBolt : Card
 	{
 		return new CardData()
 		{
-			cost = 1
+			cost = 1,
+			art = StableSpr.cards_BlockerBurnout
 		};
 	}
 
@@ -536,12 +529,13 @@ public class GarageSale : Card
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> result = new List<CardAction>();
-		
-		result.Add(new ADiscountHand
+		List<CardAction> result = new()
 		{
-			discountAmount = -1
-		});
+			new ADiscountHand
+			{
+				discountAmount = -1
+			}
+		};
 
 		if (upgrade != Upgrade.B)
 		{
@@ -564,7 +558,7 @@ public class Innovation : Card
 		string description = upgrade switch {
 			Upgrade.None => "Leftmost non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn.",
 			Upgrade.A => "Leftmost non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn.",
-			Upgrade.B => "Non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn, discard it",
+			Upgrade.B => "Non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn. Discard it",
 			_ => ""
 		};
 		return new CardData
@@ -614,7 +608,8 @@ public class Interference : Card
 			cost = upgrade == Upgrade.B ? 0 : 1,
 			infinite = upgrade != Upgrade.B,
 			recycle = upgrade == Upgrade.B,
-			flippable = upgrade == Upgrade.A
+			flippable = upgrade == Upgrade.A,
+			art = flipped ? StableSpr.cards_ScootLeft : StableSpr.cards_ScootRight
 		};
 	}
 
@@ -627,7 +622,8 @@ public class Interference : Card
 					new AMoveImproved
 					{
 						dir = 1,
-						targetPlayer = false
+						targetPlayer = false,
+						ignoreHermes = true
 					}
 				};
 			case Upgrade.B:
@@ -635,7 +631,8 @@ public class Interference : Card
 					new AMoveImproved
 					{
 						dir = 2,
-						targetPlayer = false
+						targetPlayer = false,
+						ignoreHermes = true
 					},
 					new AStatus
 					{
@@ -715,7 +712,8 @@ public class PowerCell : CheapCard
 		base.GetData(state);
 		return new CardData()
 		{
-			cost = upgrade == Upgrade.B ? 2 : 1
+			cost = upgrade == Upgrade.B ? 2 : 1,
+			art = StableSpr.cards_GoatDrone
 		};
 	}
 
@@ -798,7 +796,7 @@ public class PowerNap : CheapCard
 			cost = 1,
 			exhaust = upgrade == Upgrade.B,
 			floppable = true,
-			art = flipped ? (Spr)Manifest.PowerNapBottomCardArt!.Id! : (Spr)Manifest.PowerNapTopCardArt!.Id!,
+			art = flipped ? (Spr)Manifest.PowerNapBottomCardArt.Id! : (Spr)Manifest.PowerNapTopCardArt.Id!,
 			artTint = "ffffff"
 		};
 	}
@@ -847,29 +845,31 @@ public class PowerSink : Card
 		return new CardData()
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
-			exhaust = upgrade == Upgrade.B
+			exhaust = upgrade == Upgrade.B,
+			art = StableSpr.cards_MultiBlast
 		};
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> result = new List<CardAction>();
+		List<CardAction> result = new();
 
 		int currentCost = this.GetCurrentCostNoRecursion(s);
-		AVariableHintEnergy hint = new AVariableHintEnergy
+		AVariableHintEnergy hint = new()
 		{
 			setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
 		};
 		result.Add(hint);
 
-		int multiplier = (upgrade == Upgrade.B ? 3 : 2);
+		int multiplier = upgrade == Upgrade.B ? 3 : 2;
 		result.Add(new AAttackAdjusted {
 			damage = GetDmg(s, multiplier * Manifest.GetEnergyAmount(s, c, this)),
 			damageDisplayAdjustment = -currentCost * multiplier,
 			xHint = multiplier
 		});
 		
-		AEnergySet energy = new AEnergySet {
+		AEnergySet energy = new()
+		{
 			setTo = 0
 		};
 
@@ -905,11 +905,9 @@ public class RefundShot : CheapCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		switch (upgrade)
+		return upgrade switch
 		{
-			case Upgrade.None:
-			case Upgrade.A:
-				return new List<CardAction> {
+			Upgrade.None or Upgrade.A => new List<CardAction> {
 					new AAttack {
 						damage = GetDmg(s, 1),
 						disabled = flipped
@@ -920,9 +918,8 @@ public class RefundShot : CheapCard
 					new AEnergy {
 						changeAmount = 1
 					}
-				};
-			case Upgrade.B:
-				return new List<CardAction> {
+				},
+			Upgrade.B => new List<CardAction> {
 					new AAttack {
 						damage = GetDmg(s, 2),
 						disabled = flipped
@@ -933,10 +930,9 @@ public class RefundShot : CheapCard
 					new AEnergy {
 						changeAmount = 3
 					}
-				};
-			default:
-				return new List<CardAction>();
-		}
+				},
+			_ => new List<CardAction>(),
+		};
 	}
 }
 
@@ -1005,7 +1001,8 @@ public class ReverseEngineer : Card
 			retain = true,//upgrade == Upgrade.A,
 			cost = 0,//upgrade == Upgrade.B ? 1 : 0,
 			exhaust = true,
-			temporary = true
+			temporary = true,
+			art = StableSpr.cards_CorruptedCore
 		};
 	}
 
@@ -1102,31 +1099,30 @@ public class Rummage : Card
 		return new CardData
 		{
 			cost = 1,
-			infinite = true
+			infinite = true,
+			art = StableSpr.cards_QuickThinking
 		};
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		switch (upgrade) {
-			case Upgrade.None:
-				return new List<CardAction>
+		return upgrade switch
+		{
+			Upgrade.None => new List<CardAction>
 				{
 					new ADrawCard
 					{
 						count = 2
 					}
-				};
-			case Upgrade.A:
-				return new List<CardAction>
+				},
+			Upgrade.A => new List<CardAction>
 				{
 					new ADrawCard
 					{
 						count = 3
 					}
-				};
-			case Upgrade.B:
-				return new List<CardAction>
+				},
+			Upgrade.B => new List<CardAction>
 				{
 					new ADrawCard
 					{
@@ -1136,11 +1132,9 @@ public class Rummage : Card
 					{
 						count = 2
 					}
-				};
-			default:
-				return new List<CardAction>();
-		}
-		
+				},
+			_ => new List<CardAction>(),
+		};
 	}
 }
 
@@ -1162,22 +1156,21 @@ public class ShortTermSolution : CheapCard
 		base.GetData(state);
 		return new CardData
 		{
-			cost = upgrade == Upgrade.B ? 3 : 2
+			cost = upgrade == Upgrade.B ? 3 : 2,
+			art = StableSpr.cards_DrakeCannon
 		};
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		switch (upgrade)
+		return upgrade switch
 		{
-			case Upgrade.None:
-				return new List<CardAction> {
+			Upgrade.None => new List<CardAction> {
 					new AAttack {
 						damage = GetDmg(s, 3)
 					},
-				};
-			case Upgrade.A:
-				return new List<CardAction> {
+				},
+			Upgrade.A => new List<CardAction> {
 					new AAttack {
 						damage = GetDmg(s, 3)
 					},
@@ -1186,16 +1179,14 @@ public class ShortTermSolution : CheapCard
 						statusAmount = 1,
 						targetPlayer = true
 					},
-				};
-			case Upgrade.B:
-				return new List<CardAction> {
+				},
+			Upgrade.B => new List<CardAction> {
 					new AAttack {
 						damage = GetDmg(s, 6)
 					}
-				};
-			default:
-				return new List<CardAction>();
-		}
+				},
+			_ => new List<CardAction>(),
+		};
 	}
 }
 
@@ -1213,7 +1204,8 @@ public class SolarSailing : Card
         {
             cost = 0,
             flippable = upgrade == Upgrade.B,
-            retain = upgrade == Upgrade.A
+            retain = upgrade == Upgrade.A,
+			art = StableSpr.cards_SolarBreeze
         };
     }
 
@@ -1240,8 +1232,6 @@ public class SolarSailing : Card
 [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B }, dontOffer = true)]
 public class Surge : Card
 {
-    private static readonly Lazy<Spr> art = new(() => Enum.Parse<Spr>("cards_Overdrive"));
-
     public override string Name() => "Surge";
 
     public override CardData GetData(State state)
@@ -1251,53 +1241,101 @@ public class Surge : Card
             cost = 1,
             exhaust = true,
             temporary = true,
-            art = art.Value
+            art = StableSpr.cards_Overdrive
         };
     }
 
     public override List<CardAction> GetActions(State s, Combat c)
     {
-        switch (upgrade)
+		return upgrade switch
+		{
+			Upgrade.None => new List<CardAction>
+				{
+					new AAttack {
+						damage = GetDmg(s, 2)
+					},
+					new AStatus {
+						status = Status.overdrive,
+						statusAmount = 1,
+						targetPlayer = true
+					}
+				},
+			Upgrade.A => new List<CardAction>
+				{
+					new AAttack {
+						damage = GetDmg(s, 3)
+					},
+					new AStatus {
+						status = Status.overdrive,
+						statusAmount = 1,
+						targetPlayer = true
+					}
+				},
+			Upgrade.B => new List<CardAction>
+				{
+					new AAttack {
+						damage = GetDmg(s, 1),
+						stunEnemy = true
+					},
+					new AStatus {
+						status = Status.overdrive,
+						statusAmount = 1,
+						targetPlayer = true
+					}
+				},
+			_ => new List<CardAction>(),
+		};
+	}
+}
+
+
+
+
+[CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+public class EddieExe : Card
+{
+    public override string Name() => "Eddie.EXE";
+
+    public override CardData GetData(State state)
+    {
+        return new CardData()
         {
-            case Upgrade.None:
-                return new List<CardAction>
-                {
-                    new AAttack {
-                        damage = GetDmg(s, 2)
-                    },
-                    new AStatus {
-                        status = Status.overdrive,
-                        statusAmount = 1,
-                        targetPlayer = true
-                    }
-                };
-            case Upgrade.A:
-                return new List<CardAction>
-                {
-                    new AAttack {
-                        damage = GetDmg(s, 3)
-                    },
-                    new AStatus {
-                        status = Status.overdrive,
-                        statusAmount = 1,
-                        targetPlayer = true
-                    }
-                };
-            case Upgrade.B:
-                return new List<CardAction>
-                {
-                    new AAttack {
-                        damage = GetDmg(s, 1),
-                        stunEnemy = true
-                    },
-                    new AStatus {
-                        status = Status.overdrive,
-                        statusAmount = 1,
-                        targetPlayer = true
-                    }
-                };
-            default:
-                return new List<CardAction>();
-        }
+            cost = upgrade == Upgrade.A ? 0 : 1,
+			exhaust = true,
+			description = ColorlessLoc.GetDesc(state, upgrade == Upgrade.B ? 3 : 2, (Deck)Manifest.EddieDeck.Id!)
+        };
     }
+
+    public override List<CardAction> GetActions(State s, Combat c)
+    {
+		return upgrade switch
+		{
+			Upgrade.B => new()  {
+				new ACardOffering
+				{
+					amount = 2,
+					limitDeck = (Deck)Manifest.EddieDeck.Id!,
+					makeAllCardsTemporary = true,
+					overrideUpgradeChances = false,
+					canSkip = false,
+					inCombat = true,
+					discount = -1,
+					dialogueSelector = ".summonEddie"
+				}
+			},
+			_ => new() {
+				new ACardOffering
+				{
+					amount = 3,
+					limitDeck = (Deck)Manifest.EddieDeck.Id!,
+					makeAllCardsTemporary = true,
+					overrideUpgradeChances = false,
+					canSkip = false,
+					inCombat = true,
+					discount = -1,
+					dialogueSelector = ".summonEddie"
+				}
+			},
+		};
+	}
 }

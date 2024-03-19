@@ -85,7 +85,7 @@ internal static class EventDialogue
 		{
 			who = eddie,
 			Text = "But I don't wanna become spaghetti!",
-			loopTag = Manifest.EddieFurtiveAnimation.Tag
+			loopTag = Manifest.EddieOnEdgeAnimation.Tag
 		});
 		DB.story.GetNode("LoseCharacterCard_No")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -304,7 +304,7 @@ internal static class EventDialogue
 				{
 					who = eddie,
 					Text = "Don't sweat it, I was, uh, on lunch break.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				},
 				new CustomSay()
 				{
@@ -341,7 +341,7 @@ internal static class EventDialogue
 				{
 					who = eddie,
 					Text = "Oh, that? I was busy. Working on personal projects.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				},
 				new CustomSay()
 				{
@@ -383,7 +383,7 @@ internal static class EventDialogue
 				{
 					who = eddie,
 					Text = "...",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				},
 			}
 		};
@@ -408,7 +408,7 @@ internal static class EventDialogue
 				{
 					who = Deck.hacker.Key(),
 					Text = "Sup Eddie. How's it been?",
-					loopTag = "mad"
+					loopTag = "smile"
 				},
 				new CustomSay()
 				{
@@ -438,7 +438,7 @@ internal static class EventDialogue
 				{
 					who = Deck.hacker.Key(),
 					Text = "And what have you been up to?",
-					loopTag = "neutral"
+					loopTag = "smile"
 				},
 				new CustomSay()
 				{
@@ -450,7 +450,7 @@ internal static class EventDialogue
 				{
 					who = Deck.hacker.Key(),
 					Text = "...Nice.",
-					loopTag = "neutral"
+					loopTag = "smile"
 				},
 			}
 		};
@@ -491,18 +491,24 @@ internal static class EventDialogue
 				{
 					who = eddie,
 					Text = "Oh, uh, actually, I never had any. I was born without limbs.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				},
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "I had to make do with what I had and build myself these cool cyborg arms.",
+					Text = "I had to make do with what I had. And after a bunch of work, I built myself these cool cyborg arms.",
 					loopTag = Manifest.EddieExplainsAnimation.Tag
 				},
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
-					Text = "That doesn't make any sense. Did your limbs get combined into a really long tail or something?",
+					Text = "So, like.",
+					loopTag = "shy"
+				},
+				new CustomSay()
+				{
+					who = Deck.goat.Key(),
+					Text = "Did your limbs get absorbed into a really long tail or something?",
 					loopTag = "neutral"
 				},
 				new CustomSay()
@@ -609,13 +615,19 @@ internal static class EventDialogue
 				new CustomSay()
 				{
 					who = "comp",
-					Text = "Can you stop swindling the kid already?",
+					Text = "Hey, can you stop swindling the kid already?",
 					loopTag = "grumpy"
 				},
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Alright, alright. Hey, little amigo, how about we turn those crystals into a light fixture?",
+					Text = "Alright, alright.",
+					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Hey, little amigo, how about we turn those crystals into a light fixture?",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
 				},
 				new CustomSay()
@@ -646,7 +658,7 @@ internal static class EventDialogue
 				{
 					who = eddie,
 					Text = "Eh, I don't really feel like it.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Manifest.EddieRestingAnimation.Tag
 				},
 				new CustomSay()
 				{

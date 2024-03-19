@@ -16,7 +16,7 @@ using static System.Reflection.BindingFlags;
 
 namespace TheJazMaster.Eddie;
 
-public partial class Manifest : IArtifactManifest, ICustomEventManifest
+public partial class Manifest : IArtifactManifest, ICustomEventManifest, IStatusLogicHook
 {
     private static ICustomEventHub? _eventHub;
     internal static ICustomEventHub EventHub { get => _eventHub ?? throw new Exception(); set => _eventHub = value; }
@@ -83,7 +83,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
 
 
         // Patching status logic
-        var harmony = new Harmony("Eddie.Status");
+        var harmony = new Harmony("Eddie.Artifact");
 
         MoveEventLogic(harmony);
         FissionChamberLogic(harmony);
@@ -108,8 +108,8 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
         var eddieDeck = (Deck)EddieDeck!.Id!.Value;
         var duoDeck = DuoArtifactsApi!.DuoArtifactDeck;
 
-        PerfectInsulationArtifact = RegisterArtifact(registry, typeof(PerfectInsulation), PerfectInsulationSprite ?? throw new Exception("missing PerfectInsulation sprite"),
-            "PERFECT INSULATION", "The first time you would gain shield above your maximum each combat, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
+        PerfectInsulationArtifact = RegisterArtifact(registry, typeof(PerfectInsulation), PerfectInsulationOnSprite ?? throw new Exception("missing PerfectInsulation sprite"),
+            "PERFECT INSULATION", "The first each combat time you would gain <c=status>SHIELD</c> above your maximum, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
         Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(PerfectInsulation), new[] { eddieDeck, Enum.Parse<Deck>("dizzy") });
 
         UltraLightBatteriesArtifact = RegisterArtifact(registry, typeof(UltraLightBatteries), UltraLightBatteriesSprite ?? throw new Exception("missing UltraLightBatteries sprite"),
@@ -137,12 +137,12 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
         Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(Spellboard), new[] { eddieDeck, Enum.Parse<Deck>("shard") });
 
         VirtualTreadmillArtifact = RegisterArtifact(registry, typeof(VirtualTreadmill), VirtualTreadmillSprite ?? throw new Exception("missing VirtualTreadmill sprite"),
-            "VIRTUAL TREADMILL", "All Basic cards are <c=cardtrait>infinite</c>.", deck: duoDeck);
+            "VIRTUAL TREADMILL", "All Basic cards are <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c>.", deck: duoDeck);
         Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(VirtualTreadmill), new[] { eddieDeck, Enum.Parse<Deck>("catartifact") });
 
         if (SogginsApi != null) {
             WaxWingsArtifact = RegisterArtifact(registry, typeof(WaxWings), WaxWingsSprite ?? throw new Exception("missing WaxWings sprite"),
-                "WAX WINGS", "Whenever you <c=downside>botch</c> from oversmugging, gain 1 <c=energy>ENERGY</c>.", deck: duoDeck);
+                "WAX WINGS", "Whenever you <c=downside>botch</c> from oversmugging, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
             Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(WaxWings), new[] { eddieDeck, (Deck)SogginsApi.SogginsDeck.Id!.Value });
         }
 
@@ -164,7 +164,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
         harmony.TryPatch(
             logger: Instance.Logger!,
             original: typeof(Card).GetMethod("GetDataWithOverrides"),
-            postfix: new HarmonyMethod(typeof(Manifest).GetMethod("AffectCardData", BindingFlags.Static | BindingFlags.NonPublic))
+            postfix: new HarmonyMethod(typeof(Manifest).GetMethod("AffectCardData", Static | NonPublic))
         );
     }
 
@@ -173,7 +173,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
         harmony.TryPatch(
             logger: Instance.Logger!,
             original: typeof(Combat).GetMethod("SendCardToExhaust"),
-            prefix: new HarmonyMethod(typeof(Manifest).GetMethod("TriggerExhaustArtifacts", BindingFlags.Static | BindingFlags.NonPublic))
+            prefix: new HarmonyMethod(typeof(Manifest).GetMethod("TriggerExhaustArtifacts", Static | NonPublic))
         );
     }
 
@@ -188,47 +188,15 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
 
     private void OverdriveLogic(Harmony harmony)
     {
-        harmony.TryPatch(
-            logger: Instance.Logger!,
-            original: typeof(Ship).GetMethod("OnAfterTurn"),
-            transpiler: new HarmonyMethod(typeof(Manifest).GetMethod("SkipReduceOverdrive", BindingFlags.Static | BindingFlags.NonPublic))
-        );
+        KokoroApi.RegisterStatusLogicHook(this, 100);
     }
 
     private static void AffectCardData(Card __instance, ref CardData __result, State state) {
         foreach (Artifact item in state.EnumerateAllArtifacts()) {
-            if (item is CardDataAffectorArtifact artifact)  {
+            if (item is ICardDataAffectorArtifact artifact)  {
                 artifact.AffectCardData(state, __instance, ref __result);
             }       
         }
-    }
-
-    private static IEnumerable<CodeInstruction> SkipReduceOverdrive(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod) {
-        try
-		{
-            return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-                    ILMatches.Ldarg(0),
-					ILMatches.LdcI4((int)Status.overdrive),
-					ILMatches.Call("Get"),
-					ILMatches.LdcI4(0),
-                    ILMatches.Ble
-				)
-                .PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
-                .Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
-                    new CodeInstruction(OpCodes.Ldarg_1),
-                    new CodeInstruction(OpCodes.Ldarg_2),
-                    new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("ShouldReduceOverdrive", BindingFlags.NonPublic | BindingFlags.Static)),
-                    new CodeInstruction(OpCodes.Brfalse, branchTarget)
-                })
-                .AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
     }
 
     private static void TriggerExhaustArtifacts(Combat __instance, State s, Card card) {
@@ -343,7 +311,7 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
 
     private static void FireOnMoveEvent(AMove __instance, Combat c, State s)
     {
-        Manifest.EventHub.SignalEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", new(c, __instance));
+        EventHub.SignalEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", new(c, __instance));
     }
 
     private void FissionChamberLogic(Harmony harmony) {
@@ -662,5 +630,13 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest
                 glossary.vals[glossary.vals.Length-1] = last + " + " + baseXBonus;
             }
         }
+    }
+
+    public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+    {
+        if (status == Status.overdrive && amount > 0 && !ShouldReduceOverdrive(state, combat)) {
+            return true;
+        }
+        return false;
     }
 }

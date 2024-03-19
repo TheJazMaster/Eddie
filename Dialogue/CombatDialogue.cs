@@ -24,7 +24,7 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Who needs to do anything when you have shields.",
+					Text = "Who needs to do anything when you have armor.",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
 				}
 			}
@@ -58,8 +58,8 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "So who's piloting?",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					Text = "I'm sure she won't mind if I take her boba.",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
 				}
 			}
 		};
@@ -76,7 +76,7 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Does this mean I'm off the hook?",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -127,7 +127,7 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "MAX!",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -178,7 +178,7 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Oh, did I do something wrong again?",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -310,7 +310,7 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Worth a shot! I'll rig the ship to explode.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -700,8 +700,50 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "We're in too deep now. We have to shoot the armor more.",
+					Text = "We're in too deep now... We have to shoot the armor more.",
 					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "I don't think that will help.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.goat.Key(),
+							Text = "Oh, um, okay?",
+							loopTag = "shy"
+						},
+						new CustomSay()
+						{
+							who = Deck.riggs.Key(),
+							Text = "Yeah, I agree.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "That makes no sense.",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
+							who = Deck.peri.Key(),
+							Text = "Please don't...",
+							loopTag = "mad"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "Don't give up just yet.",
+							loopTag = "neutral"
+						},
+					}
 				}
 			}
 		};
@@ -720,6 +762,24 @@ internal static class CombatDialogue
 					who = eddie,
 					Text = "Aiming at unarmored parts is, like, a lot of effort.",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.riggs.Key(),
+							Text = "Yeah, I agree.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "Don't give up just yet.",
+							loopTag = "neutral"
+						},
+					}
 				}
 			}
 		};
@@ -738,6 +798,30 @@ internal static class CombatDialogue
 					who = eddie,
 					Text = "Maybe we can shoot the armor off? No?",
 					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "I don't think that will work.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "That makes no sense.",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
+							who = Deck.peri.Key(),
+							Text = "Please don't...",
+							loopTag = "mad"
+						},
+					}
 				}
 			}
 		};
@@ -756,9 +840,60 @@ internal static class CombatDialogue
 					who = eddie,
 					Text = "Hey, enemy ship, could you scoot over a little?",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
+				},
+				new SaySwitch()
+				{
+					lines = new() 
+					{
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "I don't think that will work.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.riggs.Key(),
+							Text = "Or I could move US over?",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "That makes no sense.",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "It was worth a shot, I guess.",
+							loopTag = "neutral"
+						},
+					}
 				}
 			}
 		};
+
+    	DB.story.all[$"WizardGeneralShouts_{eddie}_0"] = new() {
+      		type = NodeType.combat,
+      		turnStart = true,
+      		allPresent = new() {"wizard", eddie},
+      		enemyIntent = "wizardMagic",
+      		lines = new()
+			{
+				new CustomSay()
+				{
+					who = "wizard",
+					Text = "I cast Itchy Back!",
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Damn, this guy means business!",
+					loopTag = Manifest.EddieWorriedAnimation.Tag
+				}
+			}
+    	};
 
 		DB.story.all[$"ExpensiveCardPlayed_{eddie}_0"] = new()
 		{
@@ -773,7 +908,7 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Oops, I think that tripped a breaker.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -801,6 +936,12 @@ internal static class CombatDialogue
 							who = Deck.eunice.Key(),
 							Text = "Cool.",
 							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "Rad.",
+							loopTag = "smile"
 						}
 					}
 				}
@@ -830,7 +971,13 @@ internal static class CombatDialogue
 							who = Deck.riggs.Key(),
 							Text = "Yeah alright.",
 							loopTag = "neutral"
-						}
+						},
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "Gotcha.",
+							loopTag = "neutral"
+						},
 					}
 				}
 			}
@@ -859,7 +1006,7 @@ internal static class CombatDialogue
 						{
 							who = Deck.dizzy.Key(),
 							Text = "But we have to clean it up eventually.",
-							loopTag = "default"
+							loopTag = "squint"
 						}
 					}
 				}
@@ -917,7 +1064,7 @@ internal static class CombatDialogue
 				}
 			}
 		};
-		DB.story.all[$"WeDontOverlapWithEnemyAtAll_{eddie}_1"] = new()
+		DB.story.all[$"WeDontOverlapWithEnemyAtAll_{eddie}_2"] = new()
 		{
 			type = NodeType.combat,
 			allPresent = new() { eddie },
@@ -961,7 +1108,13 @@ internal static class CombatDialogue
 							who = Deck.eunice.Key(),
 							Text = "Are you kidding me?",
 							loopTag = "mad"
-						}
+						},
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "You don't say...",
+							loopTag = "squint"
+						},
 					}
 				}
 			}
@@ -1202,6 +1355,23 @@ internal static class CombatDialogue
 					Text = "I'll miss you, heat.",
 					loopTag = Manifest.EddieDisappointedAnimation.Tag
 				}
+			}
+		};
+
+		DB.story.all[$"PlayedManyCards_{eddie}_0"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { eddie },
+			handEmpty = true,
+			minCardsPlayedThisTurn = 6,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "See? It all worked out.",
+					loopTag = Manifest.EddieExcitedAnimation.Tag
+				},
 			}
 		};
 
@@ -1484,7 +1654,7 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "A classic hole in the hull. Should be a simple fix.",
+					Text = "Someone should fix that.",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
 				}
 			}
@@ -1501,7 +1671,7 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Aw man, that was my favorite piece of hull.",
+					Text = "Aw man, that was my favorite chunk of hull.",
 					loopTag = Manifest.EddieDisappointedAnimation.Tag
 				}
 			}
@@ -1535,6 +1705,22 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "That's good damage.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"WeDidOverThreeDamage_{eddie}_1"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { eddie },
+			playerShotJustHit = true,
+			minDamageDealtToEnemyThisTurn = 4,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Nice.",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
 				}
 			}
@@ -1607,6 +1793,141 @@ internal static class CombatDialogue
 					who = Deck.dizzy.Key(),
 					Text = "Where exactly did you get your education?",
 					loopTag = "squint"
+				}
+			}
+		};
+
+		DB.story.all[$"EnemyArmorPierced_Multi_{eddie}_0"] = new()
+		{
+			type = NodeType.combat,
+			playerShotJustHit = true,
+			playerJustPiercedEnemyArmor = true,
+			oncePerCombatTags = new() {"EnemyArmorPierced"},
+			oncePerRun = true,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Heh, nice armor.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			},
+			allPresent = new() {"eunice"}
+		};
+		DB.story.all[$"EnemyArmorPierced_{eddie}_1"] = new()
+		{
+			type = NodeType.combat,
+			playerShotJustHit = true,
+			allPresent = new() {eddie},
+			playerJustPiercedEnemyArmor = true,
+			oncePerCombatTags = new() {"EnemyArmorPierced"},
+			oncePerRun = true,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Phew, I was afraid we'd need to care about the armor.",
+					loopTag = Manifest.EddieRestingAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all[$"EnemyHasBrittle_{eddie}_0"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasBrittlePart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutBrittle"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "A brittle part? Someone should get fired for that.",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"EnemyHasBrittle_{eddie}_1"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasBrittlePart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutBrittle"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Brittle spot! Score!",
+					loopTag = Manifest.EddieExcitedAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"EnemyHasBrittle_{eddie}_2"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasBrittlePart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutBrittle"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Easy fight, just hit that brittle spot.",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all[$"EnemyHasWeakness_{eddie}_0"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasWeakPart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutWeakness"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Weakpoint!",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"EnemyHasWeakness_{eddie}_1"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasWeakPart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutWeakness"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "If you think about it, hitting a weakpoint is basically like getting free energy.",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"EnemyHasWeakness_{eddie}_2"] = new()
+		{
+			type = NodeType.combat,
+			enemyHasWeakPart = true,
+			allPresent = new() {eddie},
+			oncePerRunTags = new() {"yelledAboutWeakness"},
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "We should hit that weakpoint, if it's not too much trouble.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
 				}
 			}
 		};
@@ -1881,7 +2202,7 @@ internal static class CombatDialogue
 						{
 							who = Deck.hacker.Key(),
 							Text = "Sweet.",
-							loopTag = "neutral"
+							loopTag = "smile"
 						},
 						new CustomSay()
 						{
@@ -2011,6 +2332,21 @@ internal static class CombatDialogue
 				}
 			}
 		};
+
+		DB.story.GetNode("CrabFacts1_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
+		{
+			who = eddie,
+			Text = "I can't be bothered to fact-check that.",
+			loopTag = Manifest.EddieDefaultAnimation.Tag
+		});
+		
+
+		DB.story.GetNode("JustPlayedASashaCard_Multi_2")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
+		{
+			who = eddie,
+			Text = "Sports.",
+			loopTag = Manifest.EddieSquintAnimation.Tag
+		});
 
 		StoryNode node;
 		node = new()
@@ -2201,5 +2537,75 @@ internal static class CombatDialogue
 		};
 		KokoroApi.SetExtensionData(node, StoryVarsAdditions.MaxDiscountOfCardJustPlayedKey, -1);
 		DB.story.all[$"PlayedExpensive_{eddie}_0"] = node;
+
+		DB.story.all["$JustPlayedASogginsCard_{eddie}_0"] = new() {
+			type = NodeType.combat,
+			whoDidThat = Deck.soggins,
+			oncePerRun = true,
+			allPresent = new() { eddie },
+			lines = new()
+			{
+				new CustomSay() {
+					who = eddie,
+					Text = "We're still alive? That's good.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all["$JustPlayedAToothCard_{eddie}_0"] = new() {
+			type = NodeType.combat,
+			whoDidThat = Deck.tooth,
+			oncePerRun = true,
+			allPresent = new() { eddie },
+			lines = new()
+			{
+				new CustomSay() {
+					who = eddie,
+					Text = "You can get a lot of use out of junk like this.",
+					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all["summonEddie_0"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { "comp" },
+			lookup = new() { "summonEddie" },
+			oncePerCombatTags = new() { $"summonEddieTag" },
+			oncePerRun = true,
+			lines = new() {
+				new CustomSay()
+				{
+					who = "comp",
+					Text = "Let's see what I can do with this.",
+					loopTag = "neutral"
+				}
+			}
+		};
+
+		DB.story.all["summonEddie_1"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { "comp", eddie },
+			lookup = new() { "summonEddie" },
+			oncePerCombatTags = new() { $"summonEddieTag" },
+			oncePerRun = true,
+			lines = new() {
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Copying me? I'm flattered.",
+					loopTag = "neutral"
+				},
+				new CustomSay()
+				{
+					who = "comp",
+					Text = "You've got some good ideas.",
+					loopTag = "neutral"
+				}
+			}
+		};
 	}
 }

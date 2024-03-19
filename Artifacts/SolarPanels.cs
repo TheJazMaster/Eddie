@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss }, extraGlossary = new string[] { "status.evade" })]
 public class SolarPanels : Artifact, IRegisterableArtifact
 {
 	public bool turnedOn = true;

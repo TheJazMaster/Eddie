@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 	
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class Thunderstrike : Artifact
 {
 	public Thunderstrike()

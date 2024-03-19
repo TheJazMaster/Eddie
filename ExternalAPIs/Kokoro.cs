@@ -13,6 +13,8 @@ public partial interface IKokoroApi
 	bool ContainsExtensionData(object o, string key);
 	void SetExtensionData<T>(object o, string key, T data);
 	void RemoveExtensionData(object o, string key);
+	void RegisterStatusLogicHook(IStatusLogicHook hook, double priority);
+	void UnregisterStatusLogicHook(IStatusLogicHook hook);
 
 	IActionApi Actions { get; }
 
@@ -46,4 +48,22 @@ public partial interface IKokoroApi
 public interface IWrappedActionHook
 {
 	List<CardAction>? GetWrappedCardActions(CardAction action);
+}
+
+public interface IStatusLogicHook
+{
+	int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount) => newAmount;
+	bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status) => null;
+	void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount) { }
+	bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy) => false;
+}
+
+public enum StatusTurnTriggerTiming
+{
+	TurnStart, TurnEnd
+}
+
+public enum StatusTurnAutoStepSetStrategy
+{
+	Direct, QueueSet, QueueAdd, QueueImmediateSet, QueueImmediateAdd
 }

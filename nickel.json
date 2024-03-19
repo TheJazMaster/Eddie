@@ -1,0 +1,26 @@
+{
+  "EntryPointAssembly": "Eddie.dll",
+  "UniqueName": "TheJazMaster.Eddie",
+  "Version": "1.0.0",
+  "RequiredApiVersion": "0.1.0",
+  "Dependencies": [
+    {
+      "UniqueName": "Nickel.Legacy",
+      "Version": "0.3.0",
+      "IsRequired": true
+    },
+    {
+      "UniqueName": "Shockah.Kokoro",
+      "IsRequired": true
+    },
+    {
+      "UniqueName": "Shockah.DuoArtifacts",
+      "IsRequired": false
+    },
+    {
+      "UniqueName": "Shockah.Soggins",
+      "IsRequired": false
+    }
+  ],
+  "ModType": "Nickel.Legacy"
+}

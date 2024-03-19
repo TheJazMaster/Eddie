@@ -12,8 +12,10 @@ namespace TheJazMaster.Eddie.Actions
 		public override List<Tooltip> GetTooltips(State s)
 		{
 			if (!targetPlayer) {
-				List<Tooltip> list = new List<Tooltip>();
-				list.Add(dir > 0 ? new TTGlossary(Manifest.MoveEnemyRightGlossary!.Head, dir) : new TTGlossary(Manifest.MoveEnemyLeftGlossary!.Head, -dir));
+				List<Tooltip> list = new()
+				{
+					dir > 0 ? new TTGlossary(Manifest.MoveEnemyRightGlossary!.Head, dir) : new TTGlossary(Manifest.MoveEnemyLeftGlossary!.Head, -dir)
+				};
 				return list;
 			} else {
 				return base.GetTooltips(s);

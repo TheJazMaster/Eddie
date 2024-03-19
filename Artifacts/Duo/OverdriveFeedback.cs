@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.overdrive" })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.overdriveAlt" })]
 public class OverdriveFeedback : Artifact, OverdriveReductionPreventerArtifact
 {
 	bool active = true;

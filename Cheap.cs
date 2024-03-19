@@ -155,16 +155,15 @@ public static class Cheap
 		try
 		{
 			var sequence = new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.AsGuidAnchorable()
 				.Find(
 					ILMatches.Ldloc(0),
-					ILMatches.Ldfld("card").WithAutoAnchor(out Guid fieldAnchor),
+					ILMatches.Ldfld("card").Anchor(out var fieldAnchor),
 					ILMatches.Ldarg(1),
 					ILMatches.Ldarg(0),
 					ILMatches.Call("AfterWasPlayed")
 				);
 			sequence.PointerMatcher(SequenceMatcherRelativeElement.First).CreateLdlocInstruction(out var ldLoc);
-			sequence.PointerMatcher(fieldAnchor).Element(out var fieldInstruction);
+			sequence.Anchors().PointerMatcher(fieldAnchor).Element(out var fieldInstruction);
 			return sequence
 				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {

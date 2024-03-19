@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-public class Spellboard : Artifact, CardDataAffectorArtifact
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "cardtrait.infinite" })]
+public class Spellboard : Artifact, ICardDataAffectorArtifact
 {
 	private static Manifest Instance => Manifest.Instance;
 	private static readonly Lazy<bool> isDuosLoaded = new Lazy<bool>(() => Instance.DuoArtifactsApi != null); 
@@ -14,12 +14,6 @@ public class Spellboard : Artifact, CardDataAffectorArtifact
 	private static readonly List<Deck> dizzyBooksDuo = new List<Deck> {Enum.Parse<Deck>("dizzy"), Enum.Parse<Deck>("shard")};
 
 	int recursionLevel = 0;
-
-	// bool hasBookDizzyArtifact = false;
-
-	// public override void OnCombatStart(State s, Combat c) {
-	// 	hasBookDizzyArtifact = s.EnumerateAllArtifacts().Any(a => a.GetType().Name == "BooksDizzyArtifact");
-	// }
 	
 	public void AffectCardData(State s, Card card, ref CardData originalData) {
 		recursionLevel++;
@@ -29,7 +23,7 @@ public class Spellboard : Artifact, CardDataAffectorArtifact
 
 					var resources = s.ship.Get(Status.shard);
 					if (isDuosLoaded.Value)
-						resources += (s.EnumerateAllArtifacts().Any(a => Instance.DuoArtifactsApi!.GetDuoArtifactOwnership(a)?.SetEquals(dizzyBooksDuo) ?? false) ? s.ship.Get(Status.shield) : 0);
+						resources += s.EnumerateAllArtifacts().Any(a => Instance.DuoArtifactsApi!.GetDuoArtifactOwnership(a)?.SetEquals(dizzyBooksDuo) ?? false) ? s.ship.Get(Status.shield) : 0;
 
 					if (action.shardcost.Value <= resources) {
 						originalData.infinite = true;

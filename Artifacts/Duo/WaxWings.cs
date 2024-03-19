@@ -27,7 +27,7 @@ public class WaxWings : Artifact, ISmugHook
 					time = 0.3
 				},
 				new AEnergy {
-					changeAmount = 1
+					changeAmount = 2
 				}
 			});
 		}

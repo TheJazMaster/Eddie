@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.heat" })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.heatAlt" })]
 public class EmergencyVentilator : Artifact
 {
 	public override void OnTurnEnd(State state, Combat combat)

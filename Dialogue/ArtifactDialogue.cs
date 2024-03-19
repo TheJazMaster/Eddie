@@ -19,9 +19,9 @@ internal static class ArtifactDialogue
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"EnergyPrepTrigger" },
 			allPresent = new() { eddie },
 			hasArtifacts = new() { "EnergyPrep" },
+			doesNotHaveArtifacts = new() { "ControlRods" },
 			lines = new()
 			{
 				new CustomSay()
@@ -50,6 +50,24 @@ internal static class ArtifactDialogue
 				}
 			}
 		};
+
+		DB.story.all[$"ArtifactEnergyPrep_{eddie}_Ares"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			allPresent = new() { eddie },
+			hasArtifacts = new() { "EnergyPrep", "ControlRods" },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "The inactive cannon was still using power during FTL, so I switched that off.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			}
+		};
+
 		DB.story.all[$"ArtifactJetThrusters_{eddie}"] = new()
 		{
 			type = NodeType.combat,
@@ -68,7 +86,7 @@ internal static class ArtifactDialogue
 			}
 		};
 
-		DB.story.all[$"ArtifactEnergyRefund_{eddie}"] = new()
+		DB.story.all[$"ArtifactEnergyRefund_{eddie}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
@@ -86,7 +104,7 @@ internal static class ArtifactDialogue
 				}
 			}
 		};
-		DB.story.all[$"ArtifactEnergyRefund_{eddie}"] = new()
+		DB.story.all[$"ArtifactEnergyRefund_{eddie}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
@@ -101,6 +119,24 @@ internal static class ArtifactDialogue
 					who = eddie,
 					Text = "It's free energy.",
 					loopTag = Manifest.EddieExplainsAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"ArtifactEnergyRefund_{eddie}_2"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			oncePerCombatTags = new() { "EnergyRefund" },
+			allPresent = new() { eddie },
+			hasArtifacts = new() { "EnergyRefund" },
+			minCostOfCardJustPlayed = 3,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "A refund? For free?",
+					loopTag = Manifest.EddieExcitedAnimation.Tag
 				}
 			}
 		};
@@ -139,7 +175,41 @@ internal static class ArtifactDialogue
 				{
 					who = eddie,
 					Text = "Finding this fracture is gonna take FOREVER.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all[$"ArtifactAresCannon_{eddie}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRunTags = new() { "AresCannon" },
+			allPresent = new() { eddie },
+			hasArtifacts = new() { "AresCannon" },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Man, the ergonomics on this ship are terrible.",
+					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all[$"ArtifactAresCannonV2_{eddie}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRunTags = new() { "AresCannonV2" },
+			allPresent = new() { eddie },
+			hasArtifacts = new() { "AresCannonV2" },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "This ship? Trying way too hard.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
 				}
 			}
 		};
@@ -155,8 +225,8 @@ internal static class ArtifactDialogue
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "I never would have guessed.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					Text = "Damn, the booster ruined the symmetry.",
+					loopTag = Manifest.EddieAnnoyedAnimation.Tag
 				}
 			}
 		};
@@ -177,6 +247,55 @@ internal static class ArtifactDialogue
 					Text = "Jump-starting a ship? Easy-peasy.",
 					loopTag = Manifest.EddieExplainsAnimation.Tag
 				}
+			}
+		};
+
+		DB.story.all[$"ArtifactJumperCablesUnneeded_{eddie}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRunTags = new() { "ArtifactJumperCablesUnneeded" },
+			allPresent = new() { eddie },
+			hasArtifacts = new() { "JumperCables" },
+			maxTurnsThisCombat = 1,
+			minHullPercent = 1,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Uh, does anyone need me to jump-start the ship?",
+					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "Sorry dude.",
+							loopTag = "serious"
+						},
+						new CustomSay()
+						{
+							who = Deck.goat.Key(),
+							Text = "Not really.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.riggs.Key(),
+							Text = "Nah, we're good.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "Maybe next time.",
+							loopTag = "serious"
+						},
+					}
+				},
 			}
 		};
 
@@ -268,13 +387,14 @@ internal static class ArtifactDialogue
 			allPresent = new() { eddie },
 			nonePresent = new() { Deck.peri.Key() },
 			hasArtifacts = new() { "Crosslink" },
+			oncePerRun = true,
 			lines = new()
 			{
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Don't tell Peri this, but I totally dismantled the Cobalt's crosslink a few weeks ago.",
-					loopTag = Manifest.EddieFurtiveAnimation.Tag
+					loopTag = Manifest.EddieOnEdgeAnimation.Tag
 				}
 			}
 		};
@@ -283,7 +403,7 @@ internal static class ArtifactDialogue
 		{
 			who = eddie,
 			Text = "I never would have guessed.",
-			loopTag = Manifest.EddieDefaultAnimation.Tag
+			loopTag = Manifest.EddieSquintAnimation.Tag
 		});
 
 		DB.story.all[$"ArtifactIonConverter_{eddie}_0"] = new()
@@ -293,6 +413,7 @@ internal static class ArtifactDialogue
       		oncePerCombatTags = new() { "IonConverterTag" },
 			allPresent = new() { eddie },
 			hasArtifacts = new() { "IonConverter" },
+			oncePerRun = true,
 			lines = new()
 			{
 				new CustomSay()
@@ -310,6 +431,7 @@ internal static class ArtifactDialogue
       		oncePerCombatTags = new() { "IonConverterTag" },
 			allPresent = new() { eddie },
 			hasArtifacts = new() { "IonConverter" },
+			oncePerRun = true,
 			lines = new()
 			{
 				new CustomSay()
