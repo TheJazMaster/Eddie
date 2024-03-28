@@ -526,7 +526,7 @@ internal static class EventDialogue
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
-					Text = "...So, uh, I also lost and arm and a horn. It's a pretty long and very cool-",
+					Text = "...So, uh, I also lost an arm and a horn. It's a pretty long and very cool-",
 					loopTag = "shy"
 				},
 				new CustomSay()
