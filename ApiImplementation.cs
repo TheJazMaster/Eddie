@@ -7,8 +7,8 @@ public sealed class ApiImplementation : IEddieApi
 	private static Manifest Instance => Manifest.Instance;
 
 
-	public ExternalDeck EddieDeck
-		=> Manifest.EddieDeck;
+	public Deck EddieDeck
+		=> (Deck)Manifest.EddieDeck.Id!;
 
 	public ExternalGlossary ShortCircuitGlossary
 		=> Manifest.ShortCircuitGlossary!;

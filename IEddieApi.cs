@@ -4,7 +4,7 @@ namespace TheJazMaster.Eddie;
 
 public interface IEddieApi
 {
-	ExternalDeck EddieDeck { get; }
+	Deck EddieDeck { get; }
 
 	ExternalGlossary ShortCircuitGlossary { get; }
 	ExternalGlossary CheapGlossary { get; }
