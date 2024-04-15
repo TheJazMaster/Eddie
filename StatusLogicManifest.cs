@@ -268,9 +268,19 @@ public partial class Manifest : IStatusManifest
                 var discard_flag_local_load_opcode = TranspilerUtils.StoreToLoad(discard_flag_local_store_opcode);
                 var discard_flag_local_operand = iter.Current.operand;
                 Label end_label = il.DefineLabel();
+                Label end_infinite_fix_label = il.DefineLabel();
+
+
+                yield return new CodeInstruction(discard_flag_local_load_opcode, discard_flag_local_operand);
+                yield return new CodeInstruction(OpCodes.Brfalse, end_infinite_fix_label);
+                yield return new CodeInstruction(card_data_local_load_opcode, card_data_local_operand);
+                yield return new CodeInstruction(OpCodes.Ldfld, typeof(CardData).GetField("singleUse"));
+                yield return new CodeInstruction(OpCodes.Brfalse, end_infinite_fix_label);
+                yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+                yield return new CodeInstruction(discard_flag_local_store_opcode, discard_flag_local_operand);
 
                 // The if statement: if(!exhaust && !stay && !cardData.infinite && s.ship.Get(ClosedCirtuit) > 0)
-                yield return new CodeInstruction(exhaust_flag_local_load_opcode, exhaust_flag_local_operand);
+                yield return new CodeInstruction(exhaust_flag_local_load_opcode, exhaust_flag_local_operand).WithLabels(end_infinite_fix_label);
                 yield return new CodeInstruction(OpCodes.Brtrue, end_label);
                 yield return new CodeInstruction(discard_flag_local_load_opcode, discard_flag_local_operand);
                 yield return new CodeInstruction(OpCodes.Brtrue, end_label);
@@ -279,10 +289,13 @@ public partial class Manifest : IStatusManifest
                 yield return new CodeInstruction(OpCodes.Brtrue, end_label);
                 yield return new CodeInstruction(OpCodes.Ldarg_1);
                 yield return new CodeInstruction(OpCodes.Ldfld, typeof(State).GetField("ship"));
-                yield return new CodeInstruction(OpCodes.Ldc_I4, Manifest.ClosedCircuitStatus.Id);
+                yield return new CodeInstruction(OpCodes.Ldc_I4, ClosedCircuitStatus.Id);
                 yield return new CodeInstruction(OpCodes.Callvirt, typeof(Ship).GetMethod("Get"));
                 yield return new CodeInstruction(OpCodes.Ldc_I4_0);
                 yield return new CodeInstruction(OpCodes.Ble, end_label);
+                yield return new CodeInstruction(card_data_local_load_opcode, card_data_local_operand);
+                yield return new CodeInstruction(OpCodes.Ldfld, typeof(CardData).GetField("singleUse"));
+                yield return new CodeInstruction(OpCodes.Brtrue, end_label);
 
                 // s.ship.Set(ClosedCircuit, s.ship.Get(ClosedCircuit) - 1);
                 yield return new CodeInstruction(OpCodes.Ldarg_1);

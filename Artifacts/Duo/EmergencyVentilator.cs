@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.heatAlt" })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class EmergencyVentilator : Artifact
 {
 	public override void OnTurnEnd(State state, Combat combat)
@@ -12,16 +12,9 @@ public class EmergencyVentilator : Artifact
 				status = Status.heat,
 				statusAmount = -1,
 				targetPlayer = true,
-				artifactPulse = Key()//,
-				// dialogueSelector = ".IonConverterTrigger"
+				artifactPulse = Key()
 			});
 		}
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		var list = base.GetExtraTooltips() ?? new();
-		list.Add(new TTGlossary("status.heat", "1"));
-		return list;
-	}
 }
