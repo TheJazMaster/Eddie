@@ -16,7 +16,7 @@ using static System.Reflection.BindingFlags;
 
 namespace TheJazMaster.Eddie;
 
-public partial class Manifest : IArtifactManifest, ICustomEventManifest, IStatusLogicHook
+public partial class Manifest : IArtifactManifest, IStatusLogicHook
 {
     private static ICustomEventHub? _eventHub;
     internal static ICustomEventHub EventHub { get => _eventHub ?? throw new Exception(); set => _eventHub = value; }
@@ -150,13 +150,6 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest, IStatus
         OverdriveLogic(harmony);
         VersionControlLogic(harmony);
         SpellboardLogic(harmony);
-    }
-
-    public void LoadManifest(ICustomEventHub eventHub)
-    {
-        _eventHub = eventHub;
-
-        eventHub.MakeEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent");
     }
 
     private void SpellboardLogic(Harmony harmony)
@@ -305,13 +298,17 @@ public partial class Manifest : IArtifactManifest, ICustomEventManifest, IStatus
     private void MoveEventLogic(Harmony harmony)
     {
         var a_move_begin_method = typeof(AMove).GetMethod("Begin") ?? throw new Exception("Couldn't find AMove.Begin method");
-        var a_move_begin_post = typeof(Manifest).GetMethod("FireOnMoveEvent", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.FireOnMoveEvent method");
+        var a_move_begin_post = typeof(Manifest).GetMethod("FireOnMoveEvent", Static | NonPublic) ?? throw new Exception("Couldnt find Manifest.FireOnMoveEvent method");
         harmony.Patch(a_move_begin_method, postfix: new HarmonyMethod(a_move_begin_post));
     }
 
     private static void FireOnMoveEvent(AMove __instance, Combat c, State s)
     {
-        EventHub.SignalEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", new(c, __instance));
+        foreach (Artifact item in s.EnumerateAllArtifacts()) {
+            if (item is IOnMoveArtifact artifact) {
+                artifact.OnMove(s, c, __instance);
+            }
+        }
     }
 
     private void FissionChamberLogic(Harmony harmony) {

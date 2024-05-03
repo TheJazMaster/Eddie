@@ -1,7 +1,7 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss }, extraGlossary = new string[] { "status.evade" })]
-public class SolarPanels : Artifact, IRegisterableArtifact
+public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 {
 	public bool turnedOn = true;
 
@@ -14,17 +14,11 @@ public class SolarPanels : Artifact, IRegisterableArtifact
 		return (Spr)(Manifest.SolarPanelsOnSprite?.Id ?? throw new Exception("No Solar Panels On sprite"));
 	}
 
-	public SolarPanels()
+	public void OnMove(State s, Combat c, AMove move)
 	{
-		Manifest.EventHub.ConnectToEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", OnMove);
-	}
-
-	private void OnMove(Tuple<Combat, AMove> evt)
-	{
-		var move_action = evt.Item2;
-		if (move_action.targetPlayer && move_action.fromEvade) {
+		if (move.targetPlayer && move.fromEvade) {
 			turnedOn = false;
-			move_action.dialogueSelector = ".SolarPanelsRuinedTrigger";
+			move.dialogueSelector = ".SolarPanelsRuinedTrigger";
 		}
 	}
 
@@ -42,11 +36,6 @@ public class SolarPanels : Artifact, IRegisterableArtifact
 				turnedOn = true;
 
 		}
-	}
-
-	public override void OnRemoveArtifact(State state)
-	{
-		Manifest.EventHub.DisconnectFromEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", OnMove);
 	}
 
 	public override void OnCombatEnd(State state)

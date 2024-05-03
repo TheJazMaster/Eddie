@@ -1,7 +1,7 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
-public class SunLamp : Artifact
+public class SunLamp : Artifact, IOnMoveArtifact
 {
 	public bool turnedOn = true;
 	public bool charged = true;
@@ -19,15 +19,9 @@ public class SunLamp : Artifact
 		return (Spr)(Manifest.SunLampOnSprite?.Id ?? throw new Exception("No Solar Lamp On sprite"));
 	}
 
-	public SunLamp()
+	public void OnMove(State s, Combat c, AMove move)
 	{
-		Manifest.EventHub.ConnectToEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", OnMove);
-	}
-
-	private void OnMove(Tuple<Combat, AMove> evt)
-	{
-		var move_action = evt.Item2;
-		if (move_action.targetPlayer && move_action.fromEvade)
+		if (move.targetPlayer && move.fromEvade)
 		{
 			turnedOn = false;
 			if (!charged) {
@@ -55,11 +49,6 @@ public class SunLamp : Artifact
 				turnedOn = true;
 
 		}
-	}
-
-	public override void OnRemoveArtifact(State state)
-	{
-		Manifest.EventHub.DisconnectFromEvent<Tuple<Combat, AMove>>("Eddie.OnMoveEvent", OnMove);
 	}
 
 	public override void OnCombatEnd(State state)
