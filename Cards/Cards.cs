@@ -896,13 +896,13 @@ public class RefundShot : CheapCard
 						damage = GetDmg(s, 1),
 						disabled = flipped
 					},
-					new AEnergy {
-						changeAmount = 1
-					},
 					new AHurtAndHealLater
 					{
 						targetPlayer = true,
 						hurtAmount = 1
+					},
+					new AEnergy {
+						changeAmount = 1
 					}
 				},
 			Upgrade.B => new List<CardAction> {
@@ -910,13 +910,13 @@ public class RefundShot : CheapCard
 						damage = GetDmg(s, 2),
 						disabled = flipped
 					},
-					new AEnergy {
-						changeAmount = 3
-					},
 					new AHurtAndHealLater
 					{
 						targetPlayer = true,
 						hurtAmount = 1
+					},
+					new AEnergy {
+						changeAmount = 3
 					}
 				},
 			_ => new List<CardAction>(),

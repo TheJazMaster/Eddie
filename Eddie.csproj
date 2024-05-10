@@ -9,7 +9,7 @@
     <ModLoaderPath>$(HOME)\Games\Nickel</ModLoaderPath>
 		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
     <!-- <ModLoaderPath>..\..</ModLoaderPath> -->
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <GameDllPath>$(ModLoaderPath)\Extract</GameDllPath>
     <EnableDllExtract>false</EnableDllExtract>
   </PropertyGroup>

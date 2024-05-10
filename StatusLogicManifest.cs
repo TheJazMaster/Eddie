@@ -19,7 +19,7 @@ public partial class Manifest : IStatusManifest
     public static ExternalStatus LoseEnergyEveryTurnStatus { get; private set; } = null!;
     public static ExternalStatus GainEnergyEveryTurnStatus { get; private set; } = null!;
     public static ExternalStatus HealNextTurnStatus { get; private set; } = null!;
-    public static ExternalStatus OverchargeStatus { get; private set; } = null!;
+    // public static ExternalStatus OverchargeStatus { get; private set; } = null!;
 
     public void LoadManifest(IStatusRegistry statusRegistry)
     {

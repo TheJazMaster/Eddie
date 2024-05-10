@@ -15,6 +15,12 @@ public sealed class ApiImplementation : IEddieApi
 	public ExternalGlossary CheapGlossary
 		=> Manifest.CheapGlossary!;
 
+    public Status CircuitStatus => (Status)Manifest.CircuitStatus.Id!;
+    public Status ClosedCircuitStatus => (Status)Manifest.ClosedCircuitStatus.Id!;
+    public Status LoseEnergyEveryTurnStatus => (Status)Manifest.LoseEnergyEveryTurnStatus.Id!;
+    public Status GainEnergyEveryTurnStatus => (Status)Manifest.GainEnergyEveryTurnStatus.Id!;
+    public Status HealNextTurnStatus => (Status)Manifest.HealNextTurnStatus.Id!;
+
 	public void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null) {
 		Cheap.SetFree(card, overrideValue, oncePerTurnOnlyValue, permanentValue);
 	}

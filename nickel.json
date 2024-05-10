@@ -1,7 +1,7 @@
 {
   "EntryPointAssembly": "Eddie.dll",
   "UniqueName": "TheJazMaster.Eddie",
-  "Version": "1.0.3",
+  "Version": "1.0.4",
   "RequiredApiVersion": "0.1.0",
   "Dependencies": [
     {
