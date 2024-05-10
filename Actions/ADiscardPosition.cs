@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FSPRO;
 
 namespace TheJazMaster.Eddie.Actions
@@ -19,7 +15,7 @@ namespace TheJazMaster.Eddie.Actions
                 return;
             }
             State s2 = s;
-            List<Card> list = new List<Card>(c.hand);
+            List<Card> list = new(c.hand);
             int num = 0;
             foreach (Card item in list)
             {
@@ -34,6 +30,7 @@ namespace TheJazMaster.Eddie.Actions
                 item.flipped = false;
                 item.OnDiscard(s2, c);
                 c.SendCardToDiscard(s2, item);
+                break;
             }
             if (list.Count > 0)
             {

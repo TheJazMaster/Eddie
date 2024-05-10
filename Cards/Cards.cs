@@ -291,7 +291,7 @@ public class ChargeShields : Card
 	{
 		return new CardData
 		{
-			cost = upgrade == Upgrade.A ? 0 : 1,
+			cost = 0,
 			exhaust = true,
 			art = StableSpr.cards_BoostCapacitors
 		};
@@ -323,7 +323,7 @@ public class ChargeShields : Card
 				xHint = 1
 			},
 			new AEnergySet {
-				setTo = 0
+				setTo = upgrade == Upgrade.A ? 1 : 0
 			}
 		};
 	}
@@ -349,7 +349,7 @@ public class ChargeThrusters : Card
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> result = new List<CardAction>();
+		List<CardAction> result = new();
 
 		var currentCost = this.GetCurrentCostNoRecursion(s);
 		result.Add(new AVariableHintEnergy
@@ -556,9 +556,9 @@ public class Innovation : Card
 	public override CardData GetData(State state)
 	{
 		string description = upgrade switch {
-			Upgrade.None => "Leftmost non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn.",
-			Upgrade.A => "Leftmost non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn.",
-			Upgrade.B => "Non-<c=cardtrait>infinite</c> card costs 0 <c=energy>ENERGY</c> once per turn. Discard it",
+			Upgrade.None => "Choose a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn.",
+			Upgrade.A => "Choose a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn.",
+			Upgrade.B => "<c=downside>Discard</c> a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn.",
 			_ => ""
 		};
 		return new CardData
@@ -574,11 +574,17 @@ public class Innovation : Card
 		switch (upgrade) {
 			case Upgrade.None:
 			case Upgrade.A:
-				return new List<CardAction>{
-					new AMakeCardTemporarilyFreeOncePerTurn()
+				return new List<CardAction> {
+					new ADelay{
+						time = -0.5
+					},
+					new ACardSelect {
+						browseAction = new AChooseCardMakeFreeOncePerTurn(),
+						browseSource = CardBrowse.Source.Hand
+					}
 				};
 			case Upgrade.B:
-				return new List<CardAction>{
+				return new List<CardAction> {
 					new ADelay{
 						time = -0.5
 					},
@@ -605,45 +611,23 @@ public class Interference : Card
 	{
 		return new CardData()
 		{
-			cost = upgrade == Upgrade.B ? 0 : 1,
-			infinite = upgrade != Upgrade.B,
-			recycle = upgrade == Upgrade.B,
+			cost = 1,
+			infinite = true,
 			flippable = upgrade == Upgrade.A,
 			art = flipped ? StableSpr.cards_ScootLeft : StableSpr.cards_ScootRight
 		};
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		switch (upgrade) {
-			case Upgrade.None:
-			case Upgrade.A:
-				return new List<CardAction> {
-					new AMoveImproved
-					{
-						dir = 1,
-						targetPlayer = false,
-						ignoreHermes = true
-					}
-				};
-			case Upgrade.B:
-				return new List<CardAction> {
-					new AMoveImproved
-					{
-						dir = 2,
-						targetPlayer = false,
-						ignoreHermes = true
-					},
-					new AStatus
-					{
-						status = Status.overdrive,
-						statusAmount = 1,
-						targetPlayer = false
-					}
-				};
-			default:
-				return new List<CardAction>();
-		}
+	{	
+		return new List<CardAction> {
+			new AMoveImproved
+			{
+				dir = upgrade == Upgrade.B ? 2 : 1,
+				targetPlayer = false,
+				ignoreHermes = true
+			}
+		};
 	}
 }
 
@@ -667,10 +651,10 @@ public class Jumpstart : Card
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> result = new List<CardAction>();
+		List<CardAction> result = new();
 
 		int cost = this.GetCurrentCostNoRecursion(s);
-		AVariableHintEnergy hint = new AVariableHintEnergy
+		AVariableHintEnergy hint = new()
 		{
 			setAmount = Manifest.GetEnergyAmount(s, c, this) - cost
 		};
@@ -912,11 +896,13 @@ public class RefundShot : CheapCard
 						damage = GetDmg(s, 1),
 						disabled = flipped
 					},
-					new ADiscard {
-						count = 1
-					},
 					new AEnergy {
 						changeAmount = 1
+					},
+					new AHurtAndHealLater
+					{
+						targetPlayer = true,
+						hurtAmount = 1
 					}
 				},
 			Upgrade.B => new List<CardAction> {
@@ -924,11 +910,13 @@ public class RefundShot : CheapCard
 						damage = GetDmg(s, 2),
 						disabled = flipped
 					},
-					new ADiscard {
-						count = 1
-					},
 					new AEnergy {
 						changeAmount = 3
+					},
+					new AHurtAndHealLater
+					{
+						targetPlayer = true,
+						hurtAmount = 1
 					}
 				},
 			_ => new List<CardAction>(),
@@ -980,7 +968,7 @@ public class RenewableResource : Card
 
 
 
-[CardMeta(dontOffer = true, rarity = Rarity.uncommon/*, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B }*/)]
+[CardMeta(dontOffer = true, rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public class ReverseEngineer : Card
 {
 	public override string Name() => "ReverseEngineer";
@@ -997,10 +985,15 @@ public class ReverseEngineer : Card
 		// };
 		return new CardData
 		{
-			description = "Choose a card in hand. Exhaust it and gain its cost as <c=energy>ENERGY</c>.",
-			retain = true,//upgrade == Upgrade.A,
-			cost = 0,//upgrade == Upgrade.B ? 1 : 0,
-			exhaust = true,
+			description = upgrade switch
+			{
+				Upgrade.A => "Choose a card in hand. Discard it and gain its cost as <c=energy>ENERGY</c>.",
+				Upgrade.B => "Choose a card in hand. Exhaust it and gain its cost as <c=energy>ENERGY</c>.",
+				_ => "Choose a card in hand. Exhaust it and gain its cost as <c=energy>ENERGY</c>."
+			},
+			retain = true,
+			cost = 0,
+			exhaust = upgrade != Upgrade.B,
 			temporary = true,
 			art = StableSpr.cards_CorruptedCore
 		};
@@ -1008,82 +1001,34 @@ public class ReverseEngineer : Card
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		// switch (upgrade)
-		// {
-		//     case Upgrade.None:
-		//         return new List<CardAction>
-		//         {
-		//             new ADelay
-		//             {
-		//                 time = -0.5
-		//             },
-		//             new AGetEnergyFromOtherCard
-		//             {
-		//                 handPosition = 0,
-		//                 timer = 0.5,
-		//                 skipInfiniteCards = true,
-		//                 exhaustThisCardAfterwards = false//true
-		//             }
-		//         };
-		//     case Upgrade.A:
-		//         return new List<CardAction>
-		//         {
-		//             new ADelay
-		//             {
-		//                 time = -0.5
-		//             },
-		//             new AGetEnergyFromOtherCard
-		//             {
-		//                 handPosition = 0,
-		//                 timer = 0.5,
-		//                 skipInfiniteCards = true,
-		//                 exhaustThisCardAfterwards = false//true
-		//             }
-		//         };
-		//     case Upgrade.B:
-		//         return new List<CardAction>
-		//         {
-		//             new ADelay
-		//             {
-		//                 time = -0.5
-		//             },
-		//             new ACardSelect
-		//             {
-		//                 browseAction = new AGetEnergyFromChosenCard
-		//                 {
-		//                     exhaustThisCardAfterwards = false
-		//                 },
-		//                 browseSource = CardBrowse.Source.Hand
-		//             }
-		//         };
-		//     default:
-		//         return new List<CardAction>();
-		// }
-		return new List<CardAction>
-		{
-			new ADelay
-			{
-				time = -0.5
-			},
-			new ACardSelect
-			{
-				browseAction = new AGetEnergyFromChosenCard
+		return upgrade switch {
+			Upgrade.A => new List<CardAction> {
+				new ADelay
 				{
-					exhaustThisCardAfterwards = true
+					time = -0.5
 				},
-				browseSource = CardBrowse.Source.Hand
-			}
+				new ACardSelect
+				{
+					browseAction = new AGetEnergyFromChosenCard(),
+					browseSource = CardBrowse.Source.Hand
+				}
+			},
+			_ => new List<CardAction> {
+				new ADelay
+				{
+					time = -0.5
+				},
+				new ACardSelect
+				{
+					browseAction = new AGetEnergyFromChosenCard
+					{
+						exhaustThisCardAfterwards = true
+					},
+					browseSource = CardBrowse.Source.Hand
+				}
+			},
 		};
 	}
-
-	// public override void HilightOtherCards(State s, Combat c)
-	// {
-	//     Card? card = c.hand.Where((Card c) => c != this).FirstOrDefault();
-	//     if (card != null)
-	//     {
-	//         c.hilightedCards.Add(card.uuid);
-	//     }
-	// }
 }
 
 
@@ -1156,8 +1101,9 @@ public class ShortTermSolution : CheapCard
 		base.GetData(state);
 		return new CardData
 		{
-			cost = upgrade == Upgrade.B ? 3 : 2,
-			art = StableSpr.cards_DrakeCannon
+			cost = 2,
+			art = StableSpr.cards_ColorlessTrash,
+			flippable = true
 		};
 	}
 
@@ -1166,24 +1112,48 @@ public class ShortTermSolution : CheapCard
 		return upgrade switch
 		{
 			Upgrade.None => new List<CardAction> {
-					new AAttack {
-						damage = GetDmg(s, 3)
-					},
+					new AMoveImproved
+					{
+						dir = 2,
+						targetPlayer = false,
+						ignoreHermes = true
+					}
+					// new AAttack {
+					// 	damage = GetDmg(s, 3)
+					// },
 				},
 			Upgrade.A => new List<CardAction> {
-					new AAttack {
-						damage = GetDmg(s, 3)
+					new AMoveImproved
+					{
+						dir = 2,
+						targetPlayer = false,
+						ignoreHermes = true
 					},
+					// new AAttack {
+					// 	damage = GetDmg(s, 3)
+					// },
 					new AStatus {
 						status = Status.tempShield,
-						statusAmount = 1,
+						statusAmount = 2,
 						targetPlayer = true
 					},
 				},
 			Upgrade.B => new List<CardAction> {
-					new AAttack {
-						damage = GetDmg(s, 6)
+					new AMoveImproved
+					{
+						dir = 4,
+						targetPlayer = false,
+						ignoreHermes = true
+					},
+					new AStatus
+					{
+						status = Status.overdrive,
+						statusAmount = 2,
+						targetPlayer = false
 					}
+					// new AAttack {
+					// 	damage = GetDmg(s, 6)
+					// }
 				},
 			_ => new List<CardAction>(),
 		};

@@ -16,7 +16,6 @@ public class Lightweight : Card
         return new CardData
         {
             cost = 0,
-            exhaust = true,
             singleUse = true
         };
     }

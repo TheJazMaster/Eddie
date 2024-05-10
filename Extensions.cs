@@ -14,7 +14,7 @@ internal static class Extensions
 
 	public static int GetCurrentCostNoRecursion(this Card card, State s)
 	{
-		int result = 0;
+		int result;
 		recursionLevel++;
 		if (recursionLevel < 2)
 			result = card.GetCurrentCost(s);
