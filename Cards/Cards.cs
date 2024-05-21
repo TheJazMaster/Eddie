@@ -1114,7 +1114,7 @@ public class ShortTermSolution : CheapCard
 			Upgrade.None => new List<CardAction> {
 					new AMoveImproved
 					{
-						dir = 2,
+						dir = 3,
 						targetPlayer = false,
 						ignoreHermes = true
 					}
@@ -1125,7 +1125,7 @@ public class ShortTermSolution : CheapCard
 			Upgrade.A => new List<CardAction> {
 					new AMoveImproved
 					{
-						dir = 2,
+						dir = 3,
 						targetPlayer = false,
 						ignoreHermes = true
 					},
@@ -1141,7 +1141,7 @@ public class ShortTermSolution : CheapCard
 			Upgrade.B => new List<CardAction> {
 					new AMoveImproved
 					{
-						dir = 4,
+						dir = 5,
 						targetPlayer = false,
 						ignoreHermes = true
 					},
@@ -1283,7 +1283,7 @@ public class EddieExe : Card
 			Upgrade.B => new()  {
 				new ACardOffering
 				{
-					amount = 2,
+					amount = 3,
 					limitDeck = (Deck)Manifest.EddieDeck.Id!,
 					makeAllCardsTemporary = true,
 					overrideUpgradeChances = false,
@@ -1296,7 +1296,7 @@ public class EddieExe : Card
 			_ => new() {
 				new ACardOffering
 				{
-					amount = 3,
+					amount = 2,
 					limitDeck = (Deck)Manifest.EddieDeck.Id!,
 					makeAllCardsTemporary = true,
 					overrideUpgradeChances = false,
