@@ -375,7 +375,7 @@ public partial class Manifest : IStatusManifest
             yield return new CodeInstruction(OpCodes.Br, endLabel);
             yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(midLabel);
             yield return new CodeInstruction(OpCodes.Ldarg_1);
-            yield return new CodeInstruction(OpCodes.Ldarg_2);
+            yield return new CodeInstruction(OpCodes.Ldloc_1);
             yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("ClosedCircuitRetain", BindingFlags.Static | BindingFlags.NonPublic));
             yield return new CodeInstruction(OpCodes.Stloc_1);
 
@@ -397,19 +397,11 @@ public partial class Manifest : IStatusManifest
         return toRemove;
     }
 
-    private static List<Card> ClosedCircuitRetain(Combat c, State s, bool ignoreRetain) {
-        List<Card> cards = new List<Card>();
-        foreach (Card card in c.hand) {
-            if (!ignoreRetain || !card.GetDataWithOverrides(s).retain) {
-                int ccAmount = s.ship.Get((Status)ClosedCircuitStatus!.Id!);
-                if (ccAmount > 0) {
-                    s.ship.Set((Status)ClosedCircuitStatus!.Id!, ccAmount - 1);
-                } else {
-                    cards.Add(card);
-                }
-            }
-        }
-        cards.Reverse();
+    private static List<Card> ClosedCircuitRetain(Combat c, State s, List<Card> list) {
+        int ccAmount = s.ship.Get((Status)ClosedCircuitStatus!.Id!);
+        int ccAmountAfter = Math.Max(0, ccAmount - list.Count);
+        List<Card> cards = list.TakeLast(list.Count - ccAmount).ToList();
+        s.ship.Set((Status)ClosedCircuitStatus!.Id!, ccAmountAfter);
         return cards;
     }
 
