@@ -18,7 +18,7 @@ public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 				statusAmount = 1,
 				targetPlayer = true,
 				artifactPulse = Key(),
-				dialogueSelector = ".ElectromagneticCoilTrigger"
+				dialogueSelector = $".{Key()}Trigger"
 			});
 		}
 	}

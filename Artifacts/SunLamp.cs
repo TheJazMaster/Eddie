@@ -42,7 +42,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 					statusAmount = 1,
 					targetPlayer = true,
 					artifactPulse = Key(),
-					dialogueSelector = ".SunLamp"
+					dialogueSelector = $".{Key()}Trigger"
 				});
 				charged = false;
 			} else

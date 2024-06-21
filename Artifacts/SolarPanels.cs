@@ -18,7 +18,7 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 	{
 		if (move.targetPlayer && move.fromEvade) {
 			turnedOn = false;
-			move.dialogueSelector = ".SolarPanelsRuinedTrigger";
+			move.dialogueSelector = $".{Key()}RuinedTrigger";
 		}
 	}
 
