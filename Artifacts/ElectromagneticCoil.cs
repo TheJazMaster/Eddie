@@ -39,6 +39,7 @@ public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 			type = NodeType.combat,
 			lookup = new() { $"{Key()}Trigger" },
 			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerRun = true,
 			allPresent = new() { eddie },
 			hasArtifacts = new() { Key() },
 			lines = new()
@@ -56,6 +57,7 @@ public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 			type = NodeType.combat,
 			lookup = new() { $"{Key()}Trigger" },
 			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerRun = true,
 			allPresent = new() { eddie },
 			hasArtifacts = new() { Key() },
 			lines = new()
@@ -73,6 +75,7 @@ public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 			type = NodeType.combat,
 			lookup = new() { $"{Key()}Trigger" },
 			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerRun = true,
 			allPresent = new() { eddie },
 			hasArtifacts = new() { Key() },
 			lines = new()
