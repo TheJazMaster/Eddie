@@ -1,7 +1,7 @@
 {
   "EntryPointAssembly": "Eddie.dll",
   "UniqueName": "TheJazMaster.Eddie",
-  "Version": "1.0.6",
+  "Version": "1.0.7",
   "RequiredApiVersion": "0.1.0",
   "Dependencies": [
     {
@@ -22,5 +22,13 @@
       "IsRequired": false
     }
   ],
-  "ModType": "Nickel.Legacy"
+  "ModType": "Nickel.Legacy",
+  "UpdateChecks": {
+      "NexusMods": {
+          "ID": 17
+      },
+      "GitHub": {
+          "Repository": "TheJazMaster/Eddie"
+      }
+  }
 }
