@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace TheJazMaster.Eddie.Dialogue;
+namespace TheJazMaster.Eddie.DialogueAdditions;
 
 public static class StoryVarsAdditions
 {
@@ -65,5 +65,6 @@ public static class StoryVarsAdditions
         ArtifactDialogue.Inject();
         CombatDialogue.Inject();
         EventDialogue.Inject();
+        Memories.Inject();
 	}
 }

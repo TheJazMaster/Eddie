@@ -4,19 +4,29 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using TheJazMaster.Eddie.Cards;
-using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Reflection.Emit;
-using TheJazMaster.Eddie.Dialogue;
+using TheJazMaster.Eddie.DialogueAdditions;
 using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
+using Microsoft.Extensions.Logging;
+using Nickel.Legacy;
+using Nanoray.PluginManager;
+using Nickel;
+using TheJazMaster.Eddie.Artifacts;
+using System.Runtime.InteropServices;
 
 namespace TheJazMaster.Eddie;
 
-public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, IModManifest, IApiProviderManifest
+public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, CobaltCoreModding.Definitions.ModManifests.IModManifest, IApiProviderManifest, INickelManifest
 {
     internal static Manifest Instance { get; private set; } = null!;
     internal static ApiImplementation Api { get; private set; } = null!;
+
+    internal static Harmony Harmony { get; private set; } = null!;
+
+	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations = null!;
+	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations = null!;
 
     internal IKokoroApi KokoroApi { get; private set; } = null!;
     internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
@@ -26,10 +36,10 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[]
     {
-        new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
-        new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true),
-        new DependencyEntry<IModManifest>("Shockah.Soggins", ignoreIfMissing: true),
-        new DependencyEntry<IModManifest>("TheJazMaster.MoreDifficulties", ignoreIfMissing: true)
+        new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
+        new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true),
+        new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Soggins", ignoreIfMissing: true),
+        new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("TheJazMaster.MoreDifficulties", ignoreIfMissing: true)
     };
 
     public ILogger? Logger { get; set; }
@@ -112,15 +122,23 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public static ExternalSprite? FreeMarkerSprite { get; private set; }
 
+	public static Spr RoomBackground { get; private set; }
+    public static Spr RoomForeground { get; private set; }
+    public static Spr CoreEddie { get; private set; }
+    public static Spr EddieFullbody { get; private set; }
+
     public static ExternalCharacter EddieCharacter { get; private set; } = null!;
     public static ExternalDeck EddieDeck { get; private set; } = null!;
     public static ExternalAnimation EddieDefaultAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieMiniAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieGameoverAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieSquintAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieSeriousAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieOnEdgeAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieNothingAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieExplainsAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieAnnoyedAnimation { get; private set; } = null!;
+    public static ExternalAnimation EddieAnnoyedLeftAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieWorriedAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieDisappointedAnimation { get; private set; } = null!;
     public static ExternalAnimation EddieExcitedAnimation { get; private set; } = null!;
@@ -160,7 +178,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public DirectoryInfo? GameRootFolder { get; set; }
 
 
-    private ExternalSprite RegisterSprite(ISpriteRegistry registry, string globalName, string path) {
+    internal ExternalSprite RegisterSprite(ISpriteRegistry registry, string globalName, string path) {
         var sprite = new ExternalSprite("Eddie." + globalName, new FileInfo(path));
         registry.RegisterArt(sprite);
         return sprite;
@@ -170,7 +188,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     private void RegisterTalkSprites(ISpriteRegistry registry, string fileSuffix)
     {
         var dir_path = Path.Combine(ModRootFolder!.FullName, "Sprites", "portraits", fileSuffix);
-        var files = Directory.GetFiles(dir_path).Select(e => new FileInfo(e)).ToArray();
+        var files = Directory.GetFiles(dir_path).Select(e => new FileInfo(e)).Where(f => f.Name.EndsWith(".png")).ToArray();
         List<ExternalSprite> sprites = new();
         for (int i = 0; i < files.Length; i++)
         {
@@ -251,19 +269,27 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         RefundShotCardArt = RegisterSprite(registry, "RefundShotCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("refund_shot.png")));
         RenewableResourceCardArt = RegisterSprite(registry, "RenewableResourceCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("renewable_resource.png")));
 
-        // Duos
+        // BGs
+        RoomBackground = (Spr)RegisterSprite(registry, "RoomBackground", Path.Combine(ModRootFolder.FullName, "Sprites/bg", Path.GetFileName("room_back.png"))).Id!;
+        RoomForeground = (Spr)RegisterSprite(registry, "RoomForeground", Path.Combine(ModRootFolder.FullName, "Sprites/bg", Path.GetFileName("room_front.png"))).Id!;
+        CoreEddie = (Spr)RegisterSprite(registry, "CoreEddie", Path.Combine(ModRootFolder.FullName, "Sprites/bg", Path.GetFileName("core_scene_eddie.png"))).Id!;
+        EddieFullbody = (Spr)RegisterSprite(registry, "EddieFullbody", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("eddie_end.png"))).Id!;
 
+        // Duos
         if (DuoArtifactsApi != null) RegisterDuoSprites(registry);
 
         
         RegisterTalkSprites(registry, "Neutral");
         RegisterTalkSprites(registry, "Mini");
         RegisterTalkSprites(registry, "Gameover");
+        RegisterTalkSprites(registry, "Serious");
         RegisterTalkSprites(registry, "Disappointed");
         RegisterTalkSprites(registry, "OnEdge");
+        RegisterTalkSprites(registry, "Nothing");
         RegisterTalkSprites(registry, "Excited");
         RegisterTalkSprites(registry, "Resting");
         RegisterTalkSprites(registry, "Annoyed");
+        RegisterTalkSprites(registry, "AnnoyedLeft");
         RegisterTalkSprites(registry, "Explains");
         RegisterTalkSprites(registry, "Squint");
         RegisterTalkSprites(registry, "Worried");
@@ -299,6 +325,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             borderSprite,
             null);
         registry.RegisterDeck(EddieDeck);
+
+        Vault.charsWithLore.Add((Deck)EddieDeck.Id!);
 
         MoreDifficultiesApi?.RegisterAltStarters((Deck) EddieDeck.Id!, new StarterDeck {
             cards = {
@@ -470,8 +498,11 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         EddieExcitedAnimation = RegisterAnimation(registry, "excited", "Excited");
         EddieRestingAnimation = RegisterAnimation(registry, "resting", "Resting");
         EddieOnEdgeAnimation = RegisterAnimation(registry, "onedge", "OnEdge");
+        EddieNothingAnimation = RegisterAnimation(registry, "nothing", "Nothing");
         EddieAnnoyedAnimation = RegisterAnimation(registry, "annoyed", "Annoyed");
+        EddieAnnoyedLeftAnimation = RegisterAnimation(registry, "annoyedLeft", "AnnoyedLeft");
         EddieWorriedAnimation = RegisterAnimation(registry, "worried", "Worried");
+        EddieSeriousAnimation = RegisterAnimation(registry, "serious", "Serious");
     }
 
     public void BootMod(IModLoaderContact contact) {
@@ -479,7 +510,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         Instance = this;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
-        
+
         KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
         KokoroApi.RegisterTypeForExtensionData(typeof(Card));
         KokoroApi.RegisterTypeForExtensionData(typeof(CardAction));
@@ -489,7 +520,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         SogginsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.Soggins") ? contact.GetApi<ISogginsApi>("Shockah.Soggins") : null;
         MoreDifficultiesApi = contact.LoadedManifests.Any(m => m.Name == "TheJazMaster.MoreDifficulties") ? contact.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties") : null;
 
-        Harmony harmony = new("TheJazMaster.Eddie");
+        Harmony = new("TheJazMaster.Eddie");
+        var harmony = Harmony;
         
         harmony.TryPatch(
             logger: Logger!,
@@ -896,5 +928,110 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 		if (chars.Contains((Deck)EddieDeck.Id!.Value))
 			return;
 		cards.Add(new EddieExe());
+	}
+
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
+	{
+		AnyLocalizations = new JsonLocalizationProvider(
+			tokenExtractor: new SimpleLocalizationTokenExtractor(),
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"I18n/{locale}.json").OpenRead()
+		);
+		Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(AnyLocalizations)
+		);
+
+        helper.Content.Artifacts.RegisterArtifact("EmergencyThrusters", new()
+		{
+			ArtifactType = typeof(EmergencyThrusters),
+			Meta = new()
+			{
+				owner = Deck.colorless,
+				pools = [ArtifactPool.EventOnly],
+                unremovable = true,
+                extraGlossary = ["status.evade"]
+			},
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/artifact_icons/emergency_thrusters.png")).Sprite,
+			Name = AnyLocalizations.Bind(["artifact", "EmergencyThrusters", "name"]).Localize,
+			Description = AnyLocalizations.Bind(["artifact", "EmergencyThrusters", "description"]).Localize
+		});
+
+        helper.Content.Cards.RegisterCard("BasicRubble", new()
+		{
+			CardType = typeof(BasicRubble),
+			Meta = new()
+			{
+				deck = Deck.colorless,
+				rarity = Rarity.common,
+				upgradesTo = [Upgrade.A, Upgrade.B],
+                dontOffer = true
+			},
+			Art = StableSpr.cards_GoatDrone,
+			Name = AnyLocalizations.Bind(["card", "BasicRubble", "name"]).Localize
+		});
+        helper.Content.Cards.RegisterCard("BasicMove", new()
+		{
+			CardType = typeof(BasicMove),
+			Meta = new()
+			{
+				deck = Deck.colorless,
+				rarity = Rarity.common,
+				upgradesTo = [Upgrade.A, Upgrade.B],
+                dontOffer = true
+			},
+			Name = AnyLocalizations.Bind(["card", "BasicMove", "name"]).Localize
+		});
+
+        List<IPartEntry> parts = [];
+        foreach (string str in new string[] {"cannon", "scaffolding", "wing", "cockpit", "missiles"}) {
+            parts.Add(helper.Content.Ships.RegisterPart($"solarsail_{str}", new() {
+                Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/ship/{str}.png")).Sprite
+            }));
+        }
+        helper.Content.Ships.RegisterShip("solarsail", new() {
+            Name = AnyLocalizations.Bind(["ship", "name"]).Localize,
+            Description = AnyLocalizations.Bind(["ship", "description"]).Localize,
+            UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/ship/chassis.png")).Sprite,
+            Ship = new() {
+                artifacts = {
+                    new ShieldPrep(), new EmergencyThrusters()
+                },
+                cards = {
+                    new BasicMove(),
+                    new BasicRubble(),
+                    new BasicShieldColorless(),
+                    new DodgeColorless()
+                },
+                ship = new() {
+					x = 7,
+					hull = 10,
+					hullMax = 10,
+					shieldMaxBase = 4,
+					isPlayerShip = true,
+                    parts = {
+                        new Part {
+                            type = PType.cannon,
+                            skin = parts[0].UniqueName,
+                            damageModifier = PDamMod.armor
+                        },
+                        new Part {
+                            type = PType.empty,
+                            skin = parts[1].UniqueName
+                        },
+                        new Part {
+                            type = PType.wing,
+                            skin = parts[2].UniqueName
+                        },
+                        new Part {
+                            type = PType.cockpit,
+                            skin = parts[3].UniqueName
+                        },
+                        new Part {
+                            type = PType.missiles,
+                            skin = parts[4].UniqueName
+                        }
+                    }
+                }
+            }
+        });
 	}
 }

@@ -1,26 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
     <IsLegacyMod>true</IsLegacyMod>
     <ModLoaderPath>$(HOME)\Games\Nickel</ModLoaderPath>
 		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
-    <!-- <ModLoaderPath>..\..</ModLoaderPath> -->
-    <Version>1.0.7</Version>
     <GameDllPath>$(ModLoaderPath)\Extract\CobaltCore.dll</GameDllPath>
     <EnableDllExtract>false</EnableDllExtract>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nickel.ModBuildConfig" Version="0.5.0-alpha1" ExcludeAssets="runtime" />
+    <PackageReference Include="Nickel.ModBuildConfig" Version="1.0.0-alpha2" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- <PackageReference Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" ExcludeAssets="runtime" /> -->
     <PackageReference Include="Shrike" Version="3.0.0" PrivateAssets="all" />
     <PackageReference Include="Shrike.Harmony" Version="3.0.0" PrivateAssets="all" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" PrivateAssets="all" ExcludeAssets="runtime" /> -->
     <PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
   </ItemGroup>
   
@@ -40,6 +38,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Sprites/**/*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="I18n/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,0 +1,20 @@
+{
+    "ship": {
+        "name": "Apollo",
+        "description": "A battle-ready solar sail with restrictive movement but potent strafing capabilities."
+    },
+    "artifact": {
+        "EmergencyThrusters": {
+            "name": "THE CHARIOT",
+            "description": "Gain 1 <c=status>STRAFE</c> on the first turn. <c=downside>When you move using <c=status>EVADE</c>, take 1 damage."
+        }
+    },
+    "card": {
+        "BasicMove": {
+            "name": "Basic Move"
+        },
+        "BasicRubble": {
+            "name": "Basic Rubble"
+        }
+    }
+}

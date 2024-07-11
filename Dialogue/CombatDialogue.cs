@@ -1,4 +1,4 @@
-using TheJazMaster.Eddie.Dialogue;
+using TheJazMaster.Eddie.DialogueAdditions;
 
 namespace TheJazMaster.Eddie;
 
@@ -2419,19 +2419,19 @@ internal static class CombatDialogue
 		node = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			oncePerCombat = true,
-			oncePerCombatTags = new() { "PlayedDiscount" },
-			lines = new()
-			{
+			oncePerCombatTags = ["PlayedDiscount"],
+			lines =
+			[
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines =
+					[
 						new CustomSay()
 						{
 							who = eddie,
-							Text = "It's a dubious trick, but it's cheap!.",
+							Text = "It's a dubious trick, but it's cheap!",
 							loopTag = Manifest.EddieExplainsAnimation.Tag
 						},
 						new CustomSay()
@@ -2482,9 +2482,9 @@ internal static class CombatDialogue
 							Text = "What a bargain!",
 							loopTag = Manifest.EddieExcitedAnimation.Tag
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		KokoroApi.SetExtensionData(node, StoryVarsAdditions.MinDiscountOfCardJustPlayedKey, 1);
 		DB.story.all[$"PlayedDiscount_{eddie}_0"] = node;
@@ -2557,15 +2557,14 @@ internal static class CombatDialogue
 			type = NodeType.combat,
 			whoDidThat = Deck.tooth,
 			oncePerRun = true,
-			allPresent = new() { eddie },
-			lines = new()
-			{
+			allPresent = [eddie],
+			lines = [
 				new CustomSay() {
 					who = eddie,
 					Text = "You can get a lot of use out of junk like this.",
 					loopTag = Manifest.EddieExplainsAnimation.Tag
 				}
-			}
+			]
 		};
 
 		DB.story.all["summonEddie_0"] = new()
@@ -2607,5 +2606,11 @@ internal static class CombatDialogue
 				}
 			}
 		};
+
+		DB.story.GetNode("DillianShouts")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
+		{
+			who = eddie,
+			Text = "Whaddup.",
+		});
 	}
 }

@@ -230,7 +230,7 @@ internal static class EventDialogue
 				new CustomSay()
 				{
 					who = "comp",
-					Text = "Probably! 	Now go do your thing, there's a hostile ship up ahead!",
+					Text = "Probably! Now go do your thing, there's a hostile ship up ahead!",
 					loopTag = "neutral"
 				}
 			}
@@ -652,7 +652,8 @@ internal static class EventDialogue
 				new CustomSay()
 				{
 					who = "knight",
-					Text = "What say we make this <c=keyword>an honorable duel</c>? I shan't target thine weak points if ye deign not to target mine."
+					Text = "What say we make this <c=keyword>an honorable duel</c>? I shan't target thine weak points if ye deign not to target mine.",
+					flipped = true
 				},
 				new CustomSay()
 				{
@@ -663,12 +664,14 @@ internal static class EventDialogue
 				new CustomSay()
 				{
 					who = "knight",
-					Text = "..."
+					Text = "...",
+					flipped = true
 				},
 				new CustomSay()
 				{
 					who = "knight",
-					Text = "Please?"
+					Text = "Please?",
+					flipped = true
 				}
 			}
     	};
@@ -707,5 +710,174 @@ internal static class EventDialogue
 			Text = "Dang. I guess we have to kill him.",
 			loopTag = Manifest.EddieAnnoyedAnimation.Tag
 		});
+
+		DB.story.all[$"RunWinWho_{eddie}_1"] = new()
+		{
+			type = NodeType.@event,
+			bg = "BGRunWin",
+      		allPresent = new () { eddie },
+			lookup = [ $"runWin_{eddie}" ],
+			once = true,
+			lines = [
+				new Wait {
+					secs = 3
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Oh, shouldn't you repair somebody else first?",
+					loopTag = Manifest.EddieSquintAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "You play a part in this like all the others.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Really? I don't remember doing much of anything.",
+					loopTag = Manifest.EddieSquintAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "Time for that to change.",
+					flipped = true
+				}
+			]
+		};
+		DB.story.all[$"RunWinWho_{eddie}_2"] = new()
+		{
+			type = NodeType.@event,
+			bg = "BGRunWin",
+      		allPresent = [eddie],
+			requiredScenes = [
+				$"RunWinWho_{eddie}_1"
+			],
+			lookup = [ $"runWin_{eddie}" ],
+			once = true,
+			lines = [
+				new Wait {
+					secs = 3
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Ah right, you contacted me.",
+					loopTag = Manifest.EddieSquintAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Why?",
+					loopTag = Manifest.EddieSquintAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "My influence outside of the core room was limited to a few bit flips at a time.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "You were the only crew member to spend so much time looking at nonessential computer screens.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "I thought I was going crazy for at least a few months.",
+					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "I didn't yet comprehend the difference between our timescales.",
+					flipped = true
+				}
+			]
+		};
+		DB.story.all[$"RunWinWho_{eddie}_3"] = new()
+		{
+			type = NodeType.@event,
+			bg = "BGRunWin",
+      		allPresent = [eddie],
+			requiredScenes = [
+				$"RunWinWho_{eddie}_2"
+			],
+			lookup = [ $"runWin_{eddie}" ],
+			once = true,
+			lines = [
+				new Wait {
+					secs = 3
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "I should thank you.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Oh, are you sure?"
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Why?",
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "You will see.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "But in case this is the last time we meet: thank you.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Wait, \"the last time\"?",
+					loopTag = Manifest.EddieWorriedAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "This memory will repair your timestream.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Oh, good."
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "However, escaping the time loop can still go wrong in ways I cannot foresee.",
+					flipped = true
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Oh, bad.",
+					loopTag = Manifest.EddieSquintAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = "void",
+					Text = "I will do my best to help.",
+					flipped = true
+				}
+			]
+		};
 	}
 }
