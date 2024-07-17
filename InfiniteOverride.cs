@@ -22,7 +22,11 @@ public static class InfiniteOverride
 
 	private static void OverrideInfinite(Card __instance, ref CardData __result, State state)
 	{
-		
+		if (state == DB.fakeState)
+            return;
+        if (MG.inst.g.metaRoute is not null && MG.inst.g.metaRoute is { subRoute: Codex })
+            return;
+
 		if (HasInfiniteOverride(__instance))
 		{
 			__result.infinite = true;

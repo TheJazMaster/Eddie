@@ -185,6 +185,11 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
     }
 
     private static void AffectCardData(Card __instance, ref CardData __result, State state) {
+        if (state == DB.fakeState)
+            return;
+        if (MG.inst.g.metaRoute is not null && MG.inst.g.metaRoute is { subRoute: Codex })
+            return;
+        
         foreach (Artifact item in state.EnumerateAllArtifacts()) {
             if (item is ICardDataAffectorArtifact artifact)  {
                 artifact.AffectCardData(state, __instance, ref __result);
