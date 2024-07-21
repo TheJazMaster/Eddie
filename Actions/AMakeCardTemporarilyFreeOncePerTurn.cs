@@ -10,7 +10,6 @@ namespace TheJazMaster.Eddie.Actions
         
         public int howManyCards = 1;
         public bool skipInfinite = true;
-        public bool permanent = false;
 
         public override void Begin(G g, State s, Combat c)
         {
@@ -25,7 +24,7 @@ namespace TheJazMaster.Eddie.Actions
                     }
                     howManyCards--;
                     
-                    Cheap.SetFree(card, true, true, permanent ? true : null);
+                    Cheap.SetFree(card, true, true, null);
                     // Cheap.free.AddOrUpdate(card, true);
                     // Cheap.free_once_per_turn.AddOrUpdate(card, true);
                     // if (permanent)

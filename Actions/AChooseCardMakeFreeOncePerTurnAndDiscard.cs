@@ -14,7 +14,7 @@ namespace TheJazMaster.Eddie.Actions
             Card? card = selectedCard;
 			if (card != null)
 			{
-                Cheap.SetFree(card, true, true, false);
+                Cheap.SetFree(card, true, true, null);
                 // Cheap.free.AddOrUpdate(card, true);
 				// Cheap.free_once_per_turn.AddOrUpdate(card, true);
 				

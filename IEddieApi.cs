@@ -14,7 +14,7 @@ public interface IEddieApi
     Status GainEnergyEveryTurnStatus { get; }
     Status HealNextTurnStatus { get; }
 
-	void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null);
+	void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, int? permanentValue = null);
 
 	bool UsedFreeOncePerTurn(Card card);
 
@@ -22,5 +22,5 @@ public interface IEddieApi
 
 	bool IsFreeOncePerTurn(Card card);
 
-	bool IsFreePermanent(Card card);
+	int CostsLessPermanent(Card card);
 }

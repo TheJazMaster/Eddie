@@ -11,7 +11,7 @@ public class FrazzledWires : Artifact, IRegisterableArtifact
 		{
 			filterMinCost = 1,
 			filterMaxCost = 1,
-			browseAction = new CardSelectAddShortCircuitAndMakeFreeForever(),
+			browseAction = new CardSelectAddShortCircuitAndMakeCheaperForever(),
 			browseSource = CardBrowse.Source.Deck
 		});
 	}

@@ -5,18 +5,16 @@ using System.Threading.Tasks;
 
 namespace TheJazMaster.Eddie.Actions
 {
-    public class CardSelectAddShortCircuitAndMakeFreeForever : CardAction
+    public class CardSelectAddShortCircuitAndMakeCheaperForever : CardAction
     {
+        int howMuch = 1;
+        
         public override Route? BeginWithRoute(G g, State s, Combat c)
         {
             if (selectedCard != null)
             {
-                // ShortCircuit.short_circuit_override_is_permanent.AddOrUpdate(selectedCard, true);
-                // ShortCircuit.short_circuit_override.AddOrUpdate(selectedCard, true);
                 ShortCircuit.SetShortCircuit(selectedCard, true, true);
-                Cheap.SetFree(selectedCard, true, null, true);
-                // Cheap.free.AddOrUpdate(selectedCard, true);
-                // Cheap.free_permanent.AddOrUpdate(selectedCard, true);
+                Cheap.SetFree(selectedCard, null, null, howMuch);
                 return new ShowCards
                 {
                     messageKey = "showcards.addedShortCircuit",

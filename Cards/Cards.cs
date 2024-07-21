@@ -89,7 +89,7 @@ public class Borrow : Card
 					},
 					new ADrawCard
 					{
-						count = 2
+						count = 1
 					},
 					new AStatus
 					{
@@ -100,7 +100,7 @@ public class Borrow : Card
 					new AHurtAndHealLater
 					{
 						targetPlayer = true,
-						hurtAmount = 2
+						hurtAmount = 1
 					}
 				};
 			case Upgrade.B:

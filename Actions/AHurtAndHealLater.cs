@@ -13,6 +13,7 @@ namespace TheJazMaster.Eddie.Actions
 
         public override void Begin(G g, State s, Combat c)
 	    {
+            Manifest.Instance.KokoroApi.SetExtensionData(targetPlayer ? s.ship : c.otherShip, Manifest.NoHealThisTurnKey, true);
             c.Queue(new AHurt
 			{
 				hurtAmount = hurtAmount,

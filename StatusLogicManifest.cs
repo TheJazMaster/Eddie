@@ -21,6 +21,8 @@ public partial class Manifest : IStatusManifest
     public static ExternalStatus HealNextTurnStatus { get; private set; } = null!;
     // public static ExternalStatus OverchargeStatus { get; private set; } = null!;
 
+    internal static readonly string NoHealThisTurnKey = "NoHealThisTurn";
+
     public void LoadManifest(IStatusRegistry statusRegistry)
     {
 
@@ -42,7 +44,7 @@ public partial class Manifest : IStatusManifest
         statusRegistry.RegisterStatus(GainEnergyEveryTurnStatus);
 
         HealNextTurnStatus = new ExternalStatus("Eddie.Status.HealNextTurn", true, Eddie_PrimaryColor, null, HealNextTurnIcon ?? throw new Exception("Missing Heal Next Turn Icon for status"), true);
-        HealNextTurnStatus.AddLocalisation("Regain Hull Next Turn", "Regain {0} hull at the start of your next turn or at the end of combat. <c=downside>This does not count as healing.</c>");
+        HealNextTurnStatus.AddLocalisation("Regain Hull Later", "Regain {0} hull at the end of combat, or at the end of a turn where you didn't suffer temporary hull loss. <c=downside>This does not count as healing.</c>");
         statusRegistry.RegisterStatus(HealNextTurnStatus);
 
         // OverchargeStatus = new ExternalStatus("Eddie.Status.Overcharge", true, System.Drawing.Color.FromArgb(255, 56, 56), null, OverchargeIcon ?? throw new Exception("Missing Overcharge Icon for status"), true);
@@ -82,12 +84,12 @@ public partial class Manifest : IStatusManifest
     {
         if (HealNextTurnStatus?.Id == null)
             return;
-        var start_turn_method = typeof(Ship).GetMethod("OnBeginTurn") ?? throw new Exception("Couldn't find Ship.OnBeginTurn method");
-        var start_turn_post = typeof(Manifest).GetMethod("HealOnStartOfTurn", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.HealOnStartOfTurn method");
+        var start_turn_method = typeof(Ship).GetMethod("OnAfterTurn") ?? throw new Exception("Couldn't find Ship.OnAfterTurn method");
+        var start_turn_post = typeof(Manifest).GetMethod("HealOnEndOfTurn", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.HealOnEndOfTurn method");
         harmony.Patch(start_turn_method, postfix: new HarmonyMethod(start_turn_post));
 
         var updateMethod = typeof(Combat).GetMethod("Update") ?? throw new Exception("Couldn't find Combat.Update method");
-        var patch = typeof(Manifest).GetMethod("HealOnEnemyDie", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.HealOnStartOfTurn method");
+        var patch = typeof(Manifest).GetMethod("HealOnEnemyDie", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Couldnt find Manifest.HealOnEnemyDie method");
         harmony.Patch(updateMethod, postfix: new HarmonyMethod(patch));
     }
 
@@ -119,14 +121,18 @@ public partial class Manifest : IStatusManifest
         harmony.Patch(getTooltipsMethod, postfix: new HarmonyMethod(patch));
     }
 
-    private static void HealOnStartOfTurn(Ship __instance, State s, Combat c)
+    private static void HealOnEndOfTurn(Ship __instance, State s, Combat c)
     {
         var status = (Status)HealNextTurnStatus!.Id!;
 
+
         if (__instance.Get(status) > 0) {
-            __instance.Heal(__instance.Get(status));
-            __instance.Set(status, 0);
+            if (!Instance.KokoroApi.TryGetExtensionData(__instance, NoHealThisTurnKey, out bool value) || !value) {
+                __instance.Heal(__instance.Get(status));
+                __instance.Set(status, 0);
+            }
         }
+        Instance.KokoroApi.RemoveExtensionData(__instance, NoHealThisTurnKey);
     }
 
     private static void HealOnEnemyDie(Combat __instance, G g)
@@ -404,58 +410,4 @@ public partial class Manifest : IStatusManifest
         s.ship.Set((Status)ClosedCircuitStatus!.Id!, ccAmountAfter);
         return cards;
     }
-
-    // private static IEnumerable<CodeInstruction> ClosedCircuitMakesRetain(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
-    // {
-    //     using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
-
-    //     while(iter.MoveNext()) {
-    //         yield return iter.Current;
-    //         if(iter.Current.opcode != OpCodes.Ldarg_1) {
-    //             continue;
-    //         }
-
-    //         if(!iter.MoveNext()) break;
-    //         yield return iter.Current;
-
-    //         if(iter.Current.opcode != OpCodes.Ldarg_0) {
-    //             continue;
-    //         }
-
-    //         if(!iter.MoveNext()) break;
-    //         yield return iter.Current;
-
-    //         if(iter.Current.opcode != OpCodes.Ldfld) {
-    //             continue;
-    //         }
-    //         var sField = iter.Current.operand;
-
-    //         while (iter.MoveNext() && iter.Current.opcode != OpCodes.Ret) {
-    //             yield return iter.Current;
-    //         }
-
-    //         if(iter.Current.opcode != OpCodes.Ret) {
-    //             yield return iter.Current;
-    //             continue;
-    //         }
-    //         Label endLabel = il.DefineLabel();
-
-    //         yield return new CodeInstruction(OpCodes.Dup);
-    //         yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
-    //         yield return new CodeInstruction(OpCodes.Pop);
-    //         yield return new CodeInstruction(OpCodes.Ldarg_0);
-    //         yield return new CodeInstruction(OpCodes.Ldfld, sField);
-    //         yield return new CodeInstruction(OpCodes.Ldarg_1);
-    //         yield return new CodeInstruction(OpCodes.Ldarg_0);
-    //         yield return new CodeInstruction(OpCodes.Ldfld, countField);
-    //         yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("ClosedCircuitRetain", BindingFlags.Static | BindingFlags.NonPublic));
-
-    //         yield return iter.Current.WithLabels(endLabel);
-    //         break;
-    //     }
-
-    //     while(iter.MoveNext())
-    //         yield return iter.Current;
-
-    // }
 }

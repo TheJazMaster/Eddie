@@ -16,7 +16,7 @@ public static class Cheap
 
 	internal const string FreeKey = "Free";
 	internal const string FreeOncePerTurnKey = "FreeOncePerTurn";
-	internal const string FreeIsPermanentKey = "FreeIsPermanent";
+	internal const string CostsLessPermanentKey = "FreeIsPermanent";
 
 	private static void SetCheapDiscount(ref Combat __result, State s, AI ai, bool doForReal)
 	{
@@ -30,15 +30,15 @@ public static class Cheap
 	}
 
 
-	public static void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null) {
+	public static void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, int? cheaper = null) {
 		if (overrideValue != null) {
 			KokoroApi.SetExtensionData(card, FreeKey, overrideValue.Value);
 		}
 		if (oncePerTurnOnlyValue != null) {
 			KokoroApi.SetExtensionData(card, FreeOncePerTurnKey, oncePerTurnOnlyValue.Value);
 		}
-		if (permanentValue != null) {
-			KokoroApi.SetExtensionData(card, FreeIsPermanentKey, permanentValue.Value);
+		if (cheaper != null) {
+			KokoroApi.SetExtensionData(card, CostsLessPermanentKey, cheaper.Value);
 		}
 	}
 
@@ -51,15 +51,19 @@ public static class Cheap
 	}
 
 	public static bool IsFreeOncePerTurn(Card card) {
-		return KokoroApi.TryGetExtensionData<bool>(card, FreeOncePerTurnKey, out var _);
+		return KokoroApi.TryGetExtensionData(card, FreeOncePerTurnKey, out bool _);
 	}
 
-	public static bool IsFreePermanent(Card card) {
-		return KokoroApi.TryGetExtensionData<bool>(card, FreeIsPermanentKey, out var isPermanent) && isPermanent;
+	public static int CostsLessPermanent(Card card) {
+		return KokoroApi.TryGetExtensionData(card, CostsLessPermanentKey, out int howMuch) ? howMuch : 0;
 	}
 	
 	private static void SetFree(Card __instance, ref CardData __result, State state)
 	{
+		int costLess = CostsLessPermanent(__instance);
+		if (costLess > 0) {
+			__result.cost = Math.Max(0, __result.cost - costLess);
+		}
 		if (IsFree(__instance)) {
 			__result.cost = 0;
 		}
@@ -69,8 +73,7 @@ public static class Cheap
 	{
 		foreach (Card card in state.deck)
 		{
-			if (!IsFreePermanent(card))
-				KokoroApi.RemoveExtensionData(card, FreeKey);
+			KokoroApi.RemoveExtensionData(card, FreeKey);
 			KokoroApi.RemoveExtensionData(card, FreeOncePerTurnKey);
 		}
 	}

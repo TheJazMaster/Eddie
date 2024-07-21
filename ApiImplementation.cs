@@ -21,7 +21,7 @@ public sealed class ApiImplementation : IEddieApi
     public Status GainEnergyEveryTurnStatus => (Status)Manifest.GainEnergyEveryTurnStatus.Id!;
     public Status HealNextTurnStatus => (Status)Manifest.HealNextTurnStatus.Id!;
 
-	public void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, bool? permanentValue = null) {
+	public void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, int? permanentValue = null) {
 		Cheap.SetFree(card, overrideValue, oncePerTurnOnlyValue, permanentValue);
 	}
 
@@ -37,8 +37,8 @@ public sealed class ApiImplementation : IEddieApi
 		return Cheap.IsFreeOncePerTurn(card);
 	}
 
-	public bool IsFreePermanent(Card card) {
-		return Cheap.IsFreePermanent(card);
+	public int CostsLessPermanent(Card card) {
+		return Cheap.CostsLessPermanent(card);
 	}
 
 	public void SetShortCircuit(Card card, bool? overrideValue = null, bool? permanentValue = null, bool? innateValue = null) {

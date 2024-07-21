@@ -73,7 +73,7 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
             "ELECTROMAGNETIC COIL", "If you end your turn with more than 0 <c=energy>ENERGY</c>, gain 1 <c=status>EVADE</c>.");
 
         FrazzledWiresArtifact = RegisterArtifact(registry, typeof(FrazzledWires), FrazzledWiresSprite ?? throw new Exception("missing FrazzledWires sprite"),
-            "FRAZZLED WIRES", "Choose a card in your deck that costs 1 <c=energy>ENERGY</c>. Its cost is reduced to 0. <c=downside>It gains <c=cardtrait>short-circuit</c>.");
+            "FRAZZLED WIRES", "Choose a card in your deck that costs 1 <c=energy>ENERGY</c>. Its cost is reduced by 1. <c=downside>It gains <c=cardtrait>short-circuit</c>.");
 
         FissionChamberArtifact = RegisterArtifact(registry, typeof(FissionChamber), FissionChamberSprite ?? throw new Exception("missing FissionChamber sprite"),
             "FISSION CHAMBER", "All <c=keyword>X</c> values on cards are increased by 1.");

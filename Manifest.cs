@@ -374,7 +374,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         // registry.RegisterGlossary(LeftmostCardGlossary);
 
         TemporaryHurtGlossary = new ExternalGlossary("Eddie.Glossary.TemporaryHurtGlossary", "EddieTemporaryHurtAction", false, ExternalGlossary.GlossayType.action, TemporaryHurtIcon);
-        TemporaryHurtGlossary.AddLocalisation("en", "Temporary Hull Loss", "Lose {0} hull. Regain that hull at the start of next turn or at the end of combat.", null);
+        TemporaryHurtGlossary.AddLocalisation("en", "Temporary Hull Loss", "Lose {0} hull. Regain that hull at the end of combat, or at the end of a turn where you didn't suffer temporary hull loss.", null);
         registry.RegisterGlossary(TemporaryHurtGlossary);
 
         XIsEnergyGlossary = new ExternalGlossary("Eddie.Glossary.XIsEnergyGlossary", "EddieXIsEnergyAction", false, ExternalGlossary.GlossayType.action, EnergyIcon ?? throw new Exception("Missing Energy Icon"));
@@ -512,6 +512,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
         KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+        KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
         KokoroApi.RegisterTypeForExtensionData(typeof(Card));
         KokoroApi.RegisterTypeForExtensionData(typeof(CardAction));
         KokoroApi.RegisterTypeForExtensionData(typeof(StoryVars));
@@ -887,7 +888,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     }
 
     private static void DB_SetLocale_Postfix() {
-        DB.currentLocale.strings["showcards.addedShortCircuit"] = "Set cost to 0, added <c=cardtrait>short-circuit</c>!";
+        DB.currentLocale.strings["showcards.addedShortCircuit"] = "Reduced cost by 1, added <c=cardtrait>short-circuit</c>!";
     }
 
     private static IEnumerable<CodeInstruction> State_PopulateRun_Delegate_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
