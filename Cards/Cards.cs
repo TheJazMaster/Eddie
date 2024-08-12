@@ -499,7 +499,7 @@ public class GammaRay : Card
 		{
 			new AAttack
 			{
-				damage = upgrade == Upgrade.B ? 13 : 9,
+				damage = GetDmg(s, upgrade == Upgrade.B ? 13 : 9),
 				piercing = true,
 				dialogueSelector = ".GammaRay"
 			}

@@ -400,7 +400,7 @@ internal static class CombatDialogue
 				{
 					who = Deck.shard.Key(),
 					Text = "Dying sucks!",
-					loopTag = "mad"
+					loopTag = "squint"
 				},
 				new CustomSay()
 				{
@@ -1673,6 +1673,22 @@ internal static class CombatDialogue
 					who = eddie,
 					Text = "Aw man, that was my favorite chunk of hull.",
 					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				}
+			}
+		};
+
+		DB.story.all[$"WeGotShotButTookNoDamage_{eddie}_0"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { eddie },
+			enemyShotJustHit = true,
+			maxDamageDealtToPlayerThisTurn = 0,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "See? Everything's fine."
 				}
 			}
 		};

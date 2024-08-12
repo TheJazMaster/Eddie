@@ -79,7 +79,7 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
             "FISSION CHAMBER", "All <c=keyword>X</c> values on cards are increased by 1.");
 
         DeconstructionGogglesArtifact = RegisterArtifact(registry, typeof(DeconstructionGoggles), DeconstructionGogglesSprite ?? throw new Exception("missing DeconstructionGoggles sprite"),
-            "DECONSTRUCTION GOGGLES", "At the start of combat, gain 2 <c=card>Reverse-Engineer</c>s.");
+            "DECONSTRUCTION GOGGLES", "At the start of combat, gain 2 <c=card>Reverse-Engineers</c>.");
 
 
         // Patching status logic
