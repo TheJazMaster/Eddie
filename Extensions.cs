@@ -78,9 +78,6 @@ internal static class Extensions
 		if (originalMethod == null)
 		{
 			logger.Log(problemLogLevel, "Could not patch method - the mod may not work correctly.\nReason: Unknown method to patch.");
-#if DEBUG
-			Debugger.Break();
-#endif
 			return false;
 		}
 
@@ -96,9 +93,6 @@ internal static class Extensions
 		catch (Exception ex)
 		{
 			logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
-#if DEBUG
-			Debugger.Break();
-#endif
 			return false;
 		}
 	}

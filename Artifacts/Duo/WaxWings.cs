@@ -10,7 +10,7 @@ public class WaxWings : Artifact, ISmugHook
 {
 	static ISogginsApi? SogginsAPI => Manifest.Instance.SogginsApi;
 
-	bool active = false;
+	public bool active = false;
 
 	public override void OnQueueEmptyDuringPlayerTurn(State state, Combat combat)
 	{

@@ -3,7 +3,7 @@ namespace TheJazMaster.Eddie.Artifacts;
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.overdriveAlt" })]
 public class OverdriveFeedback : Artifact, OverdriveReductionPreventerArtifact
 {
-	bool active = true;
+	public bool active = true;
 
 	public override void OnTurnStart(State state, Combat combat) {
 		active = false;

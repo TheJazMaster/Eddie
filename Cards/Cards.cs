@@ -251,21 +251,13 @@ public class ChargeCannons : Card
 			setAmount = Manifest.GetEnergyAmount(s, c, this) - currentCost
 		});
 
-		// result.Add(new AStatusAdjusted
-		// {
-		//     targetPlayer = true,
-		//     status = Status.overdrive,
-		//     statusAmount = Manifest.GetEnergyAmount(s, c, this),
-		//     amountDisplayAdjustment = -currentCost,
-		//     xHint = 1
-		// });
-
+		int amount = Manifest.GetEnergyAmount(s, c, this) - currentCost;
 		result.Add(new AAddCardAdjusted
 		{
 			card = new Surge {
 				upgrade = upgrade
 			},
-			amount = Manifest.GetEnergyAmount(s, c, this) - currentCost,
+			amount = amount,
 			amountDisplayAdjustment = -currentCost,
 			destination = CardDestination.Deck,
 			xHint = 1
@@ -893,8 +885,7 @@ public class RefundShot : CheapCard
 		{
 			Upgrade.None or Upgrade.A => new List<CardAction> {
 					new AAttack {
-						damage = GetDmg(s, 1),
-						disabled = flipped
+						damage = GetDmg(s, 1)
 					},
 					new AHurtAndHealLater
 					{
@@ -907,8 +898,7 @@ public class RefundShot : CheapCard
 				},
 			Upgrade.B => new List<CardAction> {
 					new AAttack {
-						damage = GetDmg(s, 2),
-						disabled = flipped
+						damage = GetDmg(s, 2)
 					},
 					new AHurtAndHealLater
 					{

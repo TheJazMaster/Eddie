@@ -10,12 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TheJazMaster.Eddie;
 
-// [HarmonyPatch]
-[HarmonyDebug]
 public static class RenderingPatch {
-
-	// [HarmonyPatch(typeof(Card), nameof(Card.RenderAction))]
-	[HarmonyTranspiler]
 	private static IEnumerable<CodeInstruction> XEqualsPatch(IEnumerable<CodeInstruction> iseq)
     {
 		using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();

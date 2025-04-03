@@ -109,7 +109,7 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
         var duoDeck = DuoArtifactsApi!.DuoArtifactDeck;
 
         PerfectInsulationArtifact = RegisterArtifact(registry, typeof(PerfectInsulation), PerfectInsulationOnSprite ?? throw new Exception("missing PerfectInsulation sprite"),
-            "PERFECT INSULATION", "The first each combat time you would gain <c=status>SHIELD</c> above your maximum, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
+            "PERFECT INSULATION", "The first time each combat you would gain <c=status>SHIELD</c> above your maximum, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
         Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(PerfectInsulation), new[] { eddieDeck, Enum.Parse<Deck>("dizzy") });
 
         UltraLightBatteriesArtifact = RegisterArtifact(registry, typeof(UltraLightBatteries), UltraLightBatteriesSprite ?? throw new Exception("missing UltraLightBatteries sprite"),
@@ -388,11 +388,10 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
         }
     }
 
-    [HarmonyDebug]
     private static IEnumerable<CodeInstruction> RenderActionPatch(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod) {
-        List<CodeInstruction> spriteColorInstructions = new List<CodeInstruction>();
-        List<CodeInstruction> iconWidthInstructions = new List<CodeInstruction>();
-        List<CodeInstruction> wInstructions = new List<CodeInstruction>();
+        List<CodeInstruction> spriteColorInstructions = [];
+        List<CodeInstruction> iconWidthInstructions = [];
+        List<CodeInstruction> wInstructions = [];
         
         using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
         while (iter.MoveNext()) {

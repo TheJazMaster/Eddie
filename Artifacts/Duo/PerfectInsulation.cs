@@ -1,10 +1,10 @@
 namespace TheJazMaster.Eddie.Artifacts
 {
 	
-	[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.shieldAlt" })]
+	[ArtifactMeta(pools = [ArtifactPool.Common], extraGlossary = ["status.shieldAlt"])]
     public class PerfectInsulation : Artifact, OvershieldArtifact
     {
-		bool active = true;
+		public bool active = true;
 
 		public override Spr GetSprite()
 		{

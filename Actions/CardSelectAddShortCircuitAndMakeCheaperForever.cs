@@ -26,7 +26,7 @@ namespace TheJazMaster.Eddie.Actions
 
         public override string? GetCardSelectText(State s)
         {
-            return "Select a card to make free but <c=downside>add <c=cardtrait>short-circuit</c> to</c>, forever.";
+            return "Select a card to make cheaper but <c=downside>add <c=cardtrait>short-circuit</c> to</c>, forever.";
         }
     }
 }

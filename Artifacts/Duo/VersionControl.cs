@@ -3,7 +3,7 @@ namespace TheJazMaster.Eddie.Artifacts;
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "cardtrait.exhaust" })]
 public class VersionControl : Artifact, OnExhaustArtifact
 {
-	int counter = 0;
+	public int counter = 0;
 
 	public override int? GetDisplayNumber(State s)
 	{

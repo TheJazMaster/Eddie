@@ -39,4 +39,9 @@ public class FrazzledWires : Artifact, IRegisterableArtifact
 			}
 		};
 	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+	{
+		return [new TTGlossary(Manifest.ShortCircuitGlossary?.Head!)];
+	}
 }

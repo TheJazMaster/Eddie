@@ -14,15 +14,20 @@ namespace TheJazMaster.Eddie.Actions
         public override void Begin(G g, State s, Combat c)
         {
             int changeAmount = setTo - c.energy;
-            c.energy = Math.Max(setTo, 0);
-            Audio.Play((changeAmount > 0) ? Event.Status_PowerUp : Event.Status_PowerDown);
-            if (changeAmount < 0)
-            {
-                c.pulseEnergyBad = 0.5;
+            if (changeAmount != 0) {
+                c.energy = Math.Max(setTo, 0);
+                Audio.Play((changeAmount > 0) ? Event.Status_PowerUp : Event.Status_PowerDown);
+                if (changeAmount < 0)
+                {
+                    c.pulseEnergyBad = 0.5;
+                }
+                else if (changeAmount > 0)
+                {
+                    c.pulseEnergyGood = 0.5;
+                }
             }
-            else if (changeAmount > 0)
-            {
-                c.pulseEnergyGood = 0.5;
+            else {
+                timer = 0;
             }
         }
 

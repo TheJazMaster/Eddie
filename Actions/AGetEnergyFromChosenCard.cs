@@ -29,7 +29,7 @@ namespace TheJazMaster.Eddie.Actions
 
         public override Icon? GetIcon(State s)
         {
-            return new Icon(Spr.icons_bypass, null, Colors.textMain);
+            return new Icon(StableSpr.icons_bypass, null, Colors.textMain);
         }
     }
 }

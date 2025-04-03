@@ -5,7 +5,7 @@ namespace TheJazMaster.Eddie.Artifacts;
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class UltraLightBatteries : Artifact
 {
-	bool active = true;
+	public bool active = true;
 
 	public override void OnQueueEmptyDuringPlayerTurn(State state, Combat combat)
 	{

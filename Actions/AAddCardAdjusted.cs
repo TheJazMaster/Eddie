@@ -14,7 +14,8 @@ namespace TheJazMaster.Eddie.Actions
 	    {
             var oldAmount = amount;
             amount = Math.Max(0, amount + amountAdjustment);
-            base.Begin(g, s, c);
+            if (amount > 0)
+                base.Begin(g, s, c);
             amount = oldAmount;
         }
         public override Icon? GetIcon(State s)

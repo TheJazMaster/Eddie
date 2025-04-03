@@ -763,7 +763,6 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             throw new Exception("TraitIcons transpiler failed to find match");
     }
 
-    [HarmonyDebug]
     private static IEnumerable<CodeInstruction> TraitIcons(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
     { 
         bool worked = false;
