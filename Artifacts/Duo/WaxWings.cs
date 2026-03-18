@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public class WaxWings : Artifact, ISmugHook
 {
 	static ISogginsApi? SogginsAPI => Manifest.Instance.SogginsApi;
@@ -27,7 +27,7 @@ public class WaxWings : Artifact, ISmugHook
 					time = 0.3
 				},
 				new AEnergy {
-					changeAmount = 2
+					changeAmount = 3
 				}
 			});
 		}

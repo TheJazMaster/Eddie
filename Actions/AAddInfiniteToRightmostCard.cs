@@ -24,7 +24,7 @@ namespace TheJazMaster.Eddie.Actions
                         break;
                     }
                     howManyCards--;
-                    InfiniteOverride.SetInfiniteOverride(card, true, permanent);
+                    Manifest.Helper.Content.Cards.SetCardTraitOverride(s, card, Manifest.Helper.Content.Cards.InfiniteCardTrait, true, permanent);
                 }
             }
         }

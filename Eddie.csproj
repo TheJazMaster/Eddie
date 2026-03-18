@@ -6,27 +6,15 @@
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
     <IsLegacyMod>true</IsLegacyMod>
-    <ModLoaderPath>$(HOME)\Games\Nickel</ModLoaderPath>
+    <ModLoaderPath>$(HOME)\Nickel</ModLoaderPath>
 		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
-    <GameDllPath>$(ModLoaderPath)\Extract\CobaltCore.dll</GameDllPath>
     <GameExePath>/home/thejazmaster/.steam/steam/steamapps/common/Cobalt Core/CobaltCore.exe</GameExePath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nickel.ModBuildConfig" Version="1.2.2" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="Shrike" Version="3.1.0" PrivateAssets="all" />
-    <PackageReference Include="Shrike.Harmony" Version="3.1.1" PrivateAssets="all" />
-		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="All" />
+		<PackageReference Include="Nickel.ModBuildConfig" Version="2.0.2" />
+		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.2" PrivateAssets="All" ExcludeAssets="runtime" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="CobaltCoreModding.Definitions">
-      <HintPath>References\CobaltCoreModding.Definitions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
 
   <ItemGroup>
     <None Update="LICENSE.txt">

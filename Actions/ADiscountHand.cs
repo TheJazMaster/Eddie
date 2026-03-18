@@ -24,7 +24,7 @@ namespace TheJazMaster.Eddie.Actions
 
         public override Icon? GetIcon(State s)
         {
-            return new Icon(Enum.Parse<Spr>("icons_discount"), null, Colors.textMain);
+            return new Icon(StableSpr.icons_discount, null, Colors.textMain);
         }
 
         public override List<Tooltip> GetTooltips(State s)

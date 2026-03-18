@@ -25,21 +25,11 @@ namespace TheJazMaster.Eddie.Actions
             }
         }
 
-        private string GetTooltipText()
-        {
-            return "for the rest of the combat";
-        }
-
-        public override List<Tooltip> GetTooltips(State s)
-        {
-            List<Tooltip> list = new List<Tooltip>();
-            list.Add(new TTGlossary(Manifest.MakeFreeGlossary?.Head ?? throw new Exception("Missing Make Free glossary"), GetTooltipText()));
-            return list;
-        }
+        public override string? GetCardSelectText(State s) => Manifest.MakeFreeGlossary?.Head + "Then discard it.";
 
         public override Icon? GetIcon(State s)
         {
-            return new Icon(Enum.Parse<Spr>("icons_discount"), null, Colors.textMain);
+            return new Icon(StableSpr.icons_discount, null, Colors.textMain);
         }
     }
 }

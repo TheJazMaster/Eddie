@@ -15,41 +15,14 @@ namespace TheJazMaster.Eddie;
 
 public static class ShortCircuit
 {
-	private static IKokoroApi KokoroApi => Manifest.Instance.KokoroApi;
 
-	internal const string ShortCircuitKey = "ShortCircuit";
-	internal const string ShortCircuitOverrideKey = "ShortCircuitOverride";
-	internal const string ShortCircuitOverrideIsPermanentKey = "ShortCircuitOverrideIsPermanent";
-
-	private static void ShortCircuitRemoveOverride(Combat __instance, State state) {
-		foreach (Card card in state.deck)
-		{
-			if (!IsShortCircuitOverridePermanent(card)) {
-				KokoroApi.RemoveExtensionData(card, ShortCircuitOverrideKey);
-			}
-		}
+	public static void SetShortCircuit(State s, Card card, bool? overrideValue = null, bool permanentValue = false) {
+		Manifest.Helper.Content.Cards.SetCardTraitOverride(s, card, Manifest.ShortCircuitTrait, overrideValue, permanentValue);
 	}
 
-	public static void SetShortCircuit(Card card, bool? overrideValue = null, bool? permanentValue = null, bool? innateValue = null) {
-		if (overrideValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, ShortCircuitOverrideKey, overrideValue.Value);
-		}
-		if (permanentValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, ShortCircuitOverrideIsPermanentKey, permanentValue.Value);
-		}
-		if (innateValue != null) {
-			KokoroApi.SetExtensionData<bool>(card, ShortCircuitKey, innateValue.Value);
-		}
-	}
-
-	public static bool DoesShortCircuit(Card card, bool withOverrides = true)
+	public static bool DoesShortCircuit(State s, Card card)
 	{
-		return (KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitKey, out var isInnate) && isInnate) || (withOverrides && KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitOverrideKey, out var isOverridden) && isOverridden);
-	}
-
-	public static bool IsShortCircuitOverridePermanent(Card card)
-	{
-		return KokoroApi.TryGetExtensionData<bool>(card, ShortCircuitOverrideIsPermanentKey, out var isPermanent) && isPermanent;
+		return Manifest.Helper.Content.Cards.IsCardTraitActive(s, card, Manifest.ShortCircuitTrait);
 	}
 
 	[HarmonyBefore(new string[] { "Shockah.Soggins" })]
@@ -108,8 +81,8 @@ public static class ShortCircuit
 			
 			Label end_label = il.DefineLabel();
 
+			yield return new CodeInstruction(OpCodes.Ldarg_1);
 			yield return new CodeInstruction(OpCodes.Ldarg_2);
-			yield return new CodeInstruction(OpCodes.Ldc_I4_1);
 			yield return new CodeInstruction(OpCodes.Call, typeof(ShortCircuit).GetMethod("DoesShortCircuit"));
 			yield return new CodeInstruction(OpCodes.Brfalse, end_label);
 
@@ -128,11 +101,22 @@ public static class ShortCircuit
 			yield return iter.Current;
 	}
 
-	private static void DiscardMaybe(Card card, State s, Combat c, int cost) {
-		if (cost == 0) {
-			c.Queue(new ADiscardLeftmost {
-				count = 2
-			});
+	private static void ShortCircuitOverlay(G g, Combat __instance) {
+		if (Manifest.Instance.KokoroApi.TryGetExtensionData(g.state.ship, "ShortCircuitOverlay", out double data)) {
+			Draw.Sprite((Spr)Manifest.ShortCircuitOverlaySprite.Id!, -25.0, -25.0, blend: BlendMode.Screen, color: Colors.white.gain(data / 1.0 * 0.25));
+			g.state.flash = new Color(1, 1, 0).gain(data / 4.0);
+
+			double newData = data - g.dt;
+			if (newData <= 0)
+				Manifest.Instance.KokoroApi.RemoveExtensionData(g.state.ship, "ShortCircuitOverlay");
+			else
+				Manifest.Instance.KokoroApi.SetExtensionData(g.state.ship, "ShortCircuitOverlay", newData);
 		}
+	}
+
+	private static void DiscardMaybe(Card card, State s, Combat c, int cost) {
+		c.Queue(new AShortCircuit {
+			startEnergy = c.energy + cost
+		});
 	}
 }

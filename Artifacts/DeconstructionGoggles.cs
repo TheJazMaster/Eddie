@@ -1,9 +1,10 @@
 using TheJazMaster.Eddie.Cards;
+using TheJazMaster.Eddie.DialogueAdditions;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss })]
-public class DeconstructionGoggles : Artifact
+public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 {
 	public override Spr GetSprite()
 	{
@@ -98,7 +99,7 @@ public class DeconstructionGoggles : Artifact
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "CAT: deconstruction mode!",
+					Text = "CAT! Deconstruction mode!",
 					loopTag = Manifest.EddieExcitedAnimation.Tag
 				},
 				new CustomSay()
@@ -109,5 +110,30 @@ public class DeconstructionGoggles : Artifact
 				},
 			}
 		};
+
+		if (StoryVarsAdditions.SogginsName != null)
+			DB.story.all[$"Artifact{Key()}_2"] = new()
+			{
+				type = NodeType.combat,
+				oncePerRun = true,
+				oncePerCombatTags = new() { $"{Key()}Tag" },
+				allPresent = new() { eddie, StoryVarsAdditions.SogginsName },
+				hasArtifacts = new() { Key() },
+				maxTurnsThisCombat = 1,
+				lines = new()
+				{
+					new CustomSay()
+					{
+						who = StoryVarsAdditions.SogginsName,
+						Text = "I think my ideas are worth deconstructing."
+					},
+					new CustomSay()
+					{
+						who = eddie,
+						Text = "Yeah - for good.",
+						loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					},
+				}
+			};
 	}
 }

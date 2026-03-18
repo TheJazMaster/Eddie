@@ -1,7 +1,9 @@
+using TheJazMaster.Eddie.DialogueAdditions;
+
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-public class FissionChamber : Artifact, XAffectorArtifact
+public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 {
 	public override Spr GetSprite()
 	{
@@ -109,6 +111,30 @@ public class FissionChamber : Artifact, XAffectorArtifact
 					who = eddie,
 					Text = "I'm trying something out.",
 					loopTag = Manifest.EddieDefaultAnimation.Tag
+				}
+			}
+		};
+		DB.story.all[$"Artifact{Key()}_4"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			oncePerCombatTags = new() { $"{Key()}Tag" },
+			allPresent = new() { eddie, Deck.eunice.Key() },
+			hasArtifacts = new() { Key() },
+			maxTurnsThisCombat = 1,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "X marks the spot, Drake.",
+					loopTag = Manifest.EddieDefaultAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = Deck.eunice.Key(),
+					Text = "Shut up, nerd.",
+					loopTag = "mad"
 				}
 			}
 		};

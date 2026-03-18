@@ -24,7 +24,7 @@ namespace TheJazMaster.Eddie.Actions
                     }
                     howManyCards--;
 
-                    ShortCircuit.SetShortCircuit(c.hand[num], true, permanent ? true : null);
+                    ShortCircuit.SetShortCircuit(s, c.hand[num], true, permanent);
                     // ShortCircuit.short_circuit_override.AddOrUpdate(c.hand[num], true);
                     // if (permanent)
                     // {

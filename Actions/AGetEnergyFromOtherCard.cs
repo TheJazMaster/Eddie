@@ -48,7 +48,7 @@ namespace TheJazMaster.Eddie.Actions
 
         public override Icon? GetIcon(State s)
         {
-            return new Icon((Spr)Enum.Parse<Spr>("icons_bypass"), handPosition, Colors.textMain);
+            return new Icon((Spr)StableSpr.icons_bypass, handPosition, Colors.textMain);
         }
     }
 }

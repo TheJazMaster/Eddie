@@ -22,8 +22,8 @@ public static class Cheap
 	{
 		if (doForReal) {
 			foreach (Card item in s.deck) {
-				if (item is CheapCard cheapCard) {
-					item.discount = cheapCard.GetCheapDiscount();
+				if (Manifest.Helper.Content.Cards.IsCardTraitActive(s, item, Manifest.CheapTrait)) {
+					item.discount -= 1;
 				}
 			}
 		}

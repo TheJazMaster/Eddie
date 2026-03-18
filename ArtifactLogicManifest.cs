@@ -64,10 +64,10 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
     public void LoadManifest(IArtifactRegistry registry)
     {
         SunLampArtifact = RegisterArtifact(registry, typeof(SunLamp), SunLampOnSprite ?? throw new Exception("missing SunLamp sprite"),
-            "SUN LAMP", "Each turn, if you didn't use any <c=status>EVADE</c> last turn, gain 1 evade. <c=downside>Cannot activate again until you spend <c=status>EVADE</c>.</c>");
+            "SUN LAMP", "Gain 1 <c=status>TEMP SHIELD</c> each turn you don't use any <c=status>EVADE</c> to move.");
 
         SolarPanelsArtifact = RegisterArtifact(registry, typeof(SolarPanels), SolarPanelsOnSprite ?? throw new Exception("missing SolarPanels sprite"),
-            "SOLAR PANELS", "Gain 1 extra <c=energy>ENERGY</c> on the first turn. Each turn, if you didn't use any <c=status>EVADE</c> last turn, gain 1 extra <c=energy>ENERGY</c>.");
+            "SOLAR PANELS", "Gain 1 extra <c=energy>ENERGY</c> on the first turn. Each turn, if you didn't use any <c=status>EVADE</c> to move last turn, gain 1 extra <c=energy>ENERGY</c>.");
 
         ElectromagneticCoilArtifact = RegisterArtifact(registry, typeof(ElectromagneticCoil), ElectromagneticCoilSprite ?? throw new Exception("missing ElectromagneticCoil sprite"),
             "ELECTROMAGNETIC COIL", "If you end your turn with more than 0 <c=energy>ENERGY</c>, gain 1 <c=status>EVADE</c>.");
@@ -90,17 +90,6 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
 
 
         if (DuoArtifactsApi != null) RegisterDuoArtifacts(registry, harmony);
-        /* Duos:
-            Dizzy: +1 energy first time you overshield.
-            Riggs: once per turn, when you reach 0 energy, gain 1 hermes.
-            Peri: overdrive doesn't tick down if you end your turn with at least 1 energy.
-            Isaac (Thunderstrike): whenever you the enemy moves during your turn, they take 1 hull damage.
-            Drake (Emergency Ventilators): -1 heat if you end your turn with energy.
-            Max (Version Control): Every 5th time you exhaust a card, gain 1 ENERGY.
-            Books (Spellboard): Cards with enabled shard costs are infinite
-            Cat (Virtual Treadmill): On pickup, your Basic cards become infinite.
-            Soggins (Wax Wings): Gain 1 energy when you oversmug
-        */
     }
 
     void RegisterDuoArtifacts(IArtifactRegistry registry, Harmony harmony)
@@ -110,39 +99,39 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
 
         PerfectInsulationArtifact = RegisterArtifact(registry, typeof(PerfectInsulation), PerfectInsulationOnSprite ?? throw new Exception("missing PerfectInsulation sprite"),
             "PERFECT INSULATION", "The first time each combat you would gain <c=status>SHIELD</c> above your maximum, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(PerfectInsulation), new[] { eddieDeck, Enum.Parse<Deck>("dizzy") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(PerfectInsulation), new[] { eddieDeck, Deck.dizzy });
 
         UltraLightBatteriesArtifact = RegisterArtifact(registry, typeof(UltraLightBatteries), UltraLightBatteriesSprite ?? throw new Exception("missing UltraLightBatteries sprite"),
             "ULTRA-LIGHT BATTERIES", "When you run out of energy after playing a card, gain a <c=card>Lightweight</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(UltraLightBatteries), new[] { eddieDeck, Enum.Parse<Deck>("riggs") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(UltraLightBatteries), new[] { eddieDeck, Deck.riggs });
 
         OverdriveFeedbackArtifact = RegisterArtifact(registry, typeof(OverdriveFeedback), OverdriveFeedbackSprite ?? throw new Exception("missing OverdriveFeedback sprite"),
             "OVERDRIVE FEEDBACK", "If you end your turn with more than 0 <c=energy>ENERGY</c>, your <c=status>OVERDRIVE</c> doesn't decrease.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(OverdriveFeedback), new[] { eddieDeck, Enum.Parse<Deck>("peri") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(OverdriveFeedback), new[] { eddieDeck, Deck.peri });
 
         ThunderstrikeArtifact = RegisterArtifact(registry, typeof(Thunderstrike), ThunderstrikeSprite ?? throw new Exception("missing Thunderstrike sprite"),
             "THUNDERSTRIKE", "Whenever the enemy moves during your turn, they lose 1 hull.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(Thunderstrike), new[] { eddieDeck, Enum.Parse<Deck>("goat") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(Thunderstrike), new[] { eddieDeck, Deck.goat });
 
         EmergencyVentilatorArtifact = RegisterArtifact(registry, typeof(EmergencyVentilator), EmergencyVentilatorSprite ?? throw new Exception("missing EmergencyVentilator sprite"),
             "EMERGENCY VENTILATOR", "If you end your turn with more than 0 <c=energy>ENERGY</c>, lose 1 <c=status>HEAT</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(EmergencyVentilator), new[] { eddieDeck, Enum.Parse<Deck>("eunice") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(EmergencyVentilator), new[] { eddieDeck, Deck.eunice });
 
         VersionControlArtifact = RegisterArtifact(registry, typeof(VersionControl), VersionControlSprite ?? throw new Exception("missing VersionControl sprite"),
             "VERSION CONTROL", "Every 4th time you exhaust a card, gain 1 <c=energy>ENERGY</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(VersionControl), new[] { eddieDeck, Enum.Parse<Deck>("hacker") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(VersionControl), new[] { eddieDeck, Deck.hacker });
 
         SpellboardArtifact = RegisterArtifact(registry, typeof(Spellboard), SpellboardSprite ?? throw new Exception("missing Spellboard sprite"),
             "SPELLBOARD", "All cards with active shard costs you can pay are <c=cardtrait>infinite</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(Spellboard), new[] { eddieDeck, Enum.Parse<Deck>("shard") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(Spellboard), new[] { eddieDeck, Deck.shard });
 
         VirtualTreadmillArtifact = RegisterArtifact(registry, typeof(VirtualTreadmill), VirtualTreadmillSprite ?? throw new Exception("missing VirtualTreadmill sprite"),
             "VIRTUAL TREADMILL", "All Basic cards are <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c>.", deck: duoDeck);
-        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(VirtualTreadmill), new[] { eddieDeck, Enum.Parse<Deck>("catartifact") });
+        Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(VirtualTreadmill), new[] { eddieDeck, Deck.catartifact });
 
         if (SogginsApi != null) {
             WaxWingsArtifact = RegisterArtifact(registry, typeof(WaxWings), WaxWingsSprite ?? throw new Exception("missing WaxWings sprite"),
-                "WAX WINGS", "Whenever you <c=downside>botch</c> from oversmugging, gain 2 <c=energy>ENERGY</c>.", deck: duoDeck);
+                "WAX WINGS", "Whenever you <c=downside>botch</c> from oversmugging, gain 3 <c=energy>ENERGY</c>.", deck: duoDeck);
             Instance.DuoArtifactsApi!.RegisterDuoArtifact(typeof(WaxWings), new[] { eddieDeck, (Deck)SogginsApi.SogginsDeck.Id!.Value });
         }
 
@@ -595,7 +584,7 @@ public partial class Manifest : IArtifactManifest, IStatusLogicHook
             {
                 Rect? rect = new Rect(w + 1);
                 Vec xy = g.Push(null, rect).rect.xy;
-                Spr? plus = Enum.Parse<Spr>("icons_plus");
+                Spr? plus = StableSpr.icons_plus;
                 // Spr? plus = StableSpr.icons_plus;
                 Color? trueColor = (action.disabled ? color : Colors.textMain);
                 Draw.Sprite(plus, xy.x, xy.y, flipX: false, flipY: false, 0.0, null, null, null, null, trueColor);

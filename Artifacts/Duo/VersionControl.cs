@@ -1,6 +1,6 @@
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "cardtrait.exhaust" })]
+[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = ["cardtrait.exhaust"])]
 public class VersionControl : Artifact, OnExhaustArtifact
 {
 	public int counter = 0;

@@ -1,17 +1,14 @@
+using TheJazMaster.Eddie.DialogueAdditions;
+
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
-public class SunLamp : Artifact, IOnMoveArtifact
+public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 {
 	public bool turnedOn = true;
-	public bool charged = true;
 
 	public override Spr GetSprite()
 	{
-		if (!charged)
-		{
-			return (Spr)(Manifest.SunLampUnchargedSprite?.Id ?? throw new Exception("No Solar Lamp Uncharged sprite"));
-		}
 		if (!turnedOn)
 		{
 			return (Spr)(Manifest.SunLampOffSprite?.Id ?? throw new Exception("No Solar Lamp Off sprite"));
@@ -24,37 +21,28 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		if (move.targetPlayer && move.fromEvade)
 		{
 			turnedOn = false;
-			if (!charged) {
-				charged = true;
-				Pulse();
-			}
 		}
 	}
 
-	public override void OnTurnStart(State s, Combat c)
+	public override void OnTurnEnd(State s, Combat c)
 	{
-		if (c.turn != 1 && c.isPlayerTurn)
-		{
-			if (turnedOn && charged) {
-				c.QueueImmediate(new AStatus
-				{
-					status = Status.evade,
-					statusAmount = 1,
-					targetPlayer = true,
-					artifactPulse = Key(),
-					dialogueSelector = $".{Key()}Trigger"
-				});
-				charged = false;
-			} else
-				turnedOn = true;
+		if (turnedOn) {
+			c.QueueImmediate(new AStatus
+			{
+				status = Status.tempShield,
+				statusAmount = 1,
+				targetPlayer = true,
+				artifactPulse = Key(),
+				dialogueSelector = $".{Key()}Trigger"
+			});
+		} else
+			turnedOn = true;
 
-		}
 	}
 
 	public override void OnCombatEnd(State state)
 	{
 		turnedOn = true;
-		charged = true;
 	}
 
 	public void InjectDialogue()
@@ -83,7 +71,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
 			allPresent = new() { eddie, Deck.dizzy.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
@@ -107,8 +95,8 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
+			allPresent = new() { eddie, Deck.eunice.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
 			lines = new()
@@ -131,7 +119,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
 			allPresent = new() { eddie, Deck.peri.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
@@ -155,7 +143,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
 			allPresent = new() { eddie, Deck.goat.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
@@ -170,7 +158,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
-					Text = "Now I want one.",
+					Text = "Now I want one...",
 					loopTag = "neutral"
 				}
 			}
@@ -197,7 +185,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
 			allPresent = new() { Deck.hacker.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
@@ -233,7 +221,7 @@ public class SunLamp : Artifact, IOnMoveArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			oncePerCombatTags = new() { $"{Key()}DuoTag" },
 			allPresent = new() { Deck.shard.Key() },
 			hasArtifacts = new() { Key() },
 			lookup = new() { $"{Key()}Trigger" },
@@ -247,5 +235,24 @@ public class SunLamp : Artifact, IOnMoveArtifact
 				}
 			}
 		};
+
+		if (StoryVarsAdditions.SogginsName != null)
+			DB.story.all[$"Artifact{Key()}_9"] = new()
+			{
+				type = NodeType.combat,
+				oncePerRun = true,
+				oncePerCombatTags = new() { $"{Key()}DuoTag" },
+				allPresent = new() { StoryVarsAdditions.SogginsName },
+				hasArtifacts = new() { Key() },
+				lookup = new() { $"{Key()}Trigger" },
+				lines = new()
+				{
+					new CustomSay()
+					{
+						who = StoryVarsAdditions.SogginsName,
+						Text = "This light is bad for my skin."
+					}
+				}
+			};
 	}
 }

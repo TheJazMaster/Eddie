@@ -29,6 +29,12 @@ internal static class Extensions
 		source.Insert(0, item);
 	}
 
+	public static SaySwitch MaybeAdd(this SaySwitch source, bool condition, CustomSay item)
+	{
+		if (condition) source.lines.Add(item);
+		return source;
+	}
+
 	public static void Queue<T>(this List<T> source, T item)
 	{
 		source.Add(item);

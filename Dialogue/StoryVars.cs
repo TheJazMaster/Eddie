@@ -8,6 +8,8 @@ public static class StoryVarsAdditions
 
 	private static IKokoroApi KokoroApi => Instance.KokoroApi;
 
+	public static string? SogginsName => Manifest.Instance.SogginsApi?.SogginsDeck.GlobalName;
+
 
 	internal const string DiscountOfCardJustPlayedKey = "DiscountOfCardJustPlayed";
 	internal const string LastCardPlayedWasInfiniteKey = "LastCardPlayedWasInfinite";
@@ -50,21 +52,5 @@ public static class StoryVarsAdditions
 			__result = false;
 			return;
 		}
-	}
-
-	internal static void DrawLoadingScreen_Prefix(MG __instance, ref int __state)
-		=> __state = __instance.loadingQueue?.Count ?? 0;
-
-	internal static void DrawLoadingScreen_Postfix(MG __instance, ref int __state)
-	{
-		if (__state <= 0)
-			return;
-		if ((__instance.loadingQueue?.Count ?? 0) > 0)
-			return;
-		
-        ArtifactDialogue.Inject();
-        CombatDialogue.Inject();
-        EventDialogue.Inject();
-        Memories.Inject();
 	}
 }

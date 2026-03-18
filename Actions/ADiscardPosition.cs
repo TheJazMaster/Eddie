@@ -56,7 +56,7 @@ namespace TheJazMaster.Eddie.Actions
         {
             if (count.HasValue)
             {
-                return new Icon(Enum.Parse<Spr>("icons_discardCard"), count.Value, Colors.textMain);
+                return new Icon(StableSpr.icons_discardCard, count.Value, Colors.textMain);
             }
             return new Icon(StableSpr.icons_discardCard, null, Colors.textMain);
         }

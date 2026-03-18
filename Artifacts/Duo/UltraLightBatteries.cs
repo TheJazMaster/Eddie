@@ -2,7 +2,7 @@ using TheJazMaster.Eddie.Cards;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public class UltraLightBatteries : Artifact
 {
 	public bool active = true;
@@ -29,7 +29,7 @@ public class UltraLightBatteries : Artifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTCard { card = new Lightweight() });
 		return tooltips;
 	}

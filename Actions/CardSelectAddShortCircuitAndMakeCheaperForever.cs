@@ -13,7 +13,7 @@ namespace TheJazMaster.Eddie.Actions
         {
             if (selectedCard != null)
             {
-                ShortCircuit.SetShortCircuit(selectedCard, true, true);
+                ShortCircuit.SetShortCircuit(s, selectedCard, true, true);
                 Cheap.SetFree(selectedCard, null, null, howMuch);
                 return new ShowCards
                 {

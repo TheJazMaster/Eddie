@@ -1,6 +1,7 @@
+
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public class EmergencyVentilator : Artifact
 {
 	public override void OnTurnEnd(State state, Combat combat)
@@ -17,4 +18,5 @@ public class EmergencyVentilator : Artifact
 		}
 	}
 
+	public override List<Tooltip>? GetExtraTooltips() => StatusMeta.GetTooltips(Status.heat, 3);
 }

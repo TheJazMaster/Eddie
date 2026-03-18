@@ -21,6 +21,7 @@ namespace TheJazMaster.Eddie;
 public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifest, ICardManifest, ICharacterManifest, IAnimationManifest, CobaltCoreModding.Definitions.ModManifests.IModManifest, IApiProviderManifest, INickelManifest
 {
     internal static Manifest Instance { get; private set; } = null!;
+    internal static IModHelper Helper = null!;
     internal static ApiImplementation Api { get; private set; } = null!;
 
     internal static Harmony Harmony { get; private set; } = null!;
@@ -49,6 +50,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalGlossary AddInfiniteGlossary { get; private set; } = null!;
     public static ExternalGlossary DiscardLeftmostGlossary { get; private set; } = null!;
     public static ExternalGlossary MakeFreeGlossary { get; private set; } = null!;
+    public static ExternalGlossary MakeRenewableGlossary { get; private set; } = null!;
     public static ExternalGlossary CheapGlossary { get; private set; } = null!;
     public static ExternalGlossary PowerCellGlossary { get; private set; } = null!;
     // public static ExternalGlossary? LeftmostCardGlossary { get; private set; } = null!;
@@ -109,18 +111,19 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public static ExternalSprite FissionChamberSprite { get; private set; } = null!;
 
 
-    public static ExternalSprite? PerfectInsulationOnSprite { get; private set; }
-    public static ExternalSprite? PerfectInsulationOffSprite { get; private set; }
-    public static ExternalSprite? UltraLightBatteriesSprite { get; private set; }
-    public static ExternalSprite? OverdriveFeedbackSprite { get; private set; }
-    public static ExternalSprite? ThunderstrikeSprite { get; private set; }
-    public static ExternalSprite? EmergencyVentilatorSprite { get; private set; }
-    public static ExternalSprite? VersionControlSprite { get; private set; }
-    public static ExternalSprite? SpellboardSprite { get; private set; }
-    public static ExternalSprite? VirtualTreadmillSprite { get; private set; }
-    public static ExternalSprite? WaxWingsSprite { get; private set; }
+    public static ExternalSprite PerfectInsulationOnSprite { get; private set; } = null!;
+    public static ExternalSprite PerfectInsulationOffSprite { get; private set; } = null!;
+    public static ExternalSprite UltraLightBatteriesSprite { get; private set; } = null!;
+    public static ExternalSprite OverdriveFeedbackSprite { get; private set; } = null!;
+    public static ExternalSprite ThunderstrikeSprite { get; private set; } = null!;
+    public static ExternalSprite EmergencyVentilatorSprite { get; private set; } = null!;
+    public static ExternalSprite VersionControlSprite { get; private set; } = null!;
+    public static ExternalSprite SpellboardSprite { get; private set; } = null!;
+    public static ExternalSprite VirtualTreadmillSprite { get; private set; } = null!;
+    public static ExternalSprite WaxWingsSprite { get; private set; } = null!;
 
-    public static ExternalSprite? FreeMarkerSprite { get; private set; }
+    public static ExternalSprite FreeMarkerSprite { get; private set; } = null!;
+    public static ExternalSprite ShortCircuitOverlaySprite { get; private set; } = null!;
 
 	public static Spr RoomBackground { get; private set; }
     public static Spr RoomForeground { get; private set; }
@@ -171,6 +174,9 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public static ExternalCard? LightweightCard { get; private set; }
     public static ExternalCard SurgeCard { get; private set; } = null!;
+
+    public static ICardTraitEntry ShortCircuitTrait = null!;
+    public static ICardTraitEntry CheapTrait = null!;
     
 
     public DirectoryInfo? ModRootFolder { get; set; }
@@ -242,13 +248,14 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         CheapIcon = RegisterSprite(registry, "CheapIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("cheap.png")));
         TemporaryHurtIcon = RegisterSprite(registry, "TemporaryHurtIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("temporary_hurt.png")));
         HealNextTurnIcon = RegisterSprite(registry, "HealNextTurnIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("heal_next_turn.png")));
-        // OverchargeIcon = RegisterSprite(registry, "OverchargeIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("overcharge.png")));
         PowerCellIcon = RegisterSprite(registry, "PowerCellIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("power_cell.png")));
         EnergyIcon = RegisterSprite(registry, "EnergyIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("energy.png")));
         ApplyShortCircuitIcon = RegisterSprite(registry, "ApplyShortCircuitIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("apply_short_circuit.png")));
         ApplyInfiniteIcon = RegisterSprite(registry, "ApplyInfiniteIcon", Path.Combine(ModRootFolder.FullName, "Sprites/icons", Path.GetFileName("apply_infinite.png")));
 
+        // Other
         FreeMarkerSprite = RegisterSprite(registry, "FreeMarker", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("free_marker.png")));
+        ShortCircuitOverlaySprite = RegisterSprite(registry, "ShortCircuitOverlay", Path.Combine(ModRootFolder.FullName, "Sprites", Path.GetFileName("short_circuit_overlay.png")));
 
         // Card art
         ChannelCardArt = RegisterSprite(registry, "ChannelCardArt", Path.Combine(ModRootFolder.FullName, "Sprites/card_art", Path.GetFileName("channel.png")));
@@ -315,7 +322,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
     public void LoadManifest(IDeckRegistry registry)
     {
-        ExternalSprite cardArtDefault = ExternalSprite.GetRaw((int)Enum.Parse<Spr>("cards_colorless"));
+        ExternalSprite cardArtDefault = ExternalSprite.GetRaw((int)StableSpr.cards_colorless);
         ExternalSprite borderSprite = EddieCardFrame ?? throw new Exception();
         EddieDeck = new ExternalDeck(
             "Eddie.EddieDeck",
@@ -346,23 +353,27 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         // ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "This card does its actions twice in a row, but costs 1 more <c=energy>ENERGY</c> to play.", null);
         // registry.RegisterGlossary(ShortCircuitGlossary);
         ShortCircuitGlossary = new ExternalGlossary("Eddie.Glossary.ShortCircuitDesc", "EddieShortCircuitTrait", false, ExternalGlossary.GlossayType.cardtrait, ShortCircuitIcon ?? throw new Exception("Missing Short Circuit Icon"));
-        ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "If this card costs 0 energy, discard the 2 leftmost cards after playing it.", null);
+        ShortCircuitGlossary.AddLocalisation("en", "Short-Circuit", "If your total <c=energy>ENERGY</c> doesn't decrease from playing this card, discard the 2 leftmost cards in hand.", null);
         registry.RegisterGlossary(ShortCircuitGlossary);
 
         AddInfiniteGlossary = new ExternalGlossary("Eddie.Glossary.AddInfiniteDesc", "EddieAddInfiniteAction", false, ExternalGlossary.GlossayType.action, ApplyInfiniteIcon ?? throw new Exception("Missing Apply Infinite Icon"));
         AddInfiniteGlossary.AddLocalisation("en", "Make infinite", "Make a card infinite {0}.", null);
         registry.RegisterGlossary(AddInfiniteGlossary);
 
-        DiscardLeftmostGlossary = new ExternalGlossary("Eddie.Glossary.DiscardLeftmostDesc", "EddieDiscardLeftmostAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discardCard")));
+        DiscardLeftmostGlossary = new ExternalGlossary("Eddie.Glossary.DiscardLeftmostDesc", "EddieDiscardLeftmostAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_discardCard));
         DiscardLeftmostGlossary.AddLocalisation("en", "Discard Leftmost", "Discard the {0} leftmost cards.", null);
         registry.RegisterGlossary(DiscardLeftmostGlossary);
 
-        MakeFreeGlossary = new ExternalGlossary("Eddie.Glossary.MakeFreeDesc", "EddieMakeFreeAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discount")));
-        MakeFreeGlossary.AddLocalisation("en", "Make free", "Make a card cost 0 <c=energy>ENERGY</c> {0}.", null);
+        MakeFreeGlossary = new ExternalGlossary("Eddie.Glossary.MakeFreeDesc", "EddieMakeFreeAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_discount));
+        MakeFreeGlossary.AddLocalisation("en", "Make free", "Choose a card to make free for the rest of the combat.", null);
+        registry.RegisterGlossary(MakeFreeGlossary);
+
+        MakeRenewableGlossary = new ExternalGlossary("Eddie.Glossary.MakeRenewableDesc", "EddieMakeRenewableAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_infinite));
+        MakeRenewableGlossary.AddLocalisation("en", "Make renewable", "Choose a card to make <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c> for the rest of the combat.", null);
         registry.RegisterGlossary(MakeFreeGlossary);
 
         CheapGlossary = new ExternalGlossary("Eddie.Glossary.CheapDesc", "EddieCheapTrait", false, ExternalGlossary.GlossayType.cardtrait, CheapIcon ?? throw new Exception("Missing Cheap Icon"));
-        CheapGlossary.AddLocalisation("en", "Cheap", "This card starts each combat with a <c=cardtrait>discount</c> of {0} energy.", null);
+        CheapGlossary.AddLocalisation("en", "Cheap", "This card starts each combat with a <c=cardtrait>discount</c> of <c=keyword>1</c> energy.", null);
         registry.RegisterGlossary(CheapGlossary);
 
         PowerCellGlossary = new ExternalGlossary("Eddie.Glossary.PowerCellGlossary", "EddiePowerCellMidrow", false, ExternalGlossary.GlossayType.midrow, PowerCellIcon ?? throw new Exception("Missing Power Cell Icon"));
@@ -381,19 +392,19 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         XIsEnergyGlossary.AddLocalisation("en", "", "<c=action>X</c> = Your <c=energy>ENERGY</c> after paying for this card{0}.", null);
         registry.RegisterGlossary(XIsEnergyGlossary);
 
-        DiscountHandGlossary = new ExternalGlossary("Eddie.Glossary.DiscountHandGlossary", "EddieDiscountHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_discount")));
+        DiscountHandGlossary = new ExternalGlossary("Eddie.Glossary.DiscountHandGlossary", "EddieDiscountHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_discount));
         DiscountHandGlossary.AddLocalisation("en", "Discount Hand", "Every card in your hand becomes <c=cardtrait>discounted</c> by {0} energy.", null);
         registry.RegisterGlossary(DiscountHandGlossary);
 
-        ExpensiveHandGlossary = new ExternalGlossary("Eddie.Glossary.ExpensiveHandGlossary", "EddieExpensiveHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_expensive")));
+        ExpensiveHandGlossary = new ExternalGlossary("Eddie.Glossary.ExpensiveHandGlossary", "EddieExpensiveHandAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_expensive));
         ExpensiveHandGlossary.AddLocalisation("en", "Make Hand Expensive", "Every card in your hand becomes more <c=cardtrait>expensive</c> by energy.", null);
         registry.RegisterGlossary(ExpensiveHandGlossary);
 
-        MoveEnemyLeftGlossary = new ExternalGlossary("Eddie.Glossary.MoveEnemyLeftGlossary", "EddieMoveEnemyLeftAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_moveLeftEnemy")));
+        MoveEnemyLeftGlossary = new ExternalGlossary("Eddie.Glossary.MoveEnemyLeftGlossary", "EddieMoveEnemyLeftAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_moveLeftEnemy));
         MoveEnemyLeftGlossary.AddLocalisation("en", "Move Enemy Left", "The enemy will instantly move {0} spaces to the <c=keyword>LEFT</c>.", null);
         registry.RegisterGlossary(MoveEnemyLeftGlossary);
 
-        MoveEnemyRightGlossary = new ExternalGlossary("Eddie.Glossary.MoveEnemyRightGlossary", "EddieMoveEnemyRightAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)Enum.Parse<Spr>("icons_moveRightEnemy")));
+        MoveEnemyRightGlossary = new ExternalGlossary("Eddie.Glossary.MoveEnemyRightGlossary", "EddieMoveEnemyRightAction", false, ExternalGlossary.GlossayType.action, ExternalSprite.GetRaw((int)StableSpr.icons_moveRightEnemy));
         MoveEnemyRightGlossary.AddLocalisation("en", "Move Enemy Right", "The enemy will instantly move {0} spaces to the <c=keyword>RIGHT</c>.", null);
         registry.RegisterGlossary(MoveEnemyRightGlossary);
     }
@@ -461,7 +472,7 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 
         GammaRayCard = RegisterCard(registry, typeof(GammaRay), GammaRayCardArt, "Gamma Ray");
 
-        ExeCard = RegisterCard(registry, typeof(EddieExe), ExeCardArt, "Eddie.EXE", ExternalDeck.GetRaw((int)Enum.Parse<Deck>("colorless")));
+        ExeCard = RegisterCard(registry, typeof(EddieExe), ExeCardArt, "Eddie.EXE", ExternalDeck.GetRaw((int)Deck.colorless));
 
         SurgeCard = RegisterCard(registry, typeof(Surge), cardArtDefault, "Surge");
 
@@ -484,6 +495,21 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         EddieCharacter.AddDescLocalisation("<c=e6e164>EDDIE</c>\nYour ship's electrician. Their cards offer <c=keyword>flexible</c> ways to <c=keyword>spend, store and gain</c> <c=energy>energy</c>.");
 
         registry.RegisterCharacter(EddieCharacter);
+
+        var entry = Helper.Content.Characters.V2.LookupByDeck((Deck)EddieDeck.Id!.Value)!;
+        entry.Amend(new() {
+            ExeCardType = typeof(EddieExe),
+            SoloStarters = new StarterDeck {
+                cards = {
+                    new EnergyBolt(),
+                    new SolarSailing(),
+                    new Channel(),
+                    new PowerCell(),
+                    new DodgeColorless(),
+                    new CannonColorless()
+                }
+            }
+        });
     }
 
     void IAnimationManifest.LoadManifest(IAnimationRegistry registry)
@@ -508,8 +534,6 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
     public void BootMod(IModLoaderContact contact) {
 
         Instance = this;
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
         KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
         KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
@@ -540,6 +564,11 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             original: typeof(Combat).GetMethod("TryPlayCard"),
             transpiler: new HarmonyMethod(typeof(ShortCircuit).GetMethod("ShortCircuitDiscardMaybe", BindingFlags.Static | BindingFlags.NonPublic))
         );
+        harmony.TryPatch(
+            logger: Logger!,
+            original: typeof(Combat).GetMethod("RenderBehindCockpit"),
+            postfix: new HarmonyMethod(typeof(ShortCircuit).GetMethod("ShortCircuitOverlay", BindingFlags.Static | BindingFlags.NonPublic))
+        );
 
         harmony.TryPatch(
             logger: Logger!,
@@ -557,21 +586,21 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             transpiler: new HarmonyMethod(typeof(Cheap).GetMethod("RenderFreeIcon", BindingFlags.Static | BindingFlags.NonPublic))
         );
 
-        harmony.TryPatch(
-            logger: Logger!,
-            original: typeof(Combat).GetMethod("ReturnCardsToDeck"),
-            postfix: new HarmonyMethod(typeof(ShortCircuit).GetMethod("ShortCircuitRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic))
-        );
-        harmony.TryPatch(
-            logger: Logger!,
-            original: typeof(Card).GetMethod("GetDataWithOverrides"),
-            postfix: new HarmonyMethod(typeof(InfiniteOverride).GetMethod("OverrideInfinite", BindingFlags.Static | BindingFlags.NonPublic))
-        );
-        harmony.TryPatch(
-            logger: Logger!,
-            original: typeof(Combat).GetMethod("ReturnCardsToDeck"),
-            postfix: new HarmonyMethod(typeof(InfiniteOverride).GetMethod("InfiniteRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic))
-        );
+        // harmony.TryPatch(
+        //     logger: Logger!,
+        //     original: typeof(Combat).GetMethod("ReturnCardsToDeck"),
+        //     postfix: new HarmonyMethod(typeof(ShortCircuit).GetMethod("ShortCircuitRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic))
+        // );
+        // harmony.TryPatch(
+        //     logger: Logger!,
+        //     original: typeof(Card).GetMethod("GetDataWithOverrides"),
+        //     postfix: new HarmonyMethod(typeof(InfiniteOverride).GetMethod("OverrideInfinite", BindingFlags.Static | BindingFlags.NonPublic))
+        // );
+        // harmony.TryPatch(
+        //     logger: Logger!,
+        //     original: typeof(Combat).GetMethod("ReturnCardsToDeck"),
+        //     postfix: new HarmonyMethod(typeof(InfiniteOverride).GetMethod("InfiniteRemoveOverride", BindingFlags.Static | BindingFlags.NonPublic))
+        // );
         
         harmony.TryPatch(
             logger: Logger!,
@@ -595,16 +624,16 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             original: typeof(Colors).GetMethod("LookupColor", BindingFlags.Static | BindingFlags.Public),
             prefix: new HarmonyMethod(typeof(EddieColor).GetMethod("LookupColor", BindingFlags.Static | BindingFlags.NonPublic))
         );
-        harmony.TryPatch(
-            logger: Logger!,
-            original: typeof(Card).GetMethod("GetAllTooltips", BindingFlags.Instance | BindingFlags.Public),
-            transpiler: new HarmonyMethod(typeof(Manifest).GetMethod("TraitTooltips", BindingFlags.Static | BindingFlags.NonPublic))
-        );
-        harmony.TryPatch(
-            logger: Logger!,
-            original: typeof(Card).GetMethod("Render", BindingFlags.Instance | BindingFlags.Public),
-            transpiler: new HarmonyMethod(typeof(Manifest).GetMethod("TraitIcons", BindingFlags.Static | BindingFlags.NonPublic))
-        );
+        // harmony.TryPatch(
+        //     logger: Logger!,
+        //     original: typeof(Card).GetMethod("GetAllTooltips", BindingFlags.Instance | BindingFlags.Public),
+        //     transpiler: new HarmonyMethod(typeof(Manifest).GetMethod("TraitTooltips", BindingFlags.Static | BindingFlags.NonPublic))
+        // );
+        // harmony.TryPatch(
+        //     logger: Logger!,
+        //     original: typeof(Card).GetMethod("Render", BindingFlags.Instance | BindingFlags.Public),
+        //     transpiler: new HarmonyMethod(typeof(Manifest).GetMethod("TraitIcons", BindingFlags.Static | BindingFlags.NonPublic))
+        // );
         harmony.TryPatch(
             logger: Logger!,
 			original: typeof(DB).GetMethod("SetLocale", BindingFlags.Public | BindingFlags.Static),
@@ -626,257 +655,244 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
             original: typeof(StoryNode).GetMethod("Filter"),
             postfix: new HarmonyMethod(typeof(StoryVarsAdditions).GetMethod("StoryNode_Filter_Postfix", BindingFlags.Static | BindingFlags.NonPublic))
         );
-
-        harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: typeof(MG).GetMethod("DrawLoadingScreen", AccessTools.all),
-			prefix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Prefix)),
-			postfix: new HarmonyMethod(typeof(StoryVarsAdditions), nameof(StoryVarsAdditions.DrawLoadingScreen_Postfix))
-		);
-
-        harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: typeof(State).GetNestedTypes(AccessTools.all).SelectMany(t => t.GetMethods(AccessTools.all)).First(m => m.Name.StartsWith("<PopulateRun>") && m.ReturnType == typeof(Route)),
-			transpiler: new HarmonyMethod(typeof(Manifest), nameof(State_PopulateRun_Delegate_Transpiler))
-		);
     }
 
 	public object? GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
 
-    private static IEnumerable<CodeInstruction> TraitTooltips(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
-    {
-        bool worked = false;
-        int? local_index = null;
-        foreach (LocalVariableInfo info in originalMethod.GetMethodBody()!.LocalVariables)
-        {
-            if (info.LocalType == typeof(CardData))
-            {
-                local_index = info.LocalIndex;
-                break;
-            }
-        }
+    // private static IEnumerable<CodeInstruction> TraitTooltips(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
+    // {
+    //     bool worked = false;
+    //     int? local_index = null;
+    //     foreach (LocalVariableInfo info in originalMethod.GetMethodBody()!.LocalVariables)
+    //     {
+    //         if (info.LocalType == typeof(CardData))
+    //         {
+    //             local_index = info.LocalIndex;
+    //             break;
+    //         }
+    //     }
 
-        var newLocal = il.DeclareLocal(typeof(CheapCard));
+    //     var newLocal = il.DeclareLocal(typeof(CheapCard));
 
-        using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
-        while(iter.MoveNext()) {
-            yield return iter.Current;
-            if(!TranspilerUtils.IsLocalLoad(iter.Current) || TranspilerUtils.ExtractLocalIndex(iter.Current) != local_index) {
-                continue;
-            }
-            var card_data_local_load_opcode = iter.Current.opcode;
-            var card_data_local_operand = iter.Current.operand;
+    //     using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
+    //     while(iter.MoveNext()) {
+    //         yield return iter.Current;
+    //         if(!TranspilerUtils.IsLocalLoad(iter.Current) || TranspilerUtils.ExtractLocalIndex(iter.Current) != local_index) {
+    //             continue;
+    //         }
+    //         var card_data_local_load_opcode = iter.Current.opcode;
+    //         var card_data_local_operand = iter.Current.operand;
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(iter.Current.opcode != OpCodes.Ldfld || ((FieldInfo) iter.Current.operand).Name != "floppable") {
-                continue;
-            }
+    //         if(iter.Current.opcode != OpCodes.Ldfld || ((FieldInfo) iter.Current.operand).Name != "floppable") {
+    //             continue;
+    //         }
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(iter.Current.opcode != OpCodes.Brfalse_S) {
-                continue;
-            }
-            var latestLabel = (Label) iter.Current.operand;
+    //         if(iter.Current.opcode != OpCodes.Brfalse_S) {
+    //             continue;
+    //         }
+    //         var latestLabel = (Label) iter.Current.operand;
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(!TranspilerUtils.IsLocalLoad(iter.Current)) {
-                continue;
-            }
-            var list_local_load_opcode = iter.Current.opcode;
-            var list_local_operand = iter.Current.operand;
+    //         if(!TranspilerUtils.IsLocalLoad(iter.Current)) {
+    //             continue;
+    //         }
+    //         var list_local_load_opcode = iter.Current.opcode;
+    //         var list_local_operand = iter.Current.operand;
 
-            List<CodeInstruction> candidates = new();
-            while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
-                candidates.Add(iter.Current);
-                yield return iter.Current;
-            }
+    //         List<CodeInstruction> candidates = new();
+    //         while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
+    //             candidates.Add(iter.Current);
+    //             yield return iter.Current;
+    //         }
 
-            if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
-                break;
+    //         if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
+    //             break;
             
 
-            var midLabel = il.DefineLabel();
-            var endLabel = il.DefineLabel();
-            {
-                yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(latestLabel);
-                yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-                yield return new CodeInstruction(OpCodes.Call, typeof(ShortCircuit).GetMethod("DoesShortCircuit", BindingFlags.Static | BindingFlags.Public));
-                yield return new CodeInstruction(OpCodes.Brfalse, midLabel);
+    //         var midLabel = il.DefineLabel();
+    //         var endLabel = il.DefineLabel();
+    //         {
+    //             yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(latestLabel);
+    //             yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(ShortCircuit).GetMethod("DoesShortCircuit", BindingFlags.Static | BindingFlags.Public));
+    //             yield return new CodeInstruction(OpCodes.Brfalse, midLabel);
 
-                yield return new CodeInstruction(list_local_load_opcode, list_local_operand);
-                yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetProperty("ShortCircuitGlossary", BindingFlags.Static | BindingFlags.Public)!.GetMethod);
-                yield return new CodeInstruction(OpCodes.Call, typeof(ExternalGlossary).GetMethod("get_Head", BindingFlags.Instance | BindingFlags.Public));
-                yield return new CodeInstruction(candidates[1].opcode, candidates[1].operand); // empty array
-                yield return new CodeInstruction(candidates[2].opcode, candidates[2].operand); // new TTGlossary
-                yield return new CodeInstruction(candidates[3].opcode, candidates[3].operand); // Add
-            }
-            {
-                yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(midLabel);
-                yield return new CodeInstruction(OpCodes.Isinst, typeof(CheapCard));
-                yield return new CodeInstruction(OpCodes.Stloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
-                yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-                yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
+    //             yield return new CodeInstruction(list_local_load_opcode, list_local_operand);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetProperty("ShortCircuitGlossary", BindingFlags.Static | BindingFlags.Public)!.GetMethod);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(ExternalGlossary).GetMethod("get_Head", BindingFlags.Instance | BindingFlags.Public));
+    //             yield return new CodeInstruction(candidates[1].opcode, candidates[1].operand); // empty array
+    //             yield return new CodeInstruction(candidates[2].opcode, candidates[2].operand); // new TTGlossary
+    //             yield return new CodeInstruction(candidates[3].opcode, candidates[3].operand); // Add
+    //         }
+    //         {
+    //             yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(midLabel);
+    //             yield return new CodeInstruction(OpCodes.Isinst, typeof(CheapCard));
+    //             yield return new CodeInstruction(OpCodes.Stloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
+    //             yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+    //             yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
 
-                yield return new CodeInstruction(list_local_load_opcode, list_local_operand);
-                yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetProperty("CheapGlossary", BindingFlags.Static | BindingFlags.Public)!.GetMethod);
-                yield return new CodeInstruction(OpCodes.Call, typeof(ExternalGlossary).GetMethod("get_Head", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-                yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-                yield return new CodeInstruction(OpCodes.Newarr, typeof(object));
-                yield return new CodeInstruction(OpCodes.Dup);
-                yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-                yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-                yield return new CodeInstruction(OpCodes.Call, typeof(Math).GetMethod("Abs", BindingFlags.Static | BindingFlags.Public, new Type[] {typeof(int)}));
-                yield return new CodeInstruction(OpCodes.Box, typeof(int)); // ??
-                yield return new CodeInstruction(OpCodes.Stelem_Ref); // set array[0] to value
-                yield return new CodeInstruction(candidates[2].opcode, candidates[2].operand); // new TTGlossary
-                yield return new CodeInstruction(candidates[3].opcode, candidates[3].operand); // Add
-            }
+    //             yield return new CodeInstruction(list_local_load_opcode, list_local_operand);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetProperty("CheapGlossary", BindingFlags.Static | BindingFlags.Public)!.GetMethod);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(ExternalGlossary).GetMethod("get_Head", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+    //             yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+    //             yield return new CodeInstruction(OpCodes.Newarr, typeof(object));
+    //             yield return new CodeInstruction(OpCodes.Dup);
+    //             yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+    //             yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(Math).GetMethod("Abs", BindingFlags.Static | BindingFlags.Public, new Type[] {typeof(int)}));
+    //             yield return new CodeInstruction(OpCodes.Box, typeof(int)); // ??
+    //             yield return new CodeInstruction(OpCodes.Stelem_Ref); // set array[0] to value
+    //             yield return new CodeInstruction(candidates[2].opcode, candidates[2].operand); // new TTGlossary
+    //             yield return new CodeInstruction(candidates[3].opcode, candidates[3].operand); // Add
+    //         }
 
-            iter.Current.labels.Remove(latestLabel);
-            iter.Current.labels.Add(endLabel);
-            yield return iter.Current;
-            worked = true;
-            break;
-        }
+    //         iter.Current.labels.Remove(latestLabel);
+    //         iter.Current.labels.Add(endLabel);
+    //         yield return iter.Current;
+    //         worked = true;
+    //         break;
+    //     }
 
-        while (iter.MoveNext()) {
-            yield return iter.Current;
-        }
-        if (!worked)
-            throw new Exception("TraitIcons transpiler failed to find match");
-    }
+    //     while (iter.MoveNext()) {
+    //         yield return iter.Current;
+    //     }
+    //     if (!worked)
+    //         throw new Exception("TraitIcons transpiler failed to find match");
+    // }
 
-    private static IEnumerable<CodeInstruction> TraitIcons(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
-    { 
-        bool worked = false;
-        int? local_index = null;
-        foreach (LocalVariableInfo info in originalMethod.GetMethodBody()!.LocalVariables)
-        {
-            if (info.LocalType == typeof(CardData))
-            {
-                local_index = info.LocalIndex;
-                break;
-            }
-        }
-        var newLocal = il.DeclareLocal(typeof(CheapCard));
+    // private static IEnumerable<CodeInstruction> TraitIcons(IEnumerable<CodeInstruction> iseq, ILGenerator il, MethodBase originalMethod)
+    // { 
+    //     bool worked = false;
+    //     int? local_index = null;
+    //     foreach (LocalVariableInfo info in originalMethod.GetMethodBody()!.LocalVariables)
+    //     {
+    //         if (info.LocalType == typeof(CardData))
+    //         {
+    //             local_index = info.LocalIndex;
+    //             break;
+    //         }
+    //     }
+    //     var newLocal = il.DeclareLocal(typeof(CheapCard));
 
-        using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
-        while(iter.MoveNext()) {
-            // yield return iter.Current;
+    //     using IEnumerator<CodeInstruction> iter = iseq.GetEnumerator();
+    //     while(iter.MoveNext()) {
+    //         // yield return iter.Current;
 
-            // if(iter.Current.opcode != OpCodes.Call || !(iter.Current.operand is MethodInfo info) || info.Name != "Sprite") {//info != typeof(Draw).GetMethod("Sprite", BindingFlags.Static | BindingFlags.Public, new Type[] {typeof(Spr?), typeof(double), typeof(double), typeof(bool), typeof(bool), typeof(double), typeof(Vec), typeof(Vec), typeof(Vec), typeof(Rect), typeof(Color), typeof(BlendState), typeof(SamplerState), typeof(Effect)})) {
-            //     continue;
-            // }
+    //         // if(iter.Current.opcode != OpCodes.Call || !(iter.Current.operand is MethodInfo info) || info.Name != "Sprite") {//info != typeof(Draw).GetMethod("Sprite", BindingFlags.Static | BindingFlags.Public, new Type[] {typeof(Spr?), typeof(double), typeof(double), typeof(bool), typeof(bool), typeof(double), typeof(Vec), typeof(Vec), typeof(Vec), typeof(Rect), typeof(Color), typeof(BlendState), typeof(SamplerState), typeof(Effect)})) {
+    //         //     continue;
+    //         // }
 
-            // if(!iter.MoveNext()) {
-            //     break;
-            // }
-            yield return iter.Current;
+    //         // if(!iter.MoveNext()) {
+    //         //     break;
+    //         // }
+    //         yield return iter.Current;
 
-            if(!TranspilerUtils.IsLocalLoad(iter.Current) || TranspilerUtils.ExtractLocalIndex(iter.Current) != local_index) {
-                continue;
-            }
-            var card_data_local_load_opcode = iter.Current.opcode;
-            var card_data_local_operand = iter.Current.operand;
+    //         if(!TranspilerUtils.IsLocalLoad(iter.Current) || TranspilerUtils.ExtractLocalIndex(iter.Current) != local_index) {
+    //             continue;
+    //         }
+    //         var card_data_local_load_opcode = iter.Current.opcode;
+    //         var card_data_local_operand = iter.Current.operand;
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(iter.Current.opcode != OpCodes.Ldfld || ((FieldInfo) iter.Current.operand).Name != "buoyant") {
-                continue;
-            }
+    //         if(iter.Current.opcode != OpCodes.Ldfld || ((FieldInfo) iter.Current.operand).Name != "buoyant") {
+    //             continue;
+    //         }
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(iter.Current.opcode != OpCodes.Brfalse_S && iter.Current.opcode != OpCodes.Brfalse) {
-                continue;
-            }
-            var latestLabel = (Label) iter.Current.operand;
+    //         if(iter.Current.opcode != OpCodes.Brfalse_S && iter.Current.opcode != OpCodes.Brfalse) {
+    //             continue;
+    //         }
+    //         var latestLabel = (Label) iter.Current.operand;
 
-            if(!iter.MoveNext()) {
-                break;
-            }
-            yield return iter.Current;
+    //         if(!iter.MoveNext()) {
+    //             break;
+    //         }
+    //         yield return iter.Current;
 
-            if(iter.Current.opcode != OpCodes.Ldc_I4) {
-                continue;
-            }
+    //         if(iter.Current.opcode != OpCodes.Ldc_I4) {
+    //             continue;
+    //         }
 
-            List<CodeInstruction> candidates = new();
-            while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
-                candidates.Add(iter.Current);
-                yield return iter.Current;
-            }
+    //         List<CodeInstruction> candidates = new();
+    //         while (iter.MoveNext() && !(iter.Current.labels is List<Label> list && list.Contains(latestLabel))) {
+    //             candidates.Add(iter.Current);
+    //             yield return iter.Current;
+    //         }
 
-            if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
-                break;
+    //         if (!(iter.Current.labels is not null && iter.Current.labels.Contains(latestLabel)))
+    //             break;
 
 
-            var midLabel = il.DefineLabel();
-            var endLabel = il.DefineLabel();
-            {
-                yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(latestLabel);
+    //         var midLabel = il.DefineLabel();
+    //         var endLabel = il.DefineLabel();
+    //         {
+    //             yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(latestLabel);
                 
-                yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-                yield return new CodeInstruction(OpCodes.Call, typeof(ShortCircuit).GetMethod("DoesShortCircuit", BindingFlags.Static | BindingFlags.Public));
-                yield return new CodeInstruction(OpCodes.Brfalse, midLabel);
+    //             yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(ShortCircuit).GetMethod("DoesShortCircuit", BindingFlags.Static | BindingFlags.Public));
+    //             yield return new CodeInstruction(OpCodes.Brfalse, midLabel);
 
-                yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("GetShortCircuitIcon", BindingFlags.Static | BindingFlags.NonPublic));
-                foreach (var instr in candidates) {
-                    yield return new CodeInstruction(instr.opcode, instr.operand);
-                }
-            }
-            {
-                yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(midLabel);
-                yield return new CodeInstruction(OpCodes.Isinst, typeof(CheapCard));
-                yield return new CodeInstruction(OpCodes.Stloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
-                yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
-                yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-                yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("GetShortCircuitIcon", BindingFlags.Static | BindingFlags.NonPublic));
+    //             foreach (var instr in candidates) {
+    //                 yield return new CodeInstruction(instr.opcode, instr.operand);
+    //             }
+    //         }
+    //         {
+    //             yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(midLabel);
+    //             yield return new CodeInstruction(OpCodes.Isinst, typeof(CheapCard));
+    //             yield return new CodeInstruction(OpCodes.Stloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
+    //             yield return new CodeInstruction(OpCodes.Ldloc, newLocal);
+    //             yield return new CodeInstruction(OpCodes.Callvirt, typeof(CheapCard).GetMethod("GetCheapDiscount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+    //             yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
                 
-                yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("GetCheapIcon", BindingFlags.Static | BindingFlags.NonPublic));
-                foreach (var instr in candidates) {
-                    yield return new CodeInstruction(instr.opcode, instr.operand);
-                }
-            }
+    //             yield return new CodeInstruction(OpCodes.Call, typeof(Manifest).GetMethod("GetCheapIcon", BindingFlags.Static | BindingFlags.NonPublic));
+    //             foreach (var instr in candidates) {
+    //                 yield return new CodeInstruction(instr.opcode, instr.operand);
+    //             }
+    //         }
 
-            iter.Current.labels.Remove(latestLabel);
-            iter.Current.labels.Add(endLabel);
-            yield return iter.Current;
-            worked = true;
-            break;
-        }
+    //         iter.Current.labels.Remove(latestLabel);
+    //         iter.Current.labels.Add(endLabel);
+    //         yield return iter.Current;
+    //         worked = true;
+    //         break;
+    //     }
 
-        while (iter.MoveNext()) {
-            yield return iter.Current;
-        }
-        if (!worked)
-            throw new Exception("TraitIcons transpiler failed to find match");
-    }
+    //     while (iter.MoveNext()) {
+    //         yield return iter.Current;
+    //     }
+    //     if (!worked)
+    //         throw new Exception("TraitIcons transpiler failed to find match");
+    // }
 
     private static int GetShortCircuitIcon() {
         return ShortCircuitIcon?.Id ?? throw new Exception("bruh");
@@ -890,48 +906,19 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
         DB.currentLocale.strings["showcards.addedShortCircuit"] = "Reduced cost by 1, added <c=cardtrait>short-circuit</c>!";
     }
 
-    private static IEnumerable<CodeInstruction> State_PopulateRun_Delegate_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Ldarg(0),
-					ILMatches.Ldfld("chars"),
-					ILMatches.LdcI4((int)Deck.shard),
-					ILMatches.Call("Contains"),
-					ILMatches.Brtrue,
-					ILMatches.Ldloc<List<Card>>(originalMethod).CreateLdlocInstruction(out var ldlocCards),
-					ILMatches.Instruction(OpCodes.Newobj),
-					ILMatches.Call("Add")
-				)
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.DeclaringType, "chars")),
-					ldlocCards,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(Manifest), nameof(State_PopulateRun_Delegate_Transpiler_ModifyPotentialExeCards)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-	}
+        Helper = helper;
 
-    private static void State_PopulateRun_Delegate_Transpiler_ModifyPotentialExeCards(IEnumerable<Deck> chars, List<Card> cards)
-	{
-		if (chars.Contains((Deck)EddieDeck.Id!.Value))
-			return;
-		cards.Add(new EddieExe());
-	}
+        helper.Events.OnModLoadPhaseFinished += (_, phase) => {
+            if (phase == ModLoadPhase.AfterDbInit) {
+                ArtifactDialogue.Inject();
+                CombatDialogue.Inject();
+                EventDialogue.Inject();
+                Memories.Inject();
+            }
+        };
 
-	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
-	{
 		AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
 			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"I18n/{locale}.json").OpenRead()
@@ -939,6 +926,33 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 		Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(AnyLocalizations)
 		);
+
+        CheapTrait = helper.Content.Cards.RegisterTrait("Cheap", new()
+        {
+            Icon = (state, card) => (Spr)GetCheapIcon(),
+            Name = (_) => CheapGlossary.GetLocalisation(DB.currentLocale.locale, out var name, out var desc, out var _) ? name : "",
+            Tooltips = (state, card) => [
+                new TTGlossary(CheapGlossary.Head),
+                new TTGlossary("cardtrait.discount", [1])
+            ]
+        });
+        ShortCircuitTrait = helper.Content.Cards.RegisterTrait("ShortCircuit", new()
+        {
+            Icon = (state, card) => (Spr)GetShortCircuitIcon(),
+            Name = (_) => ShortCircuitGlossary.GetLocalisation(DB.currentLocale.locale, out var name, out var desc, out var _) ? name : "",
+            Tooltips = (state, card) => [
+                new TTGlossary(ShortCircuitGlossary.Head)
+            ]
+        });
+        helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, data) => {
+            if (!data.State.EnumerateAllArtifacts().OfType<VirtualTreadmill>().Any()) return;
+
+            var meta = data.Card.GetMeta();
+            if (meta.deck == Deck.colorless && meta.dontOffer) {
+                data.SetOverride(helper.Content.Cards.InfiniteCardTrait, true);
+                data.SetOverride(ShortCircuitTrait, true);
+            }
+        };
 
         helper.Content.Artifacts.RegisterArtifact("EmergencyThrusters", new()
 		{
@@ -981,6 +995,10 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
 			Name = AnyLocalizations.Bind(["card", "BasicMove", "name"]).Localize
 		});
 
+        helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount) => {
+            
+        });
+
         List<IPartEntry> parts = [];
         foreach (string str in new string[] {"cannon", "scaffolding", "wing", "cockpit", "missiles"}) {
             parts.Add(helper.Content.Ships.RegisterPart($"solarsail_{str}", new() {
@@ -1003,8 +1021,8 @@ public partial class Manifest : ISpriteManifest, IDeckManifest, IGlossaryManifes
                 },
                 ship = new() {
 					x = 7,
-					hull = 10,
-					hullMax = 10,
+					hull = 8,
+					hullMax = 8,
 					shieldMaxBase = 4,
 					isPlayerShip = true,
                     parts = {

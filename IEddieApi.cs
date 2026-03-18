@@ -1,4 +1,5 @@
 using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
 namespace TheJazMaster.Eddie;
 
@@ -13,6 +14,9 @@ public interface IEddieApi
     Status LoseEnergyEveryTurnStatus { get; }
     Status GainEnergyEveryTurnStatus { get; }
     Status HealNextTurnStatus { get; }
+
+	ICardTraitEntry CheapTrait { get; }
+	ICardTraitEntry ShortCircuitTrait { get; }
 
 	void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, int? permanentValue = null);
 

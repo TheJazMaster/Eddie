@@ -182,41 +182,28 @@ internal static class CombatDialogue
 				}
 			}
 		};
-		// DB.story.all[$"{eddie}JustHitBig_0"] = new() //TODO: make gamma ray trigger this
-		// {
-		// 	type = NodeType.combat,
-		// 	allPresent = new() { eddie },
-		// 	whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
-		// 	playerShotJustHit = true,
-		// 	minDamageDealtToEnemyThisAction = 9,
-		// 	lines = new()
-		// 	{
-		// 		new CustomSay()
-		// 		{
-		// 			who = eddie,
-		// 			Text = "As expected.",
-		// 			loopTag = Dialogue.CurrentSmugLoopTag
-		// 		},
-		// 		new SaySwitch()
-		// 		{
-		// 			lines = new()
-		// 			{
-		// 				new CustomSay()
-		// 				{
-		// 					who = Deck.peri.Key(),
-		// 					Text = "...",
-		// 					loopTag = "squint"
-		// 				},
-		// 				new CustomSay()
-		// 				{
-		// 					who = Deck.shard.Key(),
-		// 					Text = "!",
-		// 					loopTag = "stoked"
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// };
+		DB.story.all[$"{eddie}JustHitBig_0"] = new() //TODO: make gamma ray trigger this
+		{
+			type = NodeType.combat,
+			allPresent = new() { eddie },
+			whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
+			playerShotJustHit = true,
+			minDamageDealtToEnemyThisAction = 9,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Awesome!",
+					loopTag = Manifest.EddieExcitedAnimation.Tag
+				},
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Oh yeah..."
+				}
+			}
+		};
 
 		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}0"] = new()
 		{
@@ -1138,6 +1125,24 @@ internal static class CombatDialogue
 				}
 			}
 		};
+		DB.story.all[$"TooManyTurns_{eddie}"] = new()
+		{
+			type = NodeType.combat,
+			allPresent = new() { eddie },
+			minTurnsThisCombat = 15,
+			oncePerCombatTags = new() { "tooManyTurns" },
+			oncePerRun = true,
+			turnStart = true,
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "We're not done yet? Come on!",
+					loopTag = Manifest.EddieDisappointedAnimation.Tag
+				}
+			}
+		};
 		DB.story.all[$"ManyTurns_{eddie}"] = new()
 		{
 			type = NodeType.combat,
@@ -1212,7 +1217,7 @@ internal static class CombatDialogue
 			loopTag = Manifest.EddieExcitedAnimation.Tag
 		});
 
-		DB.story.all["WeJustGainedHeatAndDrakeIsHere_{eddie}_0"] = new()
+		DB.story.all[$"WeJustGainedHeatAndDrakeIsHere_{eddie}_0"] = new()
 		{
       		type = NodeType.combat,
       		lastTurnPlayerStatuses = new() { Status.heat },
@@ -2628,5 +2633,110 @@ internal static class CombatDialogue
 			who = eddie,
 			Text = "Whaddup.",
 		});
+
+		if (StoryVarsAdditions.SogginsName != null) {
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_0"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "Surely that won't happen again?",
+						loopTag = "squint"
+					}
+				]
+			};
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_1"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "Happens to the best of us. Just a lot less often."
+					}
+				]
+			};
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_2"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "Please tell me there is hidden genius at work here.",
+						loopTag = "squint"
+					}
+				]
+			};
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponseAlone_{eddie}_0"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
+				allPresent = [eddie],
+				nonePresent = [StoryVarsAdditions.SogginsName],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "There is a Soggins inside all of us."
+					}
+				]
+			};
+
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_0"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "I'm glad to see there's a method to the madness."
+					}
+				]
+			};
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_1"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "Wow, that's a visionary approach."
+					}
+				]
+			};
+			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_2"] = new()
+			{
+				type = NodeType.combat,
+				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
+				allPresent = [eddie],
+				oncePerCombat = true,
+				lines = [
+					new CustomSay
+					{
+						who = eddie,
+						Text = "I'll take what I can get."
+					}
+				]
+			};
+		}
 	}
 }

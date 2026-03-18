@@ -1,4 +1,5 @@
 using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
 namespace TheJazMaster.Eddie;
 
@@ -21,6 +22,9 @@ public sealed class ApiImplementation : IEddieApi
     public Status GainEnergyEveryTurnStatus => (Status)Manifest.GainEnergyEveryTurnStatus.Id!;
     public Status HealNextTurnStatus => (Status)Manifest.HealNextTurnStatus.Id!;
 
+	public ICardTraitEntry CheapTrait => Manifest.CheapTrait;
+	public ICardTraitEntry ShortCircuitTrait => Manifest.ShortCircuitTrait;
+
 	public void SetFree(Card card, bool? overrideValue = null, bool? oncePerTurnOnlyValue = null, int? permanentValue = null) {
 		Cheap.SetFree(card, overrideValue, oncePerTurnOnlyValue, permanentValue);
 	}
@@ -39,19 +43,5 @@ public sealed class ApiImplementation : IEddieApi
 
 	public int CostsLessPermanent(Card card) {
 		return Cheap.CostsLessPermanent(card);
-	}
-
-	public void SetShortCircuit(Card card, bool? overrideValue = null, bool? permanentValue = null, bool? innateValue = null) {
-		ShortCircuit.SetShortCircuit(card, overrideValue, permanentValue, innateValue);
-	}
-
-	public bool DoesShortCircuit(Card card, bool withOverrides = true)
-	{
-		return ShortCircuit.DoesShortCircuit(card, withOverrides);
-	}
-
-	public bool IsShortCircuitOverridePermanent(Card card)
-	{
-		return ShortCircuit.IsShortCircuitOverridePermanent(card);
 	}
 }

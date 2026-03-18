@@ -1,3 +1,5 @@
+using TheJazMaster.Eddie.DialogueAdditions;
+
 namespace TheJazMaster.Eddie.Artifacts;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss }, extraGlossary = new string[] { "status.evade" })]
@@ -125,7 +127,7 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 						new CustomSay()
 						{
 							who = Deck.shard.Key(),
-							Text = "I won't make the sun plates sad Ed, I promise!",
+							Text = "I won't ruin the sun plates, Ed, promise!",
 							loopTag = "paws"
 						},
 						new CustomSay()
@@ -145,64 +147,12 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 							who = Deck.goat.Key(),
 							Text = "How about we move the enemy instead?",
 							loopTag = "neutral"
-						}
+						},
 					}
-				}
-			}
-		};
-
-		DB.story.all[$"Artifact{Key()}Ruined_0"] = new()
-		{
-			type = NodeType.combat,
-			oncePerCombat = true,
-			lookup = new() { $"{Key()}RuinedTrigger" },
-			oncePerCombatTags = new() { $"{Key()}RuinedTag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
-				new SaySwitch()
-				{
-					lines = new()
-					{
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "Oh come on...",
-							loopTag = Manifest.EddieDisappointedAnimation.Tag
-						},
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "Readjusting...",
-							loopTag = Manifest.EddieSquintAnimation.Tag
-						},
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "Ah, the panels.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
-						},
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "No sudden movements, please!",
-							loopTag = Manifest.EddieSquintAnimation.Tag
-						},
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "Shoot. Let's try that again.",
-							loopTag = Manifest.EddieDisappointedAnimation.Tag
-						},
-						new CustomSay()
-						{
-							who = eddie,
-							Text = "That's not going to be enough sunglight.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
-						}
-					}
-				},
+				}.MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
+					who = StoryVarsAdditions.SogginsName!,
+					Text = "I'll be as calm as a clam!"
+				})
 			}
 		};
 
@@ -270,8 +220,26 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 						},
 						new CustomSay()
 						{
+							who = "comp",
+							Text = "Man...",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
 							who = Deck.eunice.Key(),
 							Text = "Yeah, you take care of that.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.eunice.Key(),
+							Text = "Wow, I'm glad we're in good hands.",
+							loopTag = "mad"
+						},
+						new CustomSay()
+						{
+							who = Deck.eunice.Key(),
+							Text = "These panels were a piece of junk anyway.",
 							loopTag = "neutral"
 						},
 						new CustomSay()
@@ -331,7 +299,13 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 						new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
-							Text = "Shields are important too.",
+							Text = "Sorry, shields are important too.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "We need more shields for next time.",
 							loopTag = "neutral"
 						},
 						new CustomSay()
@@ -346,8 +320,23 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 							Text = "We'll fix them together!",
 							loopTag = "neutral"
 						},
+						new CustomSay()
+						{
+							who = Deck.shard.Key(),
+							Text = "There's always next time!",
+							loopTag = "neutral"
+						},
 					}
-				}
+				}.MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
+					who = StoryVarsAdditions.SogginsName!,
+					Text = "Wasn't me!"
+				}).MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
+					who = StoryVarsAdditions.SogginsName!,
+					Text = "You installed them wrong."
+				}).MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
+					who = StoryVarsAdditions.SogginsName!,
+					Text = "Huh? Is something wrong?"
+				})
 			}
 		};
 	}

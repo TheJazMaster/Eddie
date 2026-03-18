@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "cardtrait.infinite" })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public class Spellboard : Artifact, ICardDataAffectorArtifact
 {
 	private static Manifest Instance => Manifest.Instance;
-	private static readonly Lazy<bool> isDuosLoaded = new Lazy<bool>(() => Instance.DuoArtifactsApi != null); 
+	private static readonly Lazy<bool> isDuosLoaded = new(() => Instance.DuoArtifactsApi != null); 
 
-	private static readonly List<Deck> dizzyBooksDuo = new List<Deck> {Enum.Parse<Deck>("dizzy"), Enum.Parse<Deck>("shard")};
+	private static readonly List<Deck> dizzyBooksDuo = [Deck.dizzy, Deck.shard];
 
 	int recursionLevel = 0;
 	
@@ -33,4 +33,9 @@ public class Spellboard : Artifact, ICardDataAffectorArtifact
 			}
 		recursionLevel = 0;
 	}
+
+	public override List<Tooltip>? GetExtraTooltips() => [
+		.. StatusMeta.GetTooltips(Status.shard, 3),
+		new TTGlossary("cardtrait.infinite")
+	];
 }
