@@ -1,225 +1,213 @@
+using Shockah.Kokoro;
 using TheJazMaster.Eddie.DialogueAdditions;
+using TwosCompany;
 
 namespace TheJazMaster.Eddie;
 
 internal static class CombatDialogue
 {
-	internal static Manifest Instance => Manifest.Instance;
-	private static IKokoroApi KokoroApi => Instance.KokoroApi;
+	internal static ModEntry Instance => ModEntry.Instance;
+	private static IKokoroApi.IV2 KokoroApi => Instance.KokoroApi;
 
 	internal static void Inject()
 	{
-		string eddie = Manifest.EddieDeck.GlobalName;
+		string eddie = Instance.EddieDeck.Key();
 
-		DB.story.all[$"BlockedALotOfAttacksWithArmor_{eddie}"] = new()
+		DB.story.all.Add($"BlockedALotOfAttacksWithArmor_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			oncePerRun = true,
-			oncePerCombatTags = new() { "YowzaThatWasALOTofArmorBlock" },
+			oncePerCombatTags = ["YowzaThatWasALOTofArmorBlock"],
 			enemyShotJustHit = true,
 			minDamageBlockedByPlayerArmorThisTurn = 3,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Who needs to do anything when you have armor.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"DizzyWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"DizzyWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "dizzyWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingDizzy },
+			allPresent = [eddie],
+			oncePerCombatTags = ["dizzyWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingDizzy],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Dizzy? This isn't funny.",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Instance.WorriedAnim
 				}
-			}
-		};
-		DB.story.all[$"RiggsWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"RiggsWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "riggsWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingRiggs },
+			allPresent = [eddie],
+			oncePerCombatTags = ["riggsWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingRiggs],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'm sure she won't mind if I take her boba.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		DB.story.all[$"PeriWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"PeriWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "periWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingPeri },
+			allPresent = [eddie],
+			oncePerCombatTags = ["periWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingPeri],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Does this mean I'm off the hook?",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag
+					loopTag = Instance.OnEdgeAnim
 				}
-			}
-		};
-		DB.story.all[$"IsaacWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"IsaacWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "isaacWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingIsaac },
+			allPresent = [eddie],
+			oncePerCombatTags = ["isaacWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingIsaac],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "He'll be back, right? I'm sure he'll be back.",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Instance.WorriedAnim
 				}
-			}
-		};
-		DB.story.all[$"DrakeWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"DrakeWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "drakeWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingDrake },
+			allPresent = [eddie],
+			oncePerCombatTags = ["drakeWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingDrake],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I thought we had something...",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					loopTag = Instance.DisappointedAnim
 				}
-			}
-		};
-		DB.story.all[$"MaxWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"MaxWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "maxWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingMax },
+			allPresent = [eddie],
+			oncePerCombatTags = ["maxWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingMax],
 			priority = true,
-			lines = new()
-			{
-				new CustomSay()
-				{
-					who = eddie,
-					Text = "MAX!",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag
+			lines = [
+				new SaySwitch() {
+					lines = [
+						new CustomSay()
+						{
+							who = eddie,
+							Text = "MAX!",
+							loopTag = Instance.OnEdgeAnim
+						},
+						new CustomSay()
+						{
+							who = eddie,
+							Text = "Max can't die. He respawns!",
+							loopTag = Instance.SquintAnim
+						}
+					]
 				}
-			}
-		};
-		DB.story.all[$"MaxWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"BooksWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "maxWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingMax },
+			allPresent = [eddie],
+			oncePerCombatTags = ["booksWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingBooks],
 			priority = true,
-			lines = new()
-			{
-				new CustomSay()
-				{
-					who = eddie,
-					Text = "Max doesn't die. He respawns!",
-					loopTag = Manifest.EddieSquintAnimation.Tag
-				}
-			}
-		};
-		DB.story.all[$"BooksWentMissing_{eddie}"] = new()
-		{
-			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "booksWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingBooks },
-			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Is this time magic again?",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				}
-			}
-		};
-		DB.story.all[$"CatWentMissing_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"CatWentMissing_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			oncePerCombatTags = new() { "CatWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingCat },
+			allPresent = [eddie],
+			oncePerCombatTags = ["CatWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingCat],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Oh, did I do something wrong again?",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag
+					loopTag = Instance.OnEdgeAnim
 				}
-			}
-		};
-		DB.story.all[$"{eddie}JustHitBig_0"] = new() //TODO: make gamma ray trigger this
+			]
+		});
+		DB.story.all.Add($"{eddie}JustHitBig_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
+			allPresent = [eddie],
+			whoDidThat = Instance.EddieDeck,
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 9,
-			lines = new()
-			{
-				new CustomSay()
-				{
-					who = eddie,
-					Text = "Awesome!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
-				},
-				new CustomSay()
-				{
-					who = eddie,
-					Text = "Oh yeah..."
+			lines = [
+				new SaySwitch {
+					lines = [
+						new CustomSay()
+						{
+							who = eddie,
+							Text = "Awesome!",
+							loopTag = Instance.ExcitedAnim
+						},
+						new CustomSay()
+						{
+							who = eddie,
+							Text = "Oh yeah..."
+						}
+					]
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}0"] = new()
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.dizzy.Key() },
+			allPresent = [eddie, Deck.dizzy.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Lights out.",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					Text = "Lights out...",
+					loopTag = Instance.DisappointedAnim
 				},
 				new CustomSay()
 				{
@@ -227,23 +215,22 @@ internal static class CombatDialogue
 					Text = "At least try to get us out of this.",
 					loopTag = "frown"
 				},
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}1"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, "comp" },
+			allPresent = [eddie, "comp"],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Do we HAVE to try again?",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
 				new CustomSay()
 				{
@@ -251,23 +238,22 @@ internal static class CombatDialogue
 					Text = "You can stay behind, if you'd prefer that.",
 					loopTag = "squint"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}2"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.goat.Key() },
+			allPresent = [eddie, Deck.goat.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Better luck next time, amigos.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				},
 				new CustomSay()
 				{
@@ -275,47 +261,45 @@ internal static class CombatDialogue
 					Text = "Adios...",
 					loopTag = "eyesClosed"
 				},
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}3"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.riggs.Key() },
+			allPresent = [eddie, Deck.riggs.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.riggs.Key(),
-					Text = "What if we, uh, ram into them at full speed?",
+						Text = "What if we, uh, ram into them at full speed?",
 					loopTag = "neutral"
 				},
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Worth a shot! I'll rig the ship to explode.",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag
+					loopTag = Instance.OnEdgeAnim
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}4"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}4", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.peri.Key() },
+			allPresent = [eddie, Deck.peri.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "It's gonna look really cool if we make it out of this one.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				},
 				new CustomSay()
 				{
@@ -323,18 +307,17 @@ internal static class CombatDialogue
 					Text = "Then get to it!",
 					loopTag = "mad"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}5"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}5", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.eunice.Key() },
+			allPresent = [eddie, Deck.eunice.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.eunice.Key(),
@@ -345,20 +328,19 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "I'll give it my best.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}6"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}6", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.hacker.Key() },
+			allPresent = [eddie, Deck.hacker.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.hacker.Key(),
@@ -369,17 +351,17 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "No, there's always a way.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}7"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}7", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.shard.Key() },
+			allPresent = [eddie, Deck.shard.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = new()
 			{
@@ -393,25 +375,24 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "At least we'll get some cryo-sleep.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
 			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}8"] = new()
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}8", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.hacker.Key() },
+			allPresent = [eddie, Deck.hacker.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Max, enter your second phase!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
 				new CustomSay()
 				{
@@ -419,18 +400,17 @@ internal static class CombatDialogue
 					Text = "NGRAAAAAAHHHHHH!",
 					loopTag = "squint"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}9"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}9", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.dizzy.Key() },
+			allPresent = [eddie, Deck.dizzy.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.dizzy.Key(),
@@ -441,25 +421,24 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "All power to shields!",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Instance.WorriedAnim
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}10"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}10", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.peri.Key() },
+			allPresent = [eddie, Deck.peri.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Man, I don't want to loop again.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
 				new CustomSay()
 				{
@@ -467,23 +446,22 @@ internal static class CombatDialogue
 					Text = "Too bad!",
 					loopTag = "mad"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}11"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}11", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.riggs.Key() },
+			allPresent = [eddie, Deck.riggs.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Don't worry, I'm sure our pilot will get us out of this.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new CustomSay()
 				{
@@ -491,18 +469,17 @@ internal static class CombatDialogue
 					Text = "I wouldn't count on it!",
 					loopTag = "nervous"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}12"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}12", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.goat.Key() },
+			allPresent = [eddie, Deck.goat.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
@@ -513,25 +490,24 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Can I get an honorary mention?",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}13"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}13", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.eunice.Key() },
+			allPresent = [eddie, Deck.eunice.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'll miss our time together, Drake.",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
 				new CustomSay()
 				{
@@ -539,23 +515,22 @@ internal static class CombatDialogue
 					Text = "Okay. I won't.",
 					loopTag = "squint"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}14"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}14", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.shard.Key() },
+			allPresent = [eddie, Deck.shard.Key()],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I've gotten through worse.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new CustomSay()
 				{
@@ -563,18 +538,17 @@ internal static class CombatDialogue
 					Text = "That's right! Never give up!",
 					loopTag = "stoked"
 				}
-			}
-		};
-		DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}15"] = new()
+			]
+		});
+		DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}15", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, "comp" },
+			allPresent = [eddie, "comp"],
 			enemyShotJustHit = true,
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "comp",
@@ -585,27 +559,26 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "We did our best.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		if (Manifest.Instance.SogginsApi != null) {
-			string soggins = Manifest.Instance.SogginsApi?.SogginsDeck.GlobalName ?? "";
-			DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}16"] = new()
+			]
+		});
+		if (Instance.SogginsApi != null) {
+			string soggins = Instance.SogginsApi.SogginsVanillaDeck.Key();
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}16", new()
 			{
 				type = NodeType.combat,
-				allPresent = new() { eddie, soggins },
+				allPresent = [eddie, soggins],
 				enemyShotJustHit = true,
 				maxHull = 2,
-				oncePerCombatTags = new() { "aboutToDie" },
+				oncePerCombatTags = ["aboutToDie"],
 				oncePerRun = true,
-				lines = new()
-				{
-					new CustomSay()
+				lines = [
+                    new CustomSay()
 					{
 						who = eddie,
 						Text = "Try pressing more buttons!",
-						loopTag = Manifest.EddieExcitedAnimation.Tag
+						loopTag = Instance.ExcitedAnim
 					},
 					new CustomSay()
 					{
@@ -613,15 +586,15 @@ internal static class CombatDialogue
 						Text = "Works every time.",
 						loopTag = "neutral"
 					}
-				}
-			};
-			DB.story.all[$"Duo_AboutToDieAndLoop_{eddie}17"] = new()
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}17", new()
 			{
 				type = NodeType.combat,
-				allPresent = new() { eddie, soggins },
+				allPresent = [eddie, soggins],
 				enemyShotJustHit = true,
 				maxHull = 2,
-				oncePerCombatTags = new() { "aboutToDie" },
+				oncePerCombatTags = ["aboutToDie"],
 				oncePerRun = true,
 				lines = new()
 				{
@@ -635,66 +608,61 @@ internal static class CombatDialogue
 					{
 						who = eddie,
 						Text = "Classic Soggins.",
-						loopTag = Manifest.EddieExplainsAnimation.Tag
+						loopTag = Instance.ExplainsAnim
 					}
 				}
-			};
+			});
 		}
-
-		DB.story.all[$"EmptyHandWithEnergy_{eddie}_0"] = new()
+		DB.story.all.Add($"EmptyHandWithEnergy_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			handEmpty = true,
 			minEnergy = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "How did that happen?",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Instance.WorriedAnim
 				}
-			}
-		};
-		DB.story.all[$"EmptyHandWithEnergy_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"EmptyHandWithEnergy_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			handEmpty = true,
 			minEnergy = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Oh well, nothing left to do.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"EnemyArmorHitLots_{eddie}_0"] = new()
+		DB.story.all.Add($"EnemyArmorHitLots_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 3,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We're in too deep now... We have to shoot the armor more.",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					loopTag = Instance.DisappointedAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "I don't think that will help.",
@@ -730,31 +698,29 @@ internal static class CombatDialogue
 							Text = "Don't give up just yet.",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"EnemyArmorHitLots_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyArmorHitLots_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 1,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Aiming at unarmored parts is, like, a lot of effort.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.riggs.Key(),
 							Text = "Yeah, I agree.",
@@ -766,31 +732,29 @@ internal static class CombatDialogue
 							Text = "Don't give up just yet.",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"EnemyArmorHitLots_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyArmorHitLots_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 1,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Maybe we can shoot the armor off? No?",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					loopTag = Instance.DisappointedAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "I don't think that will work.",
@@ -808,31 +772,29 @@ internal static class CombatDialogue
 							Text = "Please don't...",
 							loopTag = "mad"
 						},
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"EnemyArmorHitLots_{eddie}_3"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyArmorHitLots_{eddie}_3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 1,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Hey, enemy ship, could you scoot over a little?",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new() 
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "I don't think that will work.",
@@ -856,15 +818,15 @@ internal static class CombatDialogue
 							Text = "It was worth a shot, I guess.",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
-    	DB.story.all[$"WizardGeneralShouts_{eddie}_0"] = new() {
+    	DB.story.all.Add($"WizardGeneralShouts_{eddie}_0", new() {
       		type = NodeType.combat,
       		turnStart = true,
-      		allPresent = new() {"wizard", eddie},
+      		allPresent = ["wizard", eddie],
       		enemyIntent = "wizardMagic",
       		lines = new()
 			{
@@ -877,48 +839,45 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Damn, this guy means business!",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = Instance.WorriedAnim
 				}
 			}
-    	};
+    	});
 
-		DB.story.all[$"ExpensiveCardPlayed_{eddie}_0"] = new()
+		DB.story.all.Add($"ExpensiveCardPlayed_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			minCostOfCardJustPlayed = 4,
-			oncePerCombatTags = new() { "ExpensiveCardPlayed" },
+			oncePerCombatTags = ["ExpensiveCardPlayed"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Oops, I think that tripped a breaker.",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag
+					loopTag = Instance.OnEdgeAnim
 				}
-			}
-		};
-		DB.story.all[$"ExpensiveCardPlayed_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"ExpensiveCardPlayed_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			minCostOfCardJustPlayed = 4,
-			oncePerCombatTags = new() { "ExpensiveCardPlayed" },
+			oncePerCombatTags = ["ExpensiveCardPlayed"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I think something caught fire.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "Cool.",
@@ -930,30 +889,28 @@ internal static class CombatDialogue
 							Text = "Rad.",
 							loopTag = "smile"
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"ExpensiveCardPlayed_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"ExpensiveCardPlayed_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			minCostOfCardJustPlayed = 4,
-			oncePerCombatTags = new() { "ExpensiveCardPlayed" },
+			oncePerCombatTags = ["ExpensiveCardPlayed"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We should probably never do that again.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.riggs.Key(),
 							Text = "Yeah alright.",
@@ -965,132 +922,124 @@ internal static class CombatDialogue
 							Text = "Gotcha.",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"HandOnlyHasTrashCards_{eddie}"] = new()
+		DB.story.all.Add($"HandOnlyHasTrashCards_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			handFullOfTrash = true,
-			oncePerCombatTags = new() { "handOnlyHasTrashCards" },
+			oncePerCombatTags = ["handOnlyHasTrashCards"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Eh, the trash isn't that bad.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "But we have to clean it up eventually.",
 							loopTag = "squint"
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"HandOnlyHasUnplayableCards_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"HandOnlyHasUnplayableCards_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			handFullOfUnplayableCards = true,
-			oncePerCombatTags = new() { "handFullOfUnplayableCards" },
+			oncePerCombatTags = ["handFullOfUnplayableCards"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "This is all pretty useless.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"WeDontOverlapWithEnemyAtAll_{eddie}_0"] = new()
+		DB.story.all.Add($"WeDontOverlapWithEnemyAtAll_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			shipsDontOverlapAtAll = true,
-			oncePerCombatTags = new() { "NoOverlapBetweenShips" },
+			oncePerCombatTags = ["NoOverlapBetweenShips"],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I guess that works.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDontOverlapWithEnemyAtAll_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDontOverlapWithEnemyAtAll_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			shipsDontOverlapAtAll = true,
-			oncePerCombatTags = new() { "NoOverlapBetweenShips" },
+			oncePerCombatTags = ["NoOverlapBetweenShips"],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Nice. Stay there, please.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDontOverlapWithEnemyAtAll_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDontOverlapWithEnemyAtAll_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			shipsDontOverlapAtAll = true,
-			oncePerCombatTags = new() { "NoOverlapBetweenShips" },
+			oncePerCombatTags = ["NoOverlapBetweenShips"],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Yeah, stay there if you know what's good for you!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"WeDontOverlapWithEnemyAtAllButWeDoHaveASeekerToDealWith_{eddie}"] = new()
+		DB.story.all.Add($"WeDontOverlapWithEnemyAtAllButWeDoHaveASeekerToDealWith_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			shipsDontOverlapAtAll = true,
-			oncePerCombatTags = new() { "NoOverlapBetweenShipsSeeker" },
-			anyDronesHostile = new() { "missile_seeker" },
-			nonePresent = new() { "crab" },
+			oncePerCombatTags = ["NoOverlapBetweenShipsSeeker"],
+			anyDronesHostile = ["missile_seeker"],
+			nonePresent = ["crab"],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Hm... I feel like we're forgetting something.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "Are you kidding me?",
@@ -1102,81 +1051,77 @@ internal static class CombatDialogue
 							Text = "You don't say...",
 							loopTag = "squint"
 						},
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"ManyTurns_{eddie}"] = new()
+		DB.story.all.Add($"TooManyTurns_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			minTurnsThisCombat = 9,
-			oncePerCombatTags = new() { "manyTurns" },
-			oncePerRun = true,
-			turnStart = true,
-			lines = new()
-			{
-				new CustomSay()
-				{
-					who = eddie,
-					Text = "I need a siesta after this.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
-				}
-			}
-		};
-		DB.story.all[$"TooManyTurns_{eddie}"] = new()
-		{
-			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			minTurnsThisCombat = 15,
-			oncePerCombatTags = new() { "tooManyTurns" },
+			oncePerCombatTags = ["tooManyTurns"],
 			oncePerRun = true,
 			turnStart = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We're not done yet? Come on!",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					loopTag = Instance.DisappointedAnim
 				}
-			}
-		};
-		DB.story.all[$"ManyTurns_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"ManyTurns_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			minTurnsThisCombat = 9,
-			oncePerCombatTags = new() { "manyTurns" },
+			oncePerCombatTags = ["manyTurns"],
 			oncePerRun = true,
 			turnStart = true,
-			lines = new()
-			{
+			lines = [
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "I need a siesta after this.",
+					loopTag = Instance.NeutralAnim
+				}
+			]
+		});
+		DB.story.all.Add($"ManyTurns_{eddie}_1", new()
+		{
+			type = NodeType.combat,
+			allPresent = [eddie],
+			minTurnsThisCombat = 9,
+			oncePerCombatTags = ["manyTurns"],
+			oncePerRun = true,
+			turnStart = true,
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'm getting tired. Can we have a coffee break?",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				}
-			}
-		};
-		DB.story.all[$"ManyTurns_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"ManyTurns_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.riggs.Key() },
+			allPresent = [eddie, Deck.riggs.Key()],
 			minTurnsThisCombat = 9,
-			hasArtifacts = new() { "CaffeineRush" },
-			oncePerCombatTags = new() { "manyTurns" },
+			hasArtifacts = ["CaffeineRush"],
+			oncePerCombatTags = ["manyTurns"],
 			oncePerRun = true,
 			turnStart = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'm getting tired. Can we have a coffee break?",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
 				new CustomSay()
 				{
@@ -1184,23 +1129,22 @@ internal static class CombatDialogue
 					Text = "You can have some of mine.",
 					loopTag = "bobaSlurp"
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"OverheatCatFix_{eddie}"] = new()
+		DB.story.all.Add($"OverheatCatFix_{eddie}", new()
 		{
 			type = NodeType.combat,
 			wasGoingToOverheatButStopped = true,
 			whoDidThat = Deck.colorless,
-			allPresent = new() { "comp" },
-			oncePerCombatTags = new() { "OverheatCatFix" },
-			lines = new()
-			{
+			allPresent = ["comp"],
+			oncePerCombatTags = ["OverheatCatFix"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Good call, gotta keep the heat contained!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
 				new CustomSay()
 				{
@@ -1208,94 +1152,91 @@ internal static class CombatDialogue
 					Text = "Yes, that's exactly what I was going for.",
 					loopTag = "squint"
 				}
-			}
-		};
-		DB.story.GetNode("OverheatDrakeFix_Multi_6")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
+			]
+		});
+		DB.story.GetNode("OverheatDrakeFix_Multi_6")?.lines.OfType<SaySwitch>().First().lines.Insert(0, new CustomSay()
 		{
 			who = eddie,
 			Text = "Good call, gotta keep the heat contained!",
-			loopTag = Manifest.EddieExcitedAnimation.Tag
+			loopTag = Instance.ExcitedAnim
 		});
 
-		DB.story.all[$"WeJustGainedHeatAndDrakeIsHere_{eddie}_0"] = new()
+		DB.story.all.Add($"WeJustGainedHeatAndDrakeIsHere_{eddie}_0", new()
 		{
       		type = NodeType.combat,
-      		lastTurnPlayerStatuses = new() { Status.heat },
-      		allPresent = new() { eddie, Deck.eunice.Key() },
-      		oncePerCombatTags = new() { "DrakeCanYouDoSomethingAboutTheHeatPlease" },
-      		lines = new()
-        	{
-				new SaySwitch()
+      		lastTurnPlayerStatuses = [Status.heat],
+      		allPresent = [eddie, Deck.eunice.Key()],
+      		oncePerCombatTags = ["DrakeCanYouDoSomethingAboutTheHeatPlease"],
+      		lines = [
+                new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "Wow, this is nice!",
-							loopTag = Manifest.EddieExcitedAnimation.Tag
+							loopTag = Instance.ExcitedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I did feel a little cold before.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Ah, cozy...",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "A little heat never hurt anyone.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I like this temperature more.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Yeah! Crank it up!",
-							loopTag = Manifest.EddieExcitedAnimation.Tag
+							loopTag = Instance.ExcitedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "We'll deal with the consequences later.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "We should always heat the ship like this.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "We should do this more often.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I work better in the heat.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
-					}
+					]
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "I know, right?",
@@ -1325,183 +1266,172 @@ internal static class CombatDialogue
 							Text = "...Alright, don't make it weird.",
 							loopTag = "mad"
 						},
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"OverheatGeneric_{eddie}"] = new()
+		DB.story.all.Add($"OverheatGeneric_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			goingToOverheat = true,
-			oncePerCombatTags = new() { "OverheatGeneric" },
-			lines = new()
-			{
+			oncePerCombatTags = ["OverheatGeneric"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Ah, the consequences...",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"OverheatGeneric_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"OverheatGeneric_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			goingToOverheat = true,
-			oncePerCombatTags = new() { "OverheatGeneric" },
-			lines = new()
-			{
+			oncePerCombatTags = ["OverheatGeneric"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'll miss you, heat.",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					loopTag = Instance.DisappointedAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"PlayedManyCards_{eddie}_0"] = new()
+		DB.story.all.Add($"PlayedManyCards_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			handEmpty = true,
 			minCardsPlayedThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "See? It all worked out.",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"ThatsALotOfDamageToThem_{eddie}"] = new()
+		DB.story.all.Add($"ThatsALotOfDamageToThem_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 10,
-			lines = new()
-			{
+			lines = [
 				new SaySwitch() {
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "Nice.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Awesome.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"ThatsALotOfDamageToThem_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"ThatsALotOfDamageToThem_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 10,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Let's do that again!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"ThatsALotOfDamageToUs_{eddie}"] = new()
+		DB.story.all.Add($"ThatsALotOfDamageToUs_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 3,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "That was wild!",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.GetNode("TookDamageHave2HP_Multi_1")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
+		DB.story.GetNode("TookDamageHave2HP_Multi_1")?.lines.OfType<SaySwitch>().First().lines.Insert(0, new CustomSay()
 		{
 			who = eddie,
 			Text = "Nearly, eh? That's fine.",
-			loopTag = Manifest.EddieExcitedAnimation.Tag
+			loopTag = Instance.ExcitedAnim
 		});
 
-		DB.story.all[$"TookZeroDamageAtLowHealth_{eddie}"] = new()
+		DB.story.all.Add($"TookZeroDamageAtLowHealth_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			enemyShotJustHit = true,
 			maxDamageDealtToPlayerThisTurn = 0,
 			maxHull = 2,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "That's the power of determination.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeAreCorroded_{eddie}"] = new()
+			]
+		});
+		DB.story.all.Add($"WeAreCorroded_{eddie}", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			lastTurnPlayerStatuses = new() { Status.corrode },
+			allPresent = [eddie],
+			lastTurnPlayerStatuses = [Status.corrode],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "This is gonna be a lot of work to fix.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				}
-			}
-		};
-		DB.story.all[$"IMissedOopsie_{eddie}_0"] = new()
+			]
+		});
+		DB.story.all.Add($"IMissedOopsie_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
+			allPresent = [eddie],
+			whoDidThat = Instance.EddieDeck,
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
-				new CustomSay()
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
+                new CustomSay()
 				{
 					who = eddie,
 					Text = "That was a test shot.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "Uh-huh.",
@@ -1513,49 +1443,46 @@ internal static class CombatDialogue
 							Text = "What were you testing?",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"IMissedOopsie_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"IMissedOopsie_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
+			allPresent = [eddie],
+			whoDidThat = Instance.EddieDeck,
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Oops, wrong button.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
-			}
-		};
-		DB.story.all[$"IMissedOopsie_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"IMissedOopsie_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-			whoDidThat = (Deck)Manifest.EddieDeck.Id!.Value,
+			allPresent = [eddie],
+			whoDidThat = Instance.EddieDeck,
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Wow, they're totally cheating.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = Instance.SquintAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "Let me aim that thing!",
@@ -1564,250 +1491,252 @@ internal static class CombatDialogue
 						new CustomSay()
 						{
 							who = Deck.hacker.Key(),
-							Text = "Must have been the cosmic particles.",
+							Text = "Must have been cosmic particle interference.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"WeMissedOopsie_{eddie}_0"] = new()
+			]
+		});
+		DB.story.all.Add($"WeMissedOopsie_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "No biggie.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeMissedOopsie_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeMissedOopsie_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Happens to the best of us.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.peri.Key(),
 							Text = "Let's not make this a habit.",
 							loopTag = "mad"
 						}
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"WeMissedOopsie_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"WeMissedOopsie_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We'll get 'em next time.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.goat.Key(),
 							Text = "Next time we should try aiming better.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"WeGotHurtButNotTooBad_{eddie}_0"] = new()
+		DB.story.all.Add($"WeGotHurtButNotTooBad_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Someone should fix that.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeGotHurtButNotTooBad_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeGotHurtButNotTooBad_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
-			lines = new()
-			{
+			oncePerRun = true,
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Aw man, that was my favorite chunk of hull.",
-					loopTag = Manifest.EddieDisappointedAnimation.Tag
+					Text = "Aw man, I think my couch was there.",
+					loopTag = Instance.DisappointedAnim
 				}
-			}
-		};
-
-		DB.story.all[$"WeGotShotButTookNoDamage_{eddie}_0"] = new()
+			]
+		});
+		DB.story.all.Add($"WeGotHurtButNotTooBad_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
+			enemyShotJustHit = true,
+			minDamageDealtToPlayerThisTurn = 1,
+			maxDamageDealtToPlayerThisTurn = 1,
+			lines = [
+				new CustomSay()
+				{
+					who = eddie,
+					Text = "Hm, less scrap to work with.",
+					loopTag = Instance.AnnoyedAnim
+				}
+			]
+		});
+
+		DB.story.all.Add($"WeGotShotButTookNoDamage_{eddie}_0", new()
+		{
+			type = NodeType.combat,
+			allPresent = [eddie],
 			enemyShotJustHit = true,
 			maxDamageDealtToPlayerThisTurn = 0,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "See? Everything's fine."
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"WeDidOverThreeDamage_{eddie}_0"] = new()
+		DB.story.all.Add($"WeDidOverThreeDamage_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We can do better than that.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDidOverThreeDamage_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDidOverThreeDamage_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "That's good damage.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDidOverThreeDamage_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDidOverThreeDamage_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Nice.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
+			]
+		});
 		
-		DB.story.all[$"WeDidOverFiveDamage_{eddie}_0"] = new()
+		DB.story.all.Add($"WeDidOverFiveDamage_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "That's more like it.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDidOverFiveDamage_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDidOverFiveDamage_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "They'll be feeling that one.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDidOverFiveDamage_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDidOverFiveDamage_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Lights out.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
-		DB.story.all[$"WeDidOverFiveDamage_{eddie}_3"] = new()
+			]
+		});
+		DB.story.all.Add($"WeDidOverFiveDamage_{eddie}_3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.dizzy.Key() },
+			allPresent = [eddie, Deck.dizzy.Key()],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "This kind of power is what all true electricians strive for.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				},
 				new CustomSay()
 				{
@@ -1815,405 +1744,378 @@ internal static class CombatDialogue
 					Text = "Where exactly did you get your education?",
 					loopTag = "squint"
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"EnemyArmorPierced_Multi_{eddie}_0"] = new()
+		DB.story.all.Add($"EnemyArmorPierced_Multi_{eddie}_0", new()
 		{
 			type = NodeType.combat,
 			playerShotJustHit = true,
 			playerJustPiercedEnemyArmor = true,
-			oncePerCombatTags = new() {"EnemyArmorPierced"},
+			oncePerCombatTags = ["EnemyArmorPierced"],
 			oncePerRun = true,
-			lines = new()
-			{
-				new CustomSay()
-				{
+			lines = [
+                new CustomSay() {
 					who = eddie,
-					Text = "Heh, nice armor.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					Text = "Why bother with armor?",
+					loopTag = Instance.ExplainsAnim
 				}
-			},
-			allPresent = new() {"eunice"}
-		};
-		DB.story.all[$"EnemyArmorPierced_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyArmorPierced_{eddie}_1", new()
 		{
 			type = NodeType.combat,
 			playerShotJustHit = true,
-			allPresent = new() {eddie},
+			allPresent = [eddie],
 			playerJustPiercedEnemyArmor = true,
-			oncePerCombatTags = new() {"EnemyArmorPierced"},
+			oncePerCombatTags = ["EnemyArmorPierced"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Phew, I was afraid we'd need to care about the armor.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"EnemyHasBrittle_{eddie}_0"] = new()
+		DB.story.all.Add($"EnemyHasBrittle_{eddie}_0", new()
 		{
 			type = NodeType.combat,
 			enemyHasBrittlePart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutBrittle"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutBrittle"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "A brittle part? Someone should get fired for that.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		DB.story.all[$"EnemyHasBrittle_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyHasBrittle_{eddie}_1", new()
 		{
 			type = NodeType.combat,
 			enemyHasBrittlePart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutBrittle"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutBrittle"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Brittle spot! Score!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"EnemyHasBrittle_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyHasBrittle_{eddie}_2", new()
 		{
 			type = NodeType.combat,
 			enemyHasBrittlePart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutBrittle"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutBrittle"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Easy fight, just hit that brittle spot.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"EnemyHasWeakness_{eddie}_0"] = new()
+		DB.story.all.Add($"EnemyHasWeakness_{eddie}_0", new()
 		{
 			type = NodeType.combat,
 			enemyHasWeakPart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutWeakness"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutWeakness"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Weakpoint!",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		DB.story.all[$"EnemyHasWeakness_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyHasWeakness_{eddie}_1", new()
 		{
 			type = NodeType.combat,
 			enemyHasWeakPart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutWeakness"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutWeakness"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "If you think about it, hitting a weakpoint is basically like getting free energy.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		DB.story.all[$"EnemyHasWeakness_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"EnemyHasWeakness_{eddie}_2", new()
 		{
 			type = NodeType.combat,
 			enemyHasWeakPart = true,
-			allPresent = new() {eddie},
-			oncePerRunTags = new() {"yelledAboutWeakness"},
-			lines = new()
-			{
+			allPresent = [eddie],
+			oncePerRunTags = ["yelledAboutWeakness"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We should hit that weakpoint, if it's not too much trouble.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"PowerNapNap_{eddie}_0"] = new()
+		DB.story.all.Add($"PowerNapNap_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapNap" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapNap"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'll make it up in a minute, I promise.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapNap_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapNap_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapNap" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapNap"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Just let me stretch a little...",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapNap_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapNap_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapNap" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapNap"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "It's important to keep a clear head in dangerous situations.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapNap_{eddie}_3"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapNap_{eddie}_3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapNap" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapNap"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I can feel my productivity increasing already!",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapNap_{eddie}_4"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapNap_{eddie}_4", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapNap" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapNap"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Just a sec.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = Instance.RestingAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"PowerNapAwake_{eddie}_0"] = new()
+		DB.story.all.Add($"PowerNapAwake_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Fine, fine.",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I guess if it's an emergency.",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Duty calls...",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_3"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "That's fine. I'll take some time off during FTL.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_4"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_4", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Can't catch a break, huh.",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_5"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_5", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Yeah, yeah, I'm on it.",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
-		DB.story.all[$"PowerNapAwake_{eddie}_6"] = new()
+			]
+		});
+		DB.story.all.Add($"PowerNapAwake_{eddie}_6", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "PowerNap" },
-			lookup = new() { "PowerNapAwake" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["PowerNap"],
+			lookup = ["PowerNapAwake"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I'll give it my all.",
-					loopTag = Manifest.EddieAnnoyedAnimation.Tag
+					loopTag = Instance.AnnoyedAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all[$"GammaRay_{eddie}_0"] = new()
+		DB.story.all.Add($"GammaRay_{eddie}_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Wooooo!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_1"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Yes!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_2"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_2", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Awesome!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_3"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_3", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "It's just as satisfying as I expected it to be!",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.riggs.Key(),
 							Text = "Wow, carnage!",
@@ -2231,18 +2133,17 @@ internal static class CombatDialogue
 							Text = "That's scary...",
 							loopTag = "worried"
 						},
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_4"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_4", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.peri.Key() },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie, Deck.peri.Key()],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.peri.Key(),
@@ -2253,18 +2154,17 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "I know, right!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_5"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_5", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie, Deck.eunice.Key() },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie, Deck.eunice.Key()],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.eunice.Key(),
@@ -2275,29 +2175,27 @@ internal static class CombatDialogue
 				{
 					who = eddie,
 					Text = "Cool, right?",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_6"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_6", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Was that cool or what?",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "...Um...",
@@ -2315,29 +2213,27 @@ internal static class CombatDialogue
 							Text = "Oh boy...",
 							loopTag = "panic"
 						},
-					}
+					]
 				}
-			}
-		};
-		DB.story.all[$"GammaRay_{eddie}_7"] = new()
+			]
+		});
+		DB.story.all.Add($"GammaRay_{eddie}_7", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
-      		oncePerCombatTags = new() { "GammaRay" },
-			lookup = new() { "GammaRay" },
-			lines = new()
-			{
+			allPresent = [eddie],
+      		oncePerCombatTags = ["GammaRay"],
+			lookup = ["GammaRay"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Fire the gamma ray! We'll worry about the radiation later.",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = Instance.ExcitedAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
 							Text = "Sure, why not.",
@@ -2349,16 +2245,16 @@ internal static class CombatDialogue
 							Text = "When's later?",
 							loopTag = "shy"
 						}
-					}
+					]
 				}
-			}
-		};
+			]
+		});
 
 		DB.story.GetNode("CrabFacts1_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
 		{
 			who = eddie,
 			Text = "I can't be bothered to fact-check that.",
-			loopTag = Manifest.EddieDefaultAnimation.Tag
+			loopTag = Instance.NeutralAnim
 		});
 		
 
@@ -2366,78 +2262,73 @@ internal static class CombatDialogue
 		{
 			who = eddie,
 			Text = "Sports.",
-			loopTag = Manifest.EddieSquintAnimation.Tag
+			loopTag = Instance.SquintAnim
 		});
 
-		StoryNode node;
-		node = new()
+		DB.story.all.Add($"PlayedInfinite_{eddie}_0", new StoryNode()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			oncePerCombat = true,
-			oncePerCombatTags = new() { "PlayedInfinite" },
-			lines = new()
-			{
+			oncePerCombatTags = ["PlayedInfinite"],
+			lines = [
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines =
+                    [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "We can do that again, if we'd like.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Let's just do the same thing again.",
-							loopTag = Manifest.EddieExcitedAnimation.Tag
+							loopTag = Instance.ExcitedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "It's important to keep your options open.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I'm a firm believer in renewables.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Should I stop?",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "This should keep me occupied.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Again!",
-							loopTag = Manifest.EddieExcitedAnimation.Tag
+							loopTag = Instance.ExcitedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Had enough yet?",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
-					}
+					]
 				}
-			}
-		};
-		KokoroApi.SetExtensionData(node, StoryVarsAdditions.CardJustPlayedWasInfiniteKey, true);
-		DB.story.all[$"PlayedInfinite_{eddie}_0"] = node;
-
-		node = new()
+			]
+		}.WithModData(StoryVarsAdditions.CardJustPlayedWasInfiniteKey, true));
+		DB.story.all.Add($"PlayedDiscount_{eddie}_0", new StoryNode()
 		{
 			type = NodeType.combat,
 			allPresent = [eddie],
@@ -2453,128 +2344,121 @@ internal static class CombatDialogue
 						{
 							who = eddie,
 							Text = "It's a dubious trick, but it's cheap!",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Don't ask me where I got this stuff. I don't even remember.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Here's a life hack that can save you a bit of energy!",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "That's it for that discount.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Cutting a few corners can save you some power.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Might as well do it while it's easy.",
-							loopTag = Manifest.EddieDefaultAnimation.Tag
+							loopTag = Instance.NeutralAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "It was fun while it lasted.",
-							loopTag = Manifest.EddieDisappointedAnimation.Tag
+							loopTag = Instance.DisappointedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I'm a big fan of discounts.",
-							loopTag = Manifest.EddieExplainsAnimation.Tag
+							loopTag = Instance.ExplainsAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "What a bargain!",
-							loopTag = Manifest.EddieExcitedAnimation.Tag
+							loopTag = Instance.ExcitedAnim
 						}
 					]
 				}
 			]
-		};
-		KokoroApi.SetExtensionData(node, StoryVarsAdditions.MinDiscountOfCardJustPlayedKey, 1);
-		DB.story.all[$"PlayedDiscount_{eddie}_0"] = node;
+		}.WithModData(StoryVarsAdditions.MinDiscountOfCardJustPlayedKey, 1));
 
-		node = new()
+		DB.story.all.Add($"PlayedExpensive_{eddie}_0", new StoryNode()
 		{
 			type = NodeType.combat,
-			allPresent = new() { eddie },
+			allPresent = [eddie],
 			oncePerCombat = true,
-			oncePerCombatTags = new() { "PlayedExpensive" },
-			lines = new()
-			{
+			oncePerCombatTags = ["PlayedExpensive"],
+			lines = [
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "Ew.",
-							loopTag = Manifest.EddieAnnoyedAnimation.Tag
+							loopTag = Instance.AnnoyedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "What is this? Who thought of this?",
-							loopTag = Manifest.EddieAnnoyedAnimation.Tag
+							loopTag = Instance.AnnoyedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "I hated every second of that.",
-							loopTag = Manifest.EddieAnnoyedAnimation.Tag
+							loopTag = Instance.AnnoyedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "That really rubs me the wrong way.",
-							loopTag = Manifest.EddieAnnoyedAnimation.Tag
+							loopTag = Instance.AnnoyedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Never again.",
-							loopTag = Manifest.EddieAnnoyedAnimation.Tag
+							loopTag = Instance.AnnoyedAnim
 						}
-					}
+					]
 				}
-			}
-		};
-		KokoroApi.SetExtensionData(node, StoryVarsAdditions.MaxDiscountOfCardJustPlayedKey, -1);
-		DB.story.all[$"PlayedExpensive_{eddie}_0"] = node;
+			]
+		}.WithModData(StoryVarsAdditions.MaxDiscountOfCardJustPlayedKey, -1));
 
-		DB.story.all["$JustPlayedASogginsCard_{eddie}_0"] = new() {
+		DB.story.all.Add($"JustPlayedASogginsCard_{eddie}_0", new() {
 			type = NodeType.combat,
 			whoDidThat = Deck.soggins,
 			oncePerRun = true,
-			allPresent = new() { eddie },
-			lines = new()
-			{
+			allPresent = [eddie],
+			lines = [
 				new CustomSay() {
 					who = eddie,
 					Text = "We're still alive? That's good.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = Instance.NeutralAnim
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.all["$JustPlayedAToothCard_{eddie}_0"] = new() {
+		DB.story.all.Add($"JustPlayedAToothCard_{eddie}_0", new() {
 			type = NodeType.combat,
 			whoDidThat = Deck.tooth,
 			oncePerRun = true,
@@ -2583,36 +2467,35 @@ internal static class CombatDialogue
 				new CustomSay() {
 					who = eddie,
 					Text = "You can get a lot of use out of junk like this.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = Instance.ExplainsAnim
 				}
 			]
-		};
+		});
 
-		DB.story.all["summonEddie_0"] = new()
+		DB.story.all.Add("summonEddie_0", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { "comp" },
-			lookup = new() { "summonEddie" },
-			oncePerCombatTags = new() { $"summonEddieTag" },
+			allPresent = ["comp"],
+			lookup = ["summonEddie"],
+			oncePerCombatTags = [$"summonEddieTag"],
 			oncePerRun = true,
-			lines = new() {
+			lines = [
 				new CustomSay()
 				{
 					who = "comp",
 					Text = "Let's see what I can do with this.",
 					loopTag = "neutral"
 				}
-			}
-		};
-
-		DB.story.all["summonEddie_1"] = new()
+			]
+		});
+		DB.story.all.Add("summonEddie_1", new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { "comp", eddie },
-			lookup = new() { "summonEddie" },
-			oncePerCombatTags = new() { $"summonEddieTag" },
+			allPresent = ["comp", eddie],
+			lookup = ["summonEddie"],
+			oncePerCombatTags = [$"summonEddieTag"],
 			oncePerRun = true,
-			lines = new() {
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
@@ -2625,17 +2508,17 @@ internal static class CombatDialogue
 					Text = "You've got some good ideas.",
 					loopTag = "neutral"
 				}
-			}
-		};
+			]
+		});
 
-		DB.story.GetNode("DillianShouts")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
+		DB.story.GetNode("DillianShouts")?.lines.OfType<SaySwitch>().First().lines.Insert(0, new CustomSay()
 		{
 			who = eddie,
 			Text = "Whaddup.",
 		});
 
 		if (StoryVarsAdditions.SogginsName != null) {
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_0"] = new()
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_0", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
@@ -2645,12 +2528,11 @@ internal static class CombatDialogue
 					new CustomSay
 					{
 						who = eddie,
-						Text = "Surely that won't happen again?",
-						loopTag = "squint"
+						Text = "Surely that won't happen again?"
 					}
 				]
-			};
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_1"] = new()
+			});
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_1", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
@@ -2663,8 +2545,8 @@ internal static class CombatDialogue
 						Text = "Happens to the best of us. Just a lot less often."
 					}
 				]
-			};
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_2"] = new()
+			});
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}_2", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
@@ -2678,8 +2560,8 @@ internal static class CombatDialogue
 						loopTag = "squint"
 					}
 				]
-			};
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_BotchResponseAlone_{eddie}_0"] = new()
+			});
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_BotchResponseAlone_{eddie}_0", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_BotchResponse_{eddie}"],
@@ -2693,9 +2575,9 @@ internal static class CombatDialogue
 						Text = "There is a Soggins inside all of us."
 					}
 				]
-			};
+			});
 
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_0"] = new()
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_0", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
@@ -2708,8 +2590,8 @@ internal static class CombatDialogue
 						Text = "I'm glad to see there's a method to the madness."
 					}
 				]
-			};
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_1"] = new()
+			});
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_1", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
@@ -2722,8 +2604,8 @@ internal static class CombatDialogue
 						Text = "Wow, that's a visionary approach."
 					}
 				]
-			};
-			DB.story.all[$"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_2"] = new()
+			});
+			DB.story.all.Add($"{StoryVarsAdditions.SogginsName}_DoubleResponse_{eddie}_2", new()
 			{
 				type = NodeType.combat,
 				lookup = [$"{StoryVarsAdditions.SogginsName}_DoubleResponse"],
@@ -2736,7 +2618,707 @@ internal static class CombatDialogue
 						Text = "I'll take what I can get."
 					}
 				]
-			};
+			});
 		}
+
+
+		
+		Instance.Helper.ModRegistry.AwaitApiOrNull<ITwosAPI>("Mezz.TwosCompany", (api) => {
+			if (api == null) return;
+			string sorrelKey = "mezz_Sorrel";
+
+			DB.story.all.Add("mezz_Ilya_WeJustGainedHeat_Eddie_0", new()
+			{
+				type = NodeType.combat,
+				lastTurnPlayerStatuses = [Status.heat],
+				allPresent = [eddie, api.IlyaDeck.GlobalName],
+				oncePerCombatTags = ["IlyaCanYouDoSomethingAboutTheHeatPlease"],
+				lines = [
+					new SaySwitch()
+					{
+						lines = [
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "Wow, this is nice!",
+								loopTag = Instance.ExcitedAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "I did feel a little cold before.",
+								loopTag = Instance.NeutralAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "Ah, cozy...",
+								loopTag = Instance.NeutralAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "A little heat never hurt anyone.",
+								loopTag = Instance.NeutralAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "I like this temperature more.",
+								loopTag = Instance.NeutralAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "Yeah! Crank it up!",
+								loopTag = Instance.ExcitedAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "We should always heat the ship like this.",
+								loopTag = Instance.ExplainsAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "We should do this more often.",
+								loopTag = Instance.ExplainsAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "I work better in the heat.",
+								loopTag = Instance.ExplainsAnim
+							},
+						]
+					},
+					new SaySwitch()
+					{
+						lines = [
+                            new CustomSay()
+							{
+								who = api.IlyaDeck.GlobalName,
+								Text = "...sure?",
+								loopTag = "bashful"
+							},
+							new CustomSay()
+							{
+								who = api.IlyaDeck.GlobalName,
+								Text = "I'm glad you agree.",
+								loopTag = "neutral"
+							},
+							new CustomSay()
+							{
+								who = api.IlyaDeck.GlobalName,
+								Text = "I'll keep it coming.",
+								loopTag = "neutral"
+							},
+						]
+					}
+				]
+			});
+			DB.story.all[$"EnemyArmorHitLots_{eddie}_0"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "...",
+					loopTag = "side"
+				},
+				new CustomSay()
+				{
+					who = api.IlyaDeck.GlobalName,
+					Text = "It's not coming off.",
+					loopTag = "neutral"
+				},
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "Valiant, but foolish.",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "...",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Quite the competent crew you've got here, CAT.",
+					loopTag = "smug"
+				},
+				new CustomSay()
+				{
+					who = sorrelKey,
+					Text = "The tree which does not bend breaks in the wind."
+				}
+			]);
+			DB.story.all[$"EnemyArmorHitLots_{eddie}_1"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "...",
+					loopTag = "side"
+				},
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "Disgusting lack of ambition.",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Quite the competent crew you've got here, CAT.",
+					loopTag = "smug"
+				},
+				new CustomSay()
+				{
+					who = sorrelKey,
+					Text = "The tree which does not bend breaks in the wind."
+				}
+			]);
+			DB.story.all[$"EnemyArmorHitLots_{eddie}_2"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "...",
+					loopTag = "side"
+				},
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "Give it up.",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.IlyaDeck.GlobalName,
+					Text = "It's not coming off.",
+					loopTag = "neutral"
+				},
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "...",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Quite the competent crew you've got here, CAT.",
+					loopTag = "smug"
+				},
+				new CustomSay()
+				{
+					who = sorrelKey,
+					Text = "Stop. Find another way.",
+					loopTag = "annoyed"
+				}
+			]);
+			DB.story.all[$"EnemyArmorHitLots_{eddie}_3"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "...",
+					loopTag = "side"
+				},
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "Yeah, that'll work.",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "...",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Quite the competent crew you've got here, CAT.",
+					loopTag = "smug"
+				},
+				new CustomSay()
+				{
+					who = sorrelKey,
+					Text = "Stop. Find another way.",
+					loopTag = "annoyed"
+				}
+			]);
+			DB.story.all[$"ExpensiveCardPlayed_{eddie}_1"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "Have you heard of workplace safety?",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.IlyaDeck.GlobalName,
+					Text = "..!",
+					loopTag = "happy"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Then go fix it.",
+					loopTag = "annoyed"
+				}
+			]);
+			DB.story.all[$"ExpensiveCardPlayed_{eddie}_2"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "You would deny me such joy?",
+					loopTag = "smug"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "No. Keep going."
+				}
+			]);
+			DB.story.all[$"HandOnlyHasTrashCards_{eddie}"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "I don't enjoy wallowing in filth.",
+					loopTag = "angry"
+				},
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "I'm surprised you get anything done."
+				}
+			]);
+			DB.story.all[$"WeDontOverlapWithEnemyAtAllButWeDoHaveASeekerToDealWith_{eddie}"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.IlyaDeck.GlobalName,
+					Text = "How did we miss that?",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "I could've handled that.",
+					loopTag = "squint"
+				}
+			]);
+			DB.story.all[$"IMissedOopsie_{eddie}_2"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "There is no cheating in war."
+				}
+			]);
+			DB.story.all[$"WeMissedOopsie_{eddie}_1"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "A comfortable lie.",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = sorrelKey,
+					Text = "Learn from your mistakes. Do better."
+				}
+			]);
+			DB.story.all[$"WeMissedOopsie_{eddie}_2"].lines.OfType<SaySwitch>().First().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.IsabelleDeck.GlobalName,
+					Text = "Do you ever take things seriously?",
+					loopTag = "squint"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Let's not encourage this kind of mindset.",
+					loopTag = "annoyed"
+				}
+			]);
+			DB.story.all[$"GammaRay_{eddie}_3"].lines.OfType<SaySwitch>().Last().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "I've never seen anything like this...",
+					loopTag = "happy"
+				},
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "Oh yeah, this is fantastic stuff.",
+					loopTag = "datapad"
+				}
+			]);
+			DB.story.all[$"GammaRay_{eddie}_6"].lines.OfType<SaySwitch>().Last().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.JostDeck.GlobalName,
+					Text = "I've never seen anything like this...",
+					loopTag = "happy"
+				},
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "Just what I wanted to see!",
+					loopTag = "happy"
+				},
+				new CustomSay()
+				{
+					who = api.IlyaDeck.GlobalName,
+					Text = "This... is a bit much...",
+					loopTag = "shocked"
+				}
+			]);
+			DB.story.all[$"GammaRay_{eddie}_7"].lines.OfType<SaySwitch>().Last().lines.AddRange([
+				new CustomSay()
+				{
+					who = api.GaussDeck.GlobalName,
+					Text = "Don't worry, radiation poisoning doesn't persist between loops.",
+					loopTag = "datapad"
+				},
+				new CustomSay()
+				{
+					who = api.NolaDeck.GlobalName,
+					Text = "Always an exciting loop with you, isn't it?"
+				}
+			]);
+			DB.story.all.Add($"IMissedOopsie_{eddie}_Isabelle_0", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.IsabelleDeck.GlobalName],
+				whoDidThat = Instance.EddieDeck,
+				playerShotJustMissed = true,
+				oncePerRun = true,
+				hasArtifacts = ["TwosCompany.Artifacts.FlawlessCore"],
+				lines = [
+					new SaySwitch()
+					{
+						lines = [
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "That was a test shot.",
+								loopTag = Instance.NeutralAnim
+							},
+							new CustomSay()
+							{
+								who = eddie,
+								Text = "Oops, wrong button.",
+								loopTag = Instance.SquintAnim
+							},
+						]
+					},
+					new SaySwitch()
+					{
+						lines = [
+							new CustomSay()
+							{
+								who = api.IsabelleDeck.GlobalName,
+								Text = "I will gut you like a fish.",
+								loopTag = "swordsquint"
+							},
+							new CustomSay()
+							{
+								who = api.IsabelleDeck.GlobalName,
+								Text = "Say your prayers, serpent.",
+								loopTag = "swordsquint"
+							}
+						]
+					}
+				]
+			});
+			
+		
+			
+
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}18", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.NolaDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Man, I dunno, I'm kinda not feeling motivated anymore.",
+						loopTag = Instance.DisappointedAnim
+					},
+					new CustomSay()
+					{
+						who = api.NolaDeck.GlobalName,
+						Text = "Can this wait?",
+						loopTag = "annoyed"
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}19", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.NolaDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = api.NolaDeck.GlobalName,
+						Text = "Eddie. Focus. Try to find a way out of this.",
+						loopTag = "squint"
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "I- I'm not good under pressure!",
+						loopTag = Instance.OnEdgeAnim
+					}
+				]
+			});
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}20", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.IsabelleDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Eh. You win some, you lose some.",
+						loopTag = Instance.ExplainsAnim
+					},
+					new CustomSay()
+					{
+						who = api.IsabelleDeck.GlobalName,
+						Text = "Speak for yourself.",
+						loopTag = "angry"
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}21", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.IsabelleDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = api.IsabelleDeck.GlobalName,
+						Text = "Don't go thinking you can give up already.",
+						loopTag = "angry"
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Fiiiiine...",
+						loopTag = Instance.AnnoyedLeftAnim
+					}
+				]
+			});
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}22", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.IlyaDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "The fire doesn't seem to be working out.",
+						loopTag = Instance.SquintAnim
+					},
+					new CustomSay()
+					{
+						who = api.IlyaDeck.GlobalName,
+						Text = "Just give it time...",
+						loopTag = "bashful"
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}23", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.IlyaDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = api.IlyaDeck.GlobalName,
+						Text = "This... isn't working.",
+						loopTag = "forlorn"
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Hey, c'mon, it's gonna work out in the end.",
+						loopTag = Instance.WorriedAnim
+					}
+				]
+			});
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}24", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.JostDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Bah, I'm not doing well.",
+						loopTag = Instance.AnnoyedLeftAnim
+					},
+					new CustomSay()
+					{
+						who = api.JostDeck.GlobalName,
+						Text = "Breathe. Stay focused. We still need you.",
+						loopTag = "neutral"
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}25", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.JostDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = api.JostDeck.GlobalName,
+						Text = "When facing adversity, all one can do is to keep fighting.",
+						loopTag = "swordneutral"
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "That's deep.",
+						loopTag = Instance.NeutralAnim
+					}
+				]
+			});
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}26", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.GaussDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "I think you gotta zap 'em more.",
+						loopTag = Instance.SquintAnim
+					},
+					new CustomSay()
+					{
+						who = api.GaussDeck.GlobalName,
+						Text = "That's what I've been doing this whole time!",
+						loopTag = "angry"
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}27", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, api.GaussDeck.GlobalName],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = api.GaussDeck.GlobalName,
+						Text = "The situation is dire. You gotta pull one of your insane electrical stunts!",
+						loopTag = "happy"
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "I'll cook something up.",
+						loopTag = Instance.NeutralAnim
+					}
+				]
+			});
+
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}28", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, sorrelKey],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "How about we start over?"
+					},
+					new CustomSay()
+					{
+						who = sorrelKey,
+						Text = "Patience."
+					}
+				]
+			});
+			DB.story.all.Add($"Duo_AboutToDieAndLoop_{eddie}29", new()
+			{
+				type = NodeType.combat,
+				allPresent = [eddie, sorrelKey],
+				enemyShotJustHit = true,
+				maxHull = 2,
+				oncePerCombatTags = ["aboutToDie"],
+				oncePerRun = true,
+				lines = [
+					new CustomSay()
+					{
+						who = sorrelKey,
+						Text = "Hope dies last."
+					},
+                    new CustomSay()
+					{
+						who = eddie,
+						Text = "Something like that.",
+						loopTag = Instance.ExplainsAnim
+					}
+				]
+			});
+		});
 	}
 }
