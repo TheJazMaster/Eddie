@@ -24,7 +24,7 @@ namespace TheJazMaster.Eddie.Actions
                     }
                     howManyCards--;
                     
-                    Cheap.SetFree(card, true, true, null);
+                    CheapManager.SetFree(card, true, true, null);
                     // Cheap.free.AddOrUpdate(card, true);
                     // Cheap.free_once_per_turn.AddOrUpdate(card, true);
                     // if (permanent)

@@ -14,7 +14,7 @@ namespace TheJazMaster.Eddie.Actions
             Card? card = selectedCard;
 			if (card != null)
 			{
-                Cheap.SetFree(card, true, true, null);
+                CheapManager.SetFree(card, true, true, null);
                 // Cheap.free.AddOrUpdate(card, true);
 				// Cheap.free_once_per_turn.AddOrUpdate(card, true);
 				
@@ -25,7 +25,8 @@ namespace TheJazMaster.Eddie.Actions
             }
         }
 
-        public override string? GetCardSelectText(State s) => Manifest.MakeFreeGlossary?.Head + "Then discard it.";
+        public override string? GetCardSelectText(State s) => 
+            ModEntry.Instance.Localizations.Localize(["card", "Innovation", "cardSelectText", "discard"]);
 
         public override Icon? GetIcon(State s)
         {

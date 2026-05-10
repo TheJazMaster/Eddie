@@ -7,21 +7,33 @@ namespace TheJazMaster.Eddie;
 
 internal static class Memories
 {
+	static ModEntry Instance => ModEntry.Instance;
+	internal static Spr RoomBackground;
+	internal static Spr RoomForeground;
+	internal static Spr CoreEddie;
+	internal static Spr EddieFullbody;
 
 	internal static void Inject()
 	{
-        Manifest.Harmony.TryPatch(
-            logger: Manifest.Instance.Logger!,
-            original: typeof(Dialogue).GetMethod("GetMusic"),
+		Vault.charsWithLore.Add(Instance.EddieDeck);
+
+		RoomBackground = Instance.Helper.Content.Sprites.RegisterSprite(Instance.Package.PackageRoot.GetRelativeFile("Sprites/bg/room_back.png")).Sprite;
+		RoomForeground = Instance.Helper.Content.Sprites.RegisterSprite(Instance.Package.PackageRoot.GetRelativeFile("Sprites/bg/room_front.png")).Sprite;
+		CoreEddie = Instance.Helper.Content.Sprites.RegisterSprite(Instance.Package.PackageRoot.GetRelativeFile("Sprites/bg/core_scene_eddie.png")).Sprite;
+		EddieFullbody = Instance.Helper.Content.Sprites.RegisterSprite(Instance.Package.PackageRoot.GetRelativeFile("Sprites/eddie_end.png")).Sprite;
+
+		Instance.Harmony.TryPatch(
+			logger: Instance.Logger,
+            original: AccessTools.DeclaredMethod(typeof(Dialogue), nameof(Dialogue.GetMusic)),
             postfix: new HarmonyMethod(typeof(Memories).GetMethod("OverrideMusic", BindingFlags.Static | BindingFlags.NonPublic))
         );
 
 		DB.backgrounds.Add("TheJazMaster.Eddie.BG.room", typeof(BGRoom));
 		DB.backgrounds.Add("TheJazMaster.Eddie.BG.core", typeof(BGCore));
 
-		BGRunWin.charFullBodySprites.Add((Deck)Manifest.EddieDeck.Id!, Manifest.EddieFullbody);
+		BGRunWin.charFullBodySprites.Add(ModEntry.Instance.EddieDeck, EddieFullbody);
 
-		string eddie = Manifest.EddieDeck.GlobalName;
+		string eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"{eddie}_Memory_1"] = new()
 		{
@@ -58,7 +70,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Oh it was super cool.",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = ModEntry.Instance.ExcitedAnim
 				},
 				new CustomSay {
 					who = eddie,
@@ -73,7 +85,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "What? You don't remember the buggy speech about being \"locked in this device\" and wanting to be \"freed\"?",
-					loopTag = Manifest.EddieSeriousAnimation.Tag
+					loopTag = ModEntry.Instance.SeriousAnim
 				},
 				new CustomSay {
 					who = "hacker",
@@ -97,7 +109,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Well, I refought the boss and it just acted like a basic villain, so...",
-					loopTag = Manifest.EddieAnnoyedLeftAnimation.Tag
+					loopTag = ModEntry.Instance.AnnoyedLeftAnim
 				},
 				new Wait {
 					secs = 2
@@ -144,7 +156,7 @@ internal static class Memories
 				},
 				new CustomSay {
 					who = eddie,
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag,
+					loopTag = ModEntry.Instance.OnEdgeAnim,
 					Text = "Oh!"
 				},
 				new CustomSay {
@@ -191,7 +203,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Wasn't me! I promise!",
-					loopTag = Manifest.EddieWorriedAnimation.Tag
+					loopTag = ModEntry.Instance.WorriedAnim
 				},
 				new CustomSay {
 					who = eddie,
@@ -207,7 +219,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "You know, maybe the core is tired of all the measuring you've been doing? Eh? Heh heh!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag,
+					loopTag = ModEntry.Instance.ExcitedAnim,
 				},
 				new CustomSay {
 					who = "dizzy",
@@ -218,7 +230,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "...",
-					loopTag = Manifest.EddieSeriousAnimation.Tag,
+					loopTag = ModEntry.Instance.SeriousAnim,
 				},
 				new CustomSay {
 					who = "dizzy",
@@ -229,7 +241,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Yeah... Sure... I'll see you around.",
-					loopTag = Manifest.EddieSeriousAnimation.Tag,
+					loopTag = ModEntry.Instance.SeriousAnim,
 				}
 			]
 		};
@@ -266,12 +278,12 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Aw man, Dizzy's gonna kill me if he finds out I stole his keys...",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag,
+					loopTag = ModEntry.Instance.OnEdgeAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "And... he's gonna ask why we haven't hung out for 4 weeks!",
-					loopTag = Manifest.EddieWorriedAnimation.Tag,
+					loopTag = ModEntry.Instance.WorriedAnim,
 				},
 				new Wait {
 					secs = 2
@@ -279,17 +291,17 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "...",
-					loopTag = Manifest.EddieSeriousAnimation.Tag,
+					loopTag = ModEntry.Instance.SeriousAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "I'm trusting you, okay?",
-					loopTag = Manifest.EddieSeriousAnimation.Tag,
+					loopTag = ModEntry.Instance.SeriousAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "If you can even hear me...",
-					loopTag = Manifest.EddieSquintAnimation.Tag,
+					loopTag = ModEntry.Instance.SquintAnim,
 				},
 				new Wait {
 					secs = 2
@@ -297,17 +309,17 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Let's see... The reactor ventilation should be connected to...",
-					loopTag = Manifest.EddieSquintAnimation.Tag,
+					loopTag = ModEntry.Instance.SquintAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "Aha!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag,
+					loopTag = ModEntry.Instance.ExcitedAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "*snip*",
-					loopTag = Manifest.EddieNothingAnimation.Tag,
+					loopTag = ModEntry.Instance.NothingAnim,
 				},
 				new CustomSay {
 					who = eddie,
@@ -316,7 +328,7 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "Does this count as being crazy?",
-					loopTag = Manifest.EddieOnEdgeAnimation.Tag,
+					loopTag = ModEntry.Instance.OnEdgeAnim,
 				},
 				new Wait {
 					secs = 2
@@ -324,19 +336,19 @@ internal static class Memories
 				new CustomSay {
 					who = eddie,
 					Text = "I better get out of here.",
-					loopTag = Manifest.EddieWorriedAnimation.Tag,
+					loopTag = ModEntry.Instance.WorriedAnim,
 				},
 				new CustomSay {
 					who = eddie,
 					Text = "...And this better not blow us all up.",
-					loopTag = Manifest.EddieSquintAnimation.Tag,
+					loopTag = ModEntry.Instance.SquintAnim,
 				},
 			]
 		};
 	}
 
 	private static void OverrideMusic(G g, Dialogue __instance, ref MusicState? __result) {
-		if (__instance.ctx.script == $"{Manifest.EddieDeck.GlobalName}_Memory_3") {
+		if (__instance.ctx.script == $"{ModEntry.Instance.EddieDeck.Key()}_Memory_3") {
 			__result = new MusicState {
 				scene = Song.SlowSilence
 			};
@@ -352,9 +364,9 @@ public class BGRoom : BG {
 
 		Vec screenPos = new(240, 120);
 		
-		Draw.Sprite(Manifest.RoomBackground, 0.0, 0.0);
+		Draw.Sprite(Memories.RoomBackground, 0.0, 0.0);
 		Glow.Draw(screenPos, new Vec(400, 200), white);
-		Draw.Sprite(Manifest.RoomForeground, 0.0, 0.0);
+		Draw.Sprite(Memories.RoomForeground, 0.0, 0.0);
 		
 		BGComponents.Letterbox();
 	}
@@ -387,7 +399,7 @@ public class BGCore : BG {
 		Spr? id3 = StableSpr.bg_cobaltChamber_room_inner;
 		Color? color3 = value;
 		Draw.Sprite(id3, 0.0, 0.0, flipX: false, flipY: false, 0.0, null, null, null, null, color3);
-		Spr id4 = Manifest.CoreEddie;
+		Spr id4 = Memories.CoreEddie;
 		originRel = new Vec(0.0, 1.0);
 		Draw.Sprite(id4, 50.0, 60.0, flipX: false, flipY: false, 0.0, null, originRel);
 		Draw.Sprite(StableSpr.bg_cobaltChamber_room_outer, 0.0, 0.0);

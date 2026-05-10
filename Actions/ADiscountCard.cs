@@ -9,8 +9,6 @@ namespace TheJazMaster.Eddie.Actions
     {
         public int discountAmount = 0;
         public int uuid;
-
-        private const double delayTimer = 0.17;
         
         public override void Begin(G g, State s, Combat c)
         {

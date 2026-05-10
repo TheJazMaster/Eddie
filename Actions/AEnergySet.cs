@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FSPRO;
 
 namespace TheJazMaster.Eddie.Actions
@@ -9,7 +5,6 @@ namespace TheJazMaster.Eddie.Actions
     public class AEnergySet : AStatus
     {
         public int setTo = 0;
-
 
         public override void Begin(G g, State s, Combat c)
         {
@@ -31,21 +26,13 @@ namespace TheJazMaster.Eddie.Actions
             }
         }
 
-        public override List<Tooltip> GetTooltips(State s)
-        {
-            List<Tooltip> list = new List<Tooltip>();
-            // list.Add(new TTGlossary("action.Energy"));
-            return list;
-        }
-
-        public override Icon? GetIcon(State s)
-        {
+        public override Icon? GetIcon(State s) {
             statusAmount = setTo;
             mode = AStatusMode.Set;
             targetPlayer = true;
-            if (Manifest.EnergyIcon?.Id != null)
-                return new Icon((Spr)Manifest.EnergyIcon.Id, null, Colors.textMain);
-            return null;
+            return new Icon(ModEntry.Instance.EnergyIcon, null, Colors.textMain);
         }
+
+        public override List<Tooltip> GetTooltips(State s) => [];
     }
 }

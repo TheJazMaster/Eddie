@@ -14,16 +14,11 @@ namespace TheJazMaster.Eddie.Actions
             Card? card = selectedCard;
 			if (card != null)
 			{
-                ShortCircuit.SetShortCircuit(s, card, true, permanent);
-                Manifest.Helper.Content.Cards.SetCardTraitOverride(s, card, Manifest.Helper.Content.Cards.InfiniteCardTrait, true, permanent);
+                ShortCircuitManager.SetShortCircuit(s, card, true, permanent);
+                ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait, true, permanent);
             }
         }
 
-        public override string? GetCardSelectText(State s) => Manifest.MakeRenewableGlossary?.Head;
-        
-        public override Icon? GetIcon(State s)
-        {
-            return new Icon(StableSpr.icons_infinite, null, Colors.textMain);
-        }
+        public override string? GetCardSelectText(State s) => ModEntry.Instance.Localizations.Localize(["card", "RenewableResource", "cardSelectText"]);
     }
 }

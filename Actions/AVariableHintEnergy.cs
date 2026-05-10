@@ -1,38 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Threading.Tasks;
-using FSPRO;
+using Nickel;
 
 namespace TheJazMaster.Eddie.Actions
 {
     public class AVariableHintEnergy : AVariableHint
     {
         public int setAmount = 0;
-        public override Icon? GetIcon(State s)
-        {
-            if (Manifest.EnergyIcon?.Id != null)
-                return new Icon((Spr)Manifest.EnergyIcon.Id, null, Colors.textMain);
-            return null;
-        }
+        public override Icon? GetIcon(State s) => new Icon(ModEntry.Instance.EnergyIcon, null, Colors.textMain);
 
-        public override List<Tooltip> GetTooltips(State s)
-        {
-			List<Tooltip> list = new List<Tooltip>();
-			string parentheses = "";
-			if (s.route is Combat && setAmount >= 0)
-			{
-				DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(22, 1);
-				defaultInterpolatedStringHandler.AppendLiteral(" </c>(<c=keyword>");
-				defaultInterpolatedStringHandler.AppendFormatted(setAmount);
-				defaultInterpolatedStringHandler.AppendLiteral("</c>)");
-				
-			    parentheses = defaultInterpolatedStringHandler.ToStringAndClear();
+        public override List<Tooltip> GetTooltips(State s) => [
+			new GlossaryTooltip($"action.{GetType().Namespace}::AVariableHintEnergy") {
+				Description = ModEntry.Instance.Localizations.Localize(["action", GetType().Name, "description"], new {
+					Parentheses = (s.route is Combat c) ? $" </c>(<c=keyword>{setAmount}</c>)" : ""
+				})
 			}
-			list.Add(new TTText(Loc.T(Manifest.XIsEnergyGlossary?.Head + ".desc" ?? throw new Exception("Missing X = energy glossary"), true, parentheses)));
-			// list.Add(new TTGlossary((Manifest.XIsEnergyGlossary?.Head + ".desc") ?? throw new Exception("Missing X = energy glossary"), parentheses));
-			return list;
-		}
+		];
     }
 }

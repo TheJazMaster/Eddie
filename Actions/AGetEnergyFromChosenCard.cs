@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FSPRO;
-
 namespace TheJazMaster.Eddie.Actions
 {
     public class AGetEnergyFromChosenCard : CardAction
@@ -13,12 +7,12 @@ namespace TheJazMaster.Eddie.Actions
         public override void Begin(G g, State s, Combat c)
         {
             Card? card = selectedCard;
-            Manifest.TurnCardToEnergy(s, c, card, this, exhaustThisCardAfterwards);
+            XEnergyManager.TurnCardToEnergy(s, c, card, this, exhaustThisCardAfterwards);
         }
 
         public override List<Tooltip> GetTooltips(State s)
         {
-            List<Tooltip> list = new List<Tooltip>();
+            List<Tooltip> list = [];
             // list.Add(new TTGlossary("action.bypass"));
             if (exhaustThisCardAfterwards)
             {

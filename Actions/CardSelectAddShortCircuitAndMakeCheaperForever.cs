@@ -1,32 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TheJazMaster.Eddie.Actions
 {
     public class CardSelectAddShortCircuitAndMakeCheaperForever : CardAction
     {
-        int howMuch = 1;
+        public int howMuch = 1;
         
         public override Route? BeginWithRoute(G g, State s, Combat c)
         {
             if (selectedCard != null)
             {
-                ShortCircuit.SetShortCircuit(s, selectedCard, true, true);
-                Cheap.SetFree(selectedCard, null, null, howMuch);
-                return new ShowCards
+                ShortCircuitManager.SetShortCircuit(s, selectedCard, true, true);
+                CheapManager.SetFree(selectedCard, null, null, howMuch);
+                return new CustomShowCards
                 {
-                    messageKey = "showcards.addedShortCircuit",
-                    cardIds = new List<int> { selectedCard.uuid }
+                    message = ModEntry.Instance.Localizations.Localize(["action", GetType().Name, "showCards"]),
+                    cardIds = [selectedCard.uuid]
                 };
             }
             return null;
         }
 
-        public override string? GetCardSelectText(State s)
-        {
-            return "Select a card to make cheaper but <c=downside>add <c=cardtrait>short-circuit</c> to</c>, forever.";
-        }
+        public override string? GetCardSelectText(State s) => ModEntry.Instance.Localizations.Localize(["action", GetType().Name, "cardSelect"]);
     }
 }
