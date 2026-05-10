@@ -1,69 +1,85 @@
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 using TheJazMaster.Eddie.DialogueAdditions;
+using TwosCompany;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss }, extraGlossary = new string[] { "status.evade" })]
-public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
+public class SolarPanels : Artifact, IRegisterableArtifact, ArtifactInterfaceManager.IOnMoveArtifact
 {
-	public bool turnedOn = true;
+	static Spr UsedSprite;
+	static Spr UnusedSprite;
+	public bool used = false;
 
-	public override Spr GetSprite()
-	{
-		if (!turnedOn)
-		{
-			return (Spr)(Manifest.SolarPanelsOffSprite?.Id ?? throw new Exception("No Solar Panels Off sprite"));
-		}
-		return (Spr)(Manifest.SolarPanelsOnSprite?.Id ?? throw new Exception("No Solar Panels On sprite"));
-	}
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+		UsedSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/solar_panels_off.png")).Sprite;
+		UnusedSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/solar_panels.png")).Sprite;
+
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Boss],
+			UnusedSprite,
+			true
+		);
+    }
+	
+	public override Spr GetSprite() => used ? UsedSprite : UnusedSprite;
 
 	public void OnMove(State s, Combat c, AMove move)
 	{
-		if (move.targetPlayer && move.fromEvade) {
-			turnedOn = false;
-			move.dialogueSelector = $".{Key()}RuinedTrigger";
+		if (move.targetPlayer && move.fromEvade && !used) {
+			used = true;
+			c.QueueImmediate(new AStatus {
+				status = Status.energyLessNextTurn,
+				statusAmount = 1,
+				targetPlayer = true,
+				artifactPulse = Key(),
+				dialogueSelector = $".{Key()}RuinedTrigger"
+			});
 		}
 	}
 
 	public override void OnTurnStart(State s, Combat c)
 	{
-		if (c.isPlayerTurn)
-		{
-			if (turnedOn)
-				c.QueueImmediate(new AEnergy
-				{
-					changeAmount = 1,
-					artifactPulse = Key()
-				});
-			else
-				turnedOn = true;
-
-		}
+		used = false;
 	}
 
 	public override void OnCombatEnd(State state)
 	{
-		turnedOn = true;
+		used = false;
 	}
+
+    public override void OnReceiveArtifact(State state)
+    {
+        state.ship.baseEnergy += 1;
+    }
+
+    public override void OnRemoveArtifact(State state)
+    {
+        state.ship.baseEnergy -= 1;
+    }
 
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.riggs.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie, Deck.riggs.Key()],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
-				new CustomSay()
+			lines = [
+                new CustomSay()
 				{
 					who = eddie,
 					Text = "Riggs, I especially don't want any of your signature \"maneuvers\" right now.",
-					loopTag = Manifest.EddieSquintAnimation.Tag
+					loopTag = ModEntry.Instance.SquintAnim
 				},
 				new CustomSay()
 				{
@@ -71,48 +87,45 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 					Text = "Hey, I can be gentle too!",
 					loopTag = "neutral"
 				},
-			}
+			]
 		};
 		
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "Let's keep those panels angled properly or they might break.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "No sudden movements! Those solar panels need to stay aligned.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "These solar panels are pretty finnicky, be careful.",
-							loopTag = Manifest.EddieWorriedAnimation.Tag
+							loopTag = ModEntry.Instance.WorriedAnim
 						},
-					}
+					]
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = "comp",
 							Text = "They're about to fall off...",
@@ -148,71 +161,79 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 							Text = "How about we move the enemy instead?",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}.MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
 					who = StoryVarsAdditions.SogginsName!,
 					Text = "I'll be as calm as a clam!"
 				})
-			}
+			]
 		};
+		ModEntry.Instance.Helper.ModRegistry.AwaitApiOrNull<ITwosAPI>("Mezz.TwosCompany", (api) => {
+			if (api == null) return;
+
+			DB.story.all[$"Artifact{Key()}_1"].lines.OfType<SaySwitch>().Last().lines.AddRange([
+				new CustomSay {
+					who = api.IsabelleDeck.GlobalName,
+					Text = "I'll be as graceful as a butterfly.",
+					loopTag = "snide"
+				}
+			]);
+		});
 
 		DB.story.all[$"Artifact{Key()}Ruined_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}RuinedTrigger" },
-			oncePerCombatTags = new() { $"{Key()}RuinedTag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			lookup = [$"{Key()}RuinedTrigger"],
+			oncePerCombatTags = [$"{Key()}RuinedTag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lines = [
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = eddie,
 							Text = "Oh come on...",
-							loopTag = Manifest.EddieDisappointedAnimation.Tag
+							loopTag = ModEntry.Instance.DisappointedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Readjusting...",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Ah, the panels.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "No sudden movements, please!",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "Shoot. Let's try that again.",
-							loopTag = Manifest.EddieDisappointedAnimation.Tag
+							loopTag = ModEntry.Instance.DisappointedAnim
 						},
 						new CustomSay()
 						{
 							who = eddie,
 							Text = "That's not going to be enough sunglight.",
-							loopTag = Manifest.EddieSquintAnimation.Tag
+							loopTag = ModEntry.Instance.SquintAnim
 						}
-					}
+					]
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = "comp",
 							Text = "We have bigger fish to fry.",
@@ -326,7 +347,7 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 							Text = "There's always next time!",
 							loopTag = "neutral"
 						},
-					}
+					]
 				}.MaybeAdd(StoryVarsAdditions.SogginsName != null, new CustomSay() {
 					who = StoryVarsAdditions.SogginsName!,
 					Text = "Wasn't me!"
@@ -337,7 +358,7 @@ public class SolarPanels : Artifact, IRegisterableArtifact, IOnMoveArtifact
 					who = StoryVarsAdditions.SogginsName!,
 					Text = "Huh? Is something wrong?"
 				})
-			}
+			]
 		};
 	}
 }
