@@ -7,11 +7,10 @@ public interface IEddieApi
 {
 	Deck EddieDeck { get; }
 
-	ExternalGlossary ShortCircuitGlossary { get; }
-	ExternalGlossary CheapGlossary { get; }
+	// ExternalGlossary ShortCircuitGlossary { get; }
+	// ExternalGlossary CheapGlossary { get; }
     Status CircuitStatus { get; }
     Status ClosedCircuitStatus { get; }
-    Status LoseEnergyEveryTurnStatus { get; }
     Status GainEnergyEveryTurnStatus { get; }
     Status HealNextTurnStatus { get; }
 
