@@ -3,16 +3,10 @@
   "UniqueName": "TheJazMaster.Eddie",
   "DisplayName": "Eddie the Electrician",
   "Version": "{{ModVersion}}",
-  "RequiredApiVersion": "1.0.0",
+  "LoadPhase": "AfterDbInit",
   "Dependencies": [
     {
-      "UniqueName": "Nickel.Legacy",
-      "Version": "0.3.0",
-      "IsRequired": true
-    },
-    {
-      "UniqueName": "Shockah.Kokoro",
-      "IsRequired": true
+      "UniqueName": "Shockah.Kokoro"
     },
     {
       "UniqueName": "Shockah.DuoArtifacts",
@@ -23,7 +17,6 @@
       "IsRequired": false
     }
   ],
-  "ModType": "Nickel.Legacy",
   "UpdateChecks": {
       "NexusMods": {
           "ID": 17
