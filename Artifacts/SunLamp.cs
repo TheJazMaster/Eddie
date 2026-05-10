@@ -1,20 +1,30 @@
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 using TheJazMaster.Eddie.DialogueAdditions;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
-public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
-{
+public class SunLamp : Artifact, ArtifactInterfaceManager.IOnMoveArtifact, IRegisterableArtifact
+{	
+	static Spr OnSprite;
+	static Spr OffSprite;
 	public bool turnedOn = true;
 
-	public override Spr GetSprite()
-	{
-		if (!turnedOn)
-		{
-			return (Spr)(Manifest.SunLampOffSprite?.Id ?? throw new Exception("No Solar Lamp Off sprite"));
-		}
-		return (Spr)(Manifest.SunLampOnSprite?.Id ?? throw new Exception("No Solar Lamp On sprite"));
-	}
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+		OnSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/sun_lamp.png")).Sprite;
+		OffSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/sun_lamp_off.png")).Sprite;
+
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Common],
+			OnSprite
+		);
+    }
+
+	public override Spr GetSprite() => turnedOn ? OnSprite : OffSprite;
 
 	public void OnMove(State s, Combat c, AMove move)
 	{
@@ -47,41 +57,39 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Ahh, I missed this.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { eddie, Deck.dizzy.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [eddie, Deck.dizzy.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I hope you don't mind if I turn this on..",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				},
 				new CustomSay()
 				{
@@ -89,23 +97,22 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 					Text = "Not at all, go ahead!",
 					loopTag = "explains"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_2"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { eddie, Deck.eunice.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [eddie, Deck.eunice.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Finally, some peace and quiet.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				},
 				new CustomSay()
 				{
@@ -113,23 +120,22 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 					Text = "Quit hogging that thing!",
 					loopTag = "mad"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_3"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { eddie, Deck.peri.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [eddie, Deck.peri.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "This lamp really brightens up the room!",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				},
 				new CustomSay()
 				{
@@ -137,23 +143,22 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 					Text = "Can someone turn off that lamp?",
 					loopTag = "mad"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_4"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { eddie, Deck.goat.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [eddie, Deck.goat.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I read about these things. They boost productivity by, like, a lot.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				},
 				new CustomSay()
 				{
@@ -161,79 +166,75 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 					Text = "Now I want one...",
 					loopTag = "neutral"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_5"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I do some of my best thinking while asleep.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_6"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { Deck.hacker.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [Deck.hacker.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.hacker.Key(),
 					Text = "Ouch, my eyes! I'm sensitive to sunlight.",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_7"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "It's important to keep your workplace comfortable.",
-					loopTag = Manifest.EddieRestingAnimation.Tag
+					loopTag = ModEntry.Instance.RestingAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_8"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}DuoTag" },
-			allPresent = new() { Deck.shard.Key() },
-			hasArtifacts = new() { Key() },
-			lookup = new() { $"{Key()}Trigger" },
-			lines = new()
-			{
-				new CustomSay()
+			oncePerCombatTags = [$"{Key()}DuoTag"],
+			allPresent = [Deck.shard.Key()],
+			hasArtifacts = [Key()],
+			lookup = [$"{Key()}Trigger"],
+			lines = [
+                new CustomSay()
 				{
 					who = Deck.shard.Key(),
 					Text = "Wow! It's like a mini-sun!",
 					loopTag = "relaxed"
 				}
-			}
+			]
 		};
 
 		if (StoryVarsAdditions.SogginsName != null)
@@ -241,18 +242,17 @@ public class SunLamp : Artifact, IOnMoveArtifact, IRegisterableArtifact
 			{
 				type = NodeType.combat,
 				oncePerRun = true,
-				oncePerCombatTags = new() { $"{Key()}DuoTag" },
-				allPresent = new() { StoryVarsAdditions.SogginsName },
-				hasArtifacts = new() { Key() },
-				lookup = new() { $"{Key()}Trigger" },
-				lines = new()
-				{
-					new CustomSay()
+				oncePerCombatTags = [$"{Key()}DuoTag"],
+				allPresent = [StoryVarsAdditions.SogginsName],
+				hasArtifacts = [Key()],
+				lookup = [$"{Key()}Trigger"],
+				lines = [
+                    new CustomSay()
 					{
 						who = StoryVarsAdditions.SogginsName,
 						Text = "This light is bad for my skin."
 					}
-				}
+				]
 			};
 	}
 }
