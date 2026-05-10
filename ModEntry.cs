@@ -71,7 +71,10 @@ public sealed class ModEntry : SimpleMod {
         typeof(ReverseEngineer),
 
         typeof(EddieExe),
-		typeof(Lightweight)
+		typeof(Lightweight),
+
+        typeof(BasicMove),
+        typeof(BasicRubble)
     ];
 
     internal static IReadOnlyList<Type> AllArtifacts { get; } = [
