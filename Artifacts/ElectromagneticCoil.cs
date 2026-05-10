@@ -1,12 +1,20 @@
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
+
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common }, extraGlossary = new string[] { "status.evade" })]
 public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 {
-	public override Spr GetSprite()
-	{
-		return (Spr)(Manifest.ElectromagneticCoilSprite?.Id ?? throw new Exception("No Electromagnetic Coil sprite"));
-	}
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Common],
+			helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/electromagnetic_coil.png")).Sprite
+		);
+    }
 
 	public override void OnTurnEnd(State state, Combat combat)
 	{
@@ -23,70 +31,62 @@ public class ElectromagneticCoil : Artifact, IRegisterableArtifact
 		}
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		var list = base.GetExtraTooltips() ?? new();
-		list.Add(new TTGlossary("status.evade", "1"));
-		return list;
-	}
+	public override List<Tooltip>? GetExtraTooltips() => StatusMeta.GetTooltips(Status.evade, 1);
 
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
-			lookup = new() { $"{Key()}Trigger" },
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			lookup = [$"{Key()}Trigger"],
+			oncePerCombatTags = [$"{Key()}Tag"],
 			oncePerRun = true,
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Now that's what I call efficiency.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
-			lookup = new() { $"{Key()}Trigger" },
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			lookup = [$"{Key()}Trigger"],
+			oncePerCombatTags = [$"{Key()}Tag"],
 			oncePerRun = true,
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Look at this thing! Pretty cool, right?",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_2"] = new()
 		{
 			type = NodeType.combat,
-			lookup = new() { $"{Key()}Trigger" },
-			oncePerCombatTags = new() { $"{Key()}Tag" },
+			lookup = [$"{Key()}Trigger"],
+			oncePerCombatTags = [$"{Key()}Tag"],
 			oncePerRun = true,
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "We don't even have to do anything!",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = ModEntry.Instance.ExplainsAnim
 				}
-			}
+			]
 		};
 	}
 }

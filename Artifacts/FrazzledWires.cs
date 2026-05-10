@@ -1,11 +1,23 @@
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 using TheJazMaster.Eddie.Actions;
 using TheJazMaster.Eddie.DialogueAdditions;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
 public class FrazzledWires : Artifact, IRegisterableArtifact
 {
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Common],
+			helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/frazzled_wires.png")).Sprite
+		);
+    }
+	
 	public override void OnReceiveArtifact(State state)
 	{
 		state.GetCurrentQueue().QueueImmediate(new ACardSelect
@@ -19,42 +31,42 @@ public class FrazzledWires : Artifact, IRegisterableArtifact
 
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			turnStart = true,
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "I tried fixing some broken wiring in the back. Let's see if it explodes.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				}
-			}
+			]
 		};
 
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
-				new CustomSay()
+			turnStart = true,
+			lines = [
+                new CustomSay()
 				{
 					who = eddie,
 					Text = "There can be no greatness without a little risk.",
-					loopTag = Manifest.EddieExplainsAnimation.Tag
+					loopTag = ModEntry.Instance.ExplainsAnim
 				},
 				new SaySwitch()
 				{
@@ -100,12 +112,10 @@ public class FrazzledWires : Artifact, IRegisterableArtifact
 					who = StoryVarsAdditions.SogginsName!,
 					Text = "Words to live by."
 				})
-			}
+			]
 		};
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		return [new TTGlossary(Manifest.ShortCircuitGlossary?.Head!)];
-	}
+	public override List<Tooltip>? GetExtraTooltips() => 
+		[.. ShortCircuitManager.ShortCircuitTrait.Configuration.Tooltips!.Invoke(DB.fakeState, null)];
 }

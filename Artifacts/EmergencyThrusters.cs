@@ -1,11 +1,23 @@
 
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
+
 namespace TheJazMaster.Eddie.Artifacts;
 
-public class EmergencyThrusters : Artifact, IOnMoveArtifact, IRegisterableArtifact
+public class EmergencyThrusters : Artifact, ArtifactInterfaceManager.IOnMoveArtifact, IRegisterableArtifact
 {
+	public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package) {
+		IRegisterableArtifact.Register(MethodBase.GetCurrentMethod()!.DeclaringType!, Deck.colorless,
+			[ArtifactPool.EventOnly],
+			helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/emergency_thrusters.png")).Sprite,
+			true
+		);
+	}
+
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"ArtifactChariot_{eddie}"] = new()
 		{

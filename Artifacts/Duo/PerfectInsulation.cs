@@ -1,33 +1,47 @@
-namespace TheJazMaster.Eddie.Artifacts
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
+
+namespace TheJazMaster.Eddie.Artifacts;
+
+public class PerfectInsulation : Artifact, ArtifactInterfaceManager.IOvershieldArtifact, IRegisterableArtifact
 {
-	
-	[ArtifactMeta(pools = [ArtifactPool.Common], extraGlossary = ["status.shieldAlt"])]
-    public class PerfectInsulation : Artifact, OvershieldArtifact
-    {
-		public bool active = true;
+	static Spr OnSprite;
+	static Spr OffSprite;
+	public bool active = true;
 
-		public override Spr GetSprite()
-		{
-			if (!active)
-			{
-				return (Spr)Manifest.PerfectInsulationOffSprite!.Id!;
-			}
-			return (Spr)Manifest.PerfectInsulationOnSprite!.Id!;
-		}
+	public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+	{
+		if (ModEntry.Instance.DuoArtifactsApi != null) {
+			OnSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/duos/perfect_insulation_on.png")).Sprite;
+			OffSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/duos/perfect_insulation_off.png")).Sprite;
 
-        public void OnOvershield(State s, Combat c, int amount, bool targetPlayer) {
-			if (targetPlayer && active && amount > 0) {
-				c.QueueImmediate(new AEnergy {
-					changeAmount = 2,
-					artifactPulse = Key()
-				});
-				active = false;
-			}
+			IRegisterableArtifact.Register(
+				MethodBase.GetCurrentMethod()!.DeclaringType!,
+				ModEntry.Instance.DuoArtifactsApi.DuoArtifactVanillaDeck,
+				[ArtifactPool.Common],
+				OnSprite
+			);
+			ModEntry.Instance.DuoArtifactsApi.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.EddieDeck, Deck.dizzy]);
 		}
+	}
 
-		public override void OnCombatEnd(State s)
-		{
-			active = true;
+	public override Spr GetSprite() => active ? OnSprite : OffSprite;
+
+	public void OnOvershield(State s, Combat c, int amount, bool targetPlayer) {
+		if (targetPlayer && active && amount > 0) {
+			c.QueueImmediate(new AEnergy {
+				changeAmount = 2,
+				artifactPulse = Key()
+			});
+			active = false;
 		}
-    }
+	}
+
+	public override void OnCombatEnd(State s)
+	{
+		active = true;
+	}
+
+    public override List<Tooltip>? GetExtraTooltips() => [new TTGlossary("status.shieldAlt")];
 }

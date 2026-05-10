@@ -1,69 +1,64 @@
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 using TheJazMaster.Eddie.Cards;
 using TheJazMaster.Eddie.DialogueAdditions;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss })]
 public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 {
-	public override Spr GetSprite()
-	{
-		return (Spr)(Manifest.DeconstructionGogglesSprite?.Id ?? throw new Exception("No Deconstruction Goggles sprite"));
-	}
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Boss],
+			helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/deconstruction_goggles.png")).Sprite,
+			true
+		);
+    }
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
-		combat.QueueImmediate(new AAddCard
-		{
+		combat.Queue(new AAddCard {
 			card = new ReverseEngineer(),
 			destination = CardDestination.Hand,
-			amount = 1
-		});
-		combat.QueueImmediate(new AAddCard
-		{
-			card = new ReverseEngineer(),
-			destination = CardDestination.Hand,
-			amount = 1
+			amount = 2,
+			artifactPulse = Key()
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		return new List<Tooltip>
-		{
-			new TTCard
-			{
-				card = new ReverseEngineer()
-			},
-			new TTGlossary("cardtrait.retain")
-		};
-	}
+	public override List<Tooltip>? GetExtraTooltips() => [
+		new TTCard {
+			card = new ReverseEngineer()
+		},
+		new TTGlossary("cardtrait.retain")
+	];
 
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, "comp" },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Let's tear some things apart!",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
-						new CustomSay()
+					lines = [
+                        new CustomSay()
 						{
 							who = Deck.goat.Key(),
 							Text = "Not my drones, right?",
@@ -81,26 +76,25 @@ public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 							Text = "Ooooh.",
 							loopTag = "neutral"
 						},
-					}
+					]
 				},
-			}
+			]
 		};
 
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, "comp" },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [$"{Key()}Tag"],
+			allPresent = [eddie, "comp"],
+			hasArtifacts = [Key()],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "CAT! Deconstruction mode!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					loopTag = ModEntry.Instance.ExcitedAnim
 				},
 				new CustomSay()
 				{
@@ -108,7 +102,7 @@ public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 					Text = "What are you talking about?",
 					loopTag = "grumpy"
 				},
-			}
+			]
 		};
 
 		if (StoryVarsAdditions.SogginsName != null)
@@ -116,13 +110,12 @@ public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 			{
 				type = NodeType.combat,
 				oncePerRun = true,
-				oncePerCombatTags = new() { $"{Key()}Tag" },
-				allPresent = new() { eddie, StoryVarsAdditions.SogginsName },
-				hasArtifacts = new() { Key() },
+				oncePerCombatTags = [$"{Key()}Tag"],
+				allPresent = [eddie, StoryVarsAdditions.SogginsName],
+				hasArtifacts = [Key()],
 				maxTurnsThisCombat = 1,
-				lines = new()
-				{
-					new CustomSay()
+				lines = [
+                    new CustomSay()
 					{
 						who = StoryVarsAdditions.SogginsName,
 						Text = "I think my ideas are worth deconstructing."
@@ -130,10 +123,10 @@ public class DeconstructionGoggles : Artifact, IRegisterableArtifact
 					new CustomSay()
 					{
 						who = eddie,
-						Text = "Yeah - for good.",
-						loopTag = Manifest.EddieAnnoyedAnimation.Tag
+						Text = "Yeah — for good.",
+						loopTag = ModEntry.Instance.ExplainsAnim
 					},
-				}
+				]
 			};
 	}
 }
