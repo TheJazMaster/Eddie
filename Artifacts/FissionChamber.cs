@@ -1,38 +1,46 @@
-using TheJazMaster.Eddie.DialogueAdditions;
+using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
+using TheJazMaster.TyAndSasha;
 
 namespace TheJazMaster.Eddie.Artifacts;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
+public class FissionChamber : Artifact, XIncreaseManager.IXAffectorArtifact, IRegisterableArtifact, ITyAndSashaApi.IHook
 {
-	public override Spr GetSprite()
-	{
-		return (Spr)(Manifest.FissionChamberSprite?.Id ?? throw new Exception("No Fission Chamber sprite"));
-	}
+    public static void Register(Deck deck, IModHelper helper, IPluginPackage<IModManifest> package)
+    {
+        IRegisterableArtifact.Register(
+			MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ModEntry.Instance.EddieDeck,
+			[ArtifactPool.Common],
+			helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"Sprites/artifact_icons/fission_chamber.png")).Sprite
+		);
+    }
 
 	public int AffectX(int value) {
 		return value + 1;
 	}
 
+	public int AffectX(ITyAndSashaApi.IHook.IAffectXArgs args) => 1;
+
 	public void InjectDialogue()
 	{
-		var eddie = Manifest.EddieDeck.GlobalName;
+		var eddie = ModEntry.Instance.EddieDeck.Key();
 
 		DB.story.all[$"Artifact{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.riggs.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [ $"{Key()}Tag" ],
+			allPresent = [ eddie, Deck.riggs.Key() ],
+			hasArtifacts = [ Key() ],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "Hey Riggs, what if I were to put a nuclear reactor in your gun?",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				},
 				new CustomSay()
 				{
@@ -40,18 +48,17 @@ public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 					Text = "I'm listening...",
 					loopTag = "neutral"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.dizzy.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [ $"{Key()}Tag" ],
+			allPresent = [ eddie, Deck.dizzy.Key() ],
+			hasArtifacts = [ Key() ],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.dizzy.Key(),
@@ -62,25 +69,24 @@ public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 				{
 					who = eddie,
 					Text = "Don't worry about it.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_2"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.peri.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [ $"{Key()}Tag" ],
+			allPresent = [ eddie, Deck.peri.Key() ],
+			hasArtifacts = [ Key() ],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
-					Text = "Hey Peri, this should boost the inverter!",
-					loopTag = Manifest.EddieExcitedAnimation.Tag
+					Text = "Hey Peri, this should boost the inverter!", //TODO: change for 1.3
+					loopTag = ModEntry.Instance.ExcitedAnim
 				},
 				new CustomSay()
 				{
@@ -88,18 +94,17 @@ public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 					Text = "I'll keep that in mind.",
 					loopTag = "neutral"
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_3"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.hacker.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [ $"{Key()}Tag" ],
+			allPresent = [ eddie, Deck.hacker.Key() ],
+			hasArtifacts = [ Key() ],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.hacker.Key(),
@@ -110,25 +115,24 @@ public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 				{
 					who = eddie,
 					Text = "I'm trying something out.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				}
-			}
+			]
 		};
 		DB.story.all[$"Artifact{Key()}_4"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { $"{Key()}Tag" },
-			allPresent = new() { eddie, Deck.eunice.Key() },
-			hasArtifacts = new() { Key() },
+			oncePerCombatTags = [ $"{Key()}Tag" ],
+			allPresent = [ eddie, Deck.eunice.Key() ],
+			hasArtifacts = [ Key() ],
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = eddie,
 					Text = "X marks the spot, Drake.",
-					loopTag = Manifest.EddieDefaultAnimation.Tag
+					loopTag = ModEntry.Instance.NeutralAnim
 				},
 				new CustomSay()
 				{
@@ -136,7 +140,7 @@ public class FissionChamber : Artifact, XAffectorArtifact, IRegisterableArtifact
 					Text = "Shut up, nerd.",
 					loopTag = "mad"
 				}
-			}
+			]
 		};
 	}
 }
