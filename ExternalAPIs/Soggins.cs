@@ -1,17 +1,22 @@
-using CobaltCoreModding.Definitions.ExternalItems;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
-namespace TheJazMaster.Eddie;
+namespace Shockah.Soggins;
 
 public interface ISogginsApi
 {
 	ExternalDeck SogginsDeck { get; }
+	Deck SogginsVanillaDeck { get; }
 
+	ICardTraitEntry FrogproofTrait { get; }
 	Tooltip FrogproofCardTraitTooltip { get; }
 
 	ExternalStatus FrogproofingStatus { get; }
+	Status FrogproofingVanillaStatus { get; }
 	Tooltip FrogproofingTooltip { get; }
 
 	ExternalStatus SmugStatus { get; }
+	Status SmugVanillaStatus { get; }
 	Tooltip GetSmugTooltip();
 	Tooltip GetSmugTooltip(State state, Ship ship);
 	bool IsRunWithSmug(State state);
@@ -25,6 +30,7 @@ public interface ISogginsApi
 	double GetSmugDoubleChance(State state, Ship ship, Card? card);
 	int GetTimesBotchedThisCombat(State state, Combat combat);
 	SmugResult RollSmugResult(State state, Ship ship, Rand rng, Card? card);
+	bool IsCurrentlyDoubling(State state, Combat combat);
 
 	void RegisterSmugHook(ISmugHook hook, double priority);
 	void UnregisterSmugHook(ISmugHook hook);
@@ -49,6 +55,7 @@ public interface ISmugHook
 
 	double ModifySmugBotchChance(State state, Ship ship, Card? card, double chance) => chance;
 	double ModifySmugDoubleChance(State state, Ship ship, Card? card, double chance) => chance;
+	int ModifySmugSwing(State state, Combat combat, Card card, int amount) => amount;
 	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount) => amount;
 }
 
