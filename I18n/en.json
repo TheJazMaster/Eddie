@@ -1,12 +1,129 @@
 {
+    "character": {
+        "eddie": {
+            "name": "Eddie",
+            "description": "<c=e6e164>EDDIE</c>\nYour ship's electrician. Their cards offer <c=keyword>flexible</c> ways to <c=keyword>spend, store and gain</c> <c=energy>energy</c>."
+        }
+    },
     "ship": {
         "name": "Apollo",
         "description": "A battle-ready solar sail with restrictive movement but potent strafing capabilities."
+    },
+    "trait": {
+        "ShortCircuit": {
+            "name": "Short-Circuit",
+            "description": "If your total <c=energy>ENERGY</c> doesn't decrease from playing this card, discard the 2 leftmost cards in hand."
+        },
+        "Cheap": {
+            "name": "Cheap",
+            "description": "This card starts each combat with a <c=cardtrait>discount</c>."
+        }
+    },
+    "action": {
+        "CardSelectAddShortCircuitAndMakeCheaperForever": {
+            "cardSelect": "Select a card to make cheaper but <c=downside>add <c=cardtrait>short-circuit</c> to</c>, forever.",
+            "showCards": "Reduced cost by 1, added <c=cardtrait>short-circuit</c>!"
+        },
+        "ADiscountHand": {
+            "name": "Discount Hand",
+            "description": "<c=cardtrait>Discounts</c> every card in your hand by 1 energy."
+        }  ,
+        "AVariableHintEnergy": {
+            "description": "<c=action>X</c> = Your <c=energy>ENERGY</c> after paying for this card{{Parentheses}}."
+        }            
+    },
+    "midrow": {
+        "PowerCell": {
+            "name": "Power Cell", 
+            "description": "Blocks one attack. Gain 1 <c=energy>ENERGY</c> when this is destroyed."
+        }
+    },
+    "status": {
+        "Circuit": {
+            "name": "circuit",
+            "description": "Gain {0} <c=status>CLOSED CIRCUIT</c> at the start of your turn."
+        },
+        "ClosedCircuit": {
+            "name": "closed circuit",
+            "description": "When a card would be <c=keyword>discarded</c> (including from being played), lose 1 <c=status>CLOSED CIRCUIT</c> instead."
+        },
+        "MoreEnergy": {
+            "name": "more energy",
+            "description": "Gain {0} <c=energy>ENERGY</c> at the start of every turn."
+        }
     },
     "artifact": {
         "EmergencyThrusters": {
             "name": "THE CHARIOT",
             "description": "Gain 1 <c=status>STRAFE</c> on the first turn. <c=downside>When you move using <c=status>EVADE</c>, take 1 damage."
+        },
+
+
+        "DeconstructionGoggles": {
+            "name": "DECONSTRUCTION GOGGLES", 
+            "description": "At the start of combat, gain 2 <c=card>Reverse-Engineers</c>."
+        },
+        "CircuitBoard": {
+            "name": "CIRCUIT BOARD",
+            "description": "Gain 2 <c=status>CLOSED CIRCUIT</c> on the first turn."
+        },
+        "ElectromagneticCoil": {
+            "name": "ELECTROMAGNETIC COIL",
+            "description": "If you end your turn with more than 0 <c=energy>ENERGY</c>, gain 1 <c=status>EVADE</c>."
+        },
+        "FrazzledWires": {
+            "name": "FRAZZLED WIRES", 
+            "description": "Choose a card in your deck that costs 1 <c=energy>ENERGY</c>. Its cost is reduced by 1. <c=downside>It gains <c=cardtrait>short-circuit</c>."
+        },
+        "FissionChamber": {
+            "name": "FISSION CHAMBER",
+            "description": "All <c=keyword>X</c> values on cards are increased by 1."
+        },
+        "SunLamp": {
+            "name": "SUN LAMP",
+            "description": "At the end of each turn where you didn't move using <c=status>EVADE</c>, gain 1 <c=status>TEMP SHIELD</c>."
+        },
+        "SolarPanels": {
+            "name": "SOLAR PANELS",
+            "description": "Gain 1 extra <c=energy>ENERGY</c> each turn. <c=downside>The first time you move using EVADE in a turn, gain 1 less energy next turn.</c>"
+        },
+
+
+        "EmergencyVentilator": {
+            "name": "EMERGENCY VENTILATOR",
+            "description": "If you end your turn with more than 0 <c=energy>ENERGY</c>, lose 2 <c=status>HEAT</c>."
+        },
+        "OverdriveFeedback": {
+            "name": "OVERDRIVE FEEDBACK",
+            "description": "If you end your turn with more than 0 <c=energy>ENERGY</c>, your <c=status>OVERDRIVE</c> doesn't decrease."
+        },
+        "PerfectInsulation": {
+            "name": "PERFECT INSULATION",
+            "description": "The first time each combat you would gain <c=status>SHIELD</c> above your maximum, gain 2 <c=energy>ENERGY</c>."
+        },
+        "Spellboard": {
+            "name": "SPELLBOARD",
+            "description": "All cards with active shard costs you can pay are <c=cardtrait>infinite</c>."
+        },
+        "Thunderstrike": {
+            "name": "THUNDER-STRIKE",
+            "description": "Whenever the enemy moves during your turn, they lose hull equal to the distance moved."
+        },
+        "UltraLightBatteries": {
+            "name": "ULTRA-LIGHT BATTERIES",
+            "description": "When you run out of energy after playing a card, gain a <c=card>Lightweight</c>."
+        },
+        "VersionControl": {
+            "name": "VERSION CONTROL",
+            "description": "Every 4th time you exhaust a card, gain 1 <c=energy>ENERGY</c>."
+        },
+        "VirtualTreadmill": {
+            "name": "VIRTUAL TREADMILL",
+            "description": "All Basic cards are <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c>."
+        },
+        "WaxWings": {
+            "name": "WAX WINGS",
+            "description": "Whenever you <c=downside>botch</c> from oversmugging, gain 2 <c=energy>ENERGY</c>."
         }
     },
     "card": {
@@ -15,6 +132,119 @@
         },
         "BasicRubble": {
             "name": "Basic Rubble"
-        }
+        },
+
+
+        "Amplify": {
+			"name": "Amplify"
+		},
+		"Borrow": {
+			"name": "Borrow"
+		},
+		"Channel": {
+			"name": "Channel"
+		},
+		"ChargeCannons": {
+			"name": "Charge Cannons",
+            "description": {
+                "None": "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surges</c> to your draw pile, lose all <c=energy>ENERGY</c>.",
+                "A": "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge As</c> to your draw pile, lose all <c=energy>ENERGY</c>.",
+			    "B": "X = <c=energy>ENERGY</c>\nAdd X <c=card>Surge Bs</c> to your draw pile, lose all <c=energy>ENERGY</c>."
+            }
+		},
+		"ChargeShields": {
+			"name": "Charge Shields"
+		},
+		"ChargeThrusters": {
+			"name": "Charge Thrusters"
+		},
+		"Circuit": {
+			"name": "Circuit"
+		},
+        "DysonSphere": {
+            "name": "Dyson Sphere"
+        },
+		"EnergyBolt": {
+			"name": "Energy Payload"
+		},
+		"GammaRay": {
+			"name": "Gamma Ray"
+		},
+		"GarageSale": {
+			"name": "Garage Sale"
+		},
+		"Hyperfocus": {
+			"name": "Hyperfocus"
+		},
+		"Innovation": {
+			"name": "Innovation",
+            "description": {
+                "None": "Choose a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn.",
+                "A": "Choose a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn.",
+                "B": "<c=downside>Discard</c> a card in hand. It costs 0 <c=energy>ENERGY</c> once per turn."
+            },
+            "cardSelectText": {
+                "discard": "Choose a card to make free for the rest of the combat, then discard it.",
+                "normal": "Choose a card to make free for the rest of the combat."
+            }
+		},
+		"Interference": {
+			"name": "Interference"
+		},
+		"Jumpstart": {
+			"name": "Jumpstart"
+		},
+        "OffPeak": {
+            "name": "Off-Peak"
+        },
+		"PowerCell": {
+			"name": "Power Cell"
+		},
+		"PowerNap": {
+			"name": "Power Nap"
+		},
+		"PowerSink": {
+			"name": "Power Sink"
+		},
+		"RefundShot": {
+			"name": "Refund Shot"
+		},
+        "RenewableResource": {
+            "name": "Renewable Resource",
+            "description": {
+                "None": "Choose a <c=keyword>hand</c> card to make <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c> this combat.",
+                "A": "Choose a <c=keyword>hand</c> card to make <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c> this combat.",
+                "B": "Choose two <c=keyword>hand</c> cards to make  <c=cardtrait>infinite</c> and <c=cardtrait>short-circuit</c> this combat."
+            },
+            "cardSelectText": "Choose a card to make <c=cardtrait>infinite</c> and <c=downside>short-circuit</c> for the rest of the combat."
+        },
+        "ReverseEngineer": {
+            "name": "Reverse-Engineer",
+            "description": {
+				"None": "Choose a card in hand. <c=keyword>Exhaust</c> it and gain its cost as <c=energy>ENERGY</c>.",
+                "A": "Choose a card in hand. <c=keyword>Discard</c> it and gain its cost as <c=energy>ENERGY</c>.",
+				"B": "Choose a card in hand. <c=keyword>Exhaust</c> it and gain its cost as <c=energy>ENERGY</c>."
+            }
+        },
+		"Rummage": {
+			"name": "Rummage"
+		},
+		"ShortTermSolution": {
+			"name": "Short-Term Solution"
+		},
+        "SolarSailing": {
+            "name": "Solar Sailing"
+        },
+        "Surge": {
+            "name": "Surge"
+        },
+
+
+		"EddieExe": {
+			"name": "EddieExe"
+		},
+		"Lightweight": {
+			"name": "Lightweight"
+		}
     }
 }
