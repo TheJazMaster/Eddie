@@ -1,4 +1,4 @@
-# Eddie, the Electrician 2.0.0
+# Eddie, the Electrician
 A Cobalt Core mod. **Requires [Kokoro](https://github.com/Shockah/Cobalt-Core-Mods/tree/master/Kokoro)**.
 
 Take this lazy snake for a spin and play around with **infinite cards**, **X-costs**, **hand/energy management** and **big attacks**.
