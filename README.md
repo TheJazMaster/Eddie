@@ -8,4 +8,4 @@ Take this lazy snake for a spin and play around with **infinite cards**, **X-cos
 
 Huge thanks to **Arin** for doing the character sprite, border and card frame, and for design advice.
 
-Links to this [GitHub page](https://github.com/TheJazMaster/Eddie) and the [modloader](https://github.com/Shockah/Nickel/releases/latest)'s
+Links to this [GitHub page](https://github.com/TheJazMaster/Eddie) and the [modloader](https://github.com/Shockah/Nickel/releases/latest)'s.
